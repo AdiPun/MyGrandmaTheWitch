@@ -6,6 +6,7 @@ void Draw();
 void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 {
 	Play::CreateManager(DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_SCALE);
+
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -23,5 +24,6 @@ int MainGameExit(void)
 
 void Draw()
 {
-
+	Play::DrawBackground();
+	Play::PresentDrawingBuffer();
 }
