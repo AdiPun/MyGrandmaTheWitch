@@ -1,5 +1,7 @@
 #include "MainGame.h"
 
+void Draw();
+
 // The entry point for a PlayBuffer program
 void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 {
@@ -9,7 +11,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
-	
+	Draw();
 }
 
 // Gets called once when the player quits the game 
@@ -19,3 +21,7 @@ int MainGameExit(void)
 	return PLAY_OK;
 }
 
+void Draw()
+{
+
+}
