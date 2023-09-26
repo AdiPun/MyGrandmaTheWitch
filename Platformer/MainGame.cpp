@@ -113,6 +113,14 @@ void UpdatePlayer()
 		}
 		break;
 	case STATE_AIRBORNE:
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
+		}
 		HandleAirborneControls();
 		break;
 	}
