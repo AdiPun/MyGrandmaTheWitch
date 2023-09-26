@@ -114,6 +114,7 @@ void UpdatePlayer()
 	{
 		obj_player.acceleration.y = 0;
 		obj_player.velocity.y = 0;
+		obj_player.pos.y = std::clamp(obj_player.pos.y, 0.f, obj_player.oldPos.y+1);
 	}
 	else if (!IsGrounded())
 	{
@@ -356,8 +357,8 @@ void Draw()
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
-	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
-	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxyoffset, playerinfo.groundingboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxyoffset, playerinfo.groundingboxAABB);
 	Play::PresentDrawingBuffer();
 }
 
@@ -367,7 +368,7 @@ void DrawPlatforms()
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
-		//DrawObjectAABB(p.pos, platform.AABB);
+		DrawObjectAABB(p.pos, platform.AABB);
 	}
 }
 
