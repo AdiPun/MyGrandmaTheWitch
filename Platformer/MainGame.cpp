@@ -18,7 +18,7 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
-	Vector2D maxyoffset{ 0,37 };
+	Vector2D maxyoffset{ 0,50 };
 	Vector2D groundingboxAABB{ 10,1 };
 	
 	bool facingright = true;
@@ -240,7 +240,7 @@ void HandlePlayerControls()
 	// Jump
 	if (Play::KeyPressed(VK_UP))
 	{
-		obj_player.velocity.y -= 5;
+		obj_player.velocity.y -= 15;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
