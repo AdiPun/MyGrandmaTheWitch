@@ -175,6 +175,10 @@ void UpdatePlayer()
 		{
 			gamestate.playerstate = STATE_FALLING;
 		}
+		if (IsGrounded())
+		{
+			gamestate.playerstate = STATE_LANDING;
+		}
 		break;
 
 	case STATE_FALLING:
