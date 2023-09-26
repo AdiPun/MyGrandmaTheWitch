@@ -15,7 +15,7 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D AABB{ 15,20 };
+	Vector2D AABB{ 10,20 };
 	bool facingright = true;
 	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
@@ -24,6 +24,7 @@ struct PlayerInfo
 	float animationspeedfall{ 0.07f };
 	float animationspeedland { 0.1f };
 	float runspeed{ 4.5f };
+	float jumpspeed{ 4.0f };
 	float fallspeed{ 3.5f };
 	float scale{ 2.5f };
 	float gravity{ 0.0f};
@@ -75,12 +76,14 @@ void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	obj_player.scale = playerinfo.scale;
-	obj_player.velocity.x *= 0.9f;
+	
 	obj_player.acceleration.y = playerinfo.gravity;
 	switch (gamestate.playerstate)
 	{
 	case STATE_LANDING:
 	{
+		obj_player.velocity.x *= 0.96f;
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
@@ -96,9 +99,12 @@ void UpdatePlayer()
 		break;
 	}
 	case STATE_GROUND:
+		obj_player.velocity.x *= 0.9f;
 		HandlePlayerControls();
 		break;
 	case STATE_JUMPING:
+		obj_player.velocity.x *= 0.99f;
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
@@ -113,6 +119,8 @@ void UpdatePlayer()
 		}
 		break;
 	case STATE_AIRBORNE:
+		obj_player.velocity.x *= 0.99f;
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
@@ -155,11 +163,7 @@ void HandlePlayerControls()
 		Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 	}
 
-	if (Play::KeyPressed(VK_SPACE))
-	{
-		//Add sound effect!
-	}
-
+	// Jump
 	if (Play::KeyPressed(VK_UP))
 	{
 		//obj_player.velocity.y -= 5;
@@ -170,7 +174,7 @@ void HandlePlayerControls()
 void HandleAirborneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	// Running animation
+	// Falling animation
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
