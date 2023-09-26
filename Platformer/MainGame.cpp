@@ -11,18 +11,19 @@ enum PlayerState
 	STATE_AIRBORNE,
 	STATE_LANDING,
 	STATE_JUMPING,
+	STATE_ATTACK,
 };
 
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	bool facingright = true;
-	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.3f };
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.07f };
 	float animationspeedland { 0.1f };
+	float animationspeedatk2{ 0.3f };
 	float runspeed{ 4.5f };
 	float jumpspeed{ 4.0f };
 	float fallspeed{ 3.5f };
@@ -81,7 +82,7 @@ void UpdatePlayer()
 	switch (gamestate.playerstate)
 	{
 	case STATE_LANDING:
-	{
+
 		obj_player.velocity.x *= 0.96f;
 
 		if (!playerinfo.facingright)
@@ -97,12 +98,15 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_GROUND;
 		}
 		break;
-	}
+
 	case STATE_GROUND:
+
 		obj_player.velocity.x *= 0.9f;
 		HandlePlayerControls();
 		break;
+
 	case STATE_JUMPING:
+
 		obj_player.velocity.x *= 0.99f;
 
 		if (!playerinfo.facingright)
@@ -119,6 +123,7 @@ void UpdatePlayer()
 		}
 		break;
 	case STATE_AIRBORNE:
+
 		obj_player.velocity.x *= 0.99f;
 
 		if (!playerinfo.facingright)
@@ -130,6 +135,24 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
 		HandleAirborneControls();
+		break;
+
+	case STATE_ATTACK:
+
+		obj_player.velocity.x *= 0.9f;
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "atk3_left", playerinfo.animationspeedatk2);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "atk3_right", playerinfo.animationspeedatk2);
+		}
+		if (Play::IsAnimationComplete(obj_player))
+		{
+			gamestate.playerstate = STATE_GROUND;
+		}
 		break;
 	}
 	Play::UpdateGameObject(obj_player);
@@ -169,6 +192,11 @@ void HandlePlayerControls()
 		//obj_player.velocity.y -= 5;
 		gamestate.playerstate = STATE_JUMPING;
 	}
+
+	if (Play::KeyPressed(VK_SPACE))
+	{
+		gamestate.playerstate = STATE_ATTACK;
+	}
 }
 
 void HandleAirborneControls()
@@ -198,6 +226,7 @@ void Draw()
 	Play::DrawBackground();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	Play::PresentDrawingBuffer();
 }
 
