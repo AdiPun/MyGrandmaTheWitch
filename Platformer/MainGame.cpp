@@ -23,6 +23,7 @@ struct PlayerInfo
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.05f };
 	float runspeed{ 4.5f };
+	float fallspeed{ 3.5f };
 	float scale{ 2.5f };
 	float gravity{ 0.0f};
 };
@@ -153,13 +154,17 @@ void HandleAirborneControls()
 	{
 		playerinfo.facingright = false;
 		Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
-		obj_player.velocity.x = -playerinfo.runspeed;
+		obj_player.velocity.x = -playerinfo.fallspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
 		Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
-		obj_player.velocity.x = playerinfo.runspeed;
+		obj_player.velocity.x = playerinfo.fallspeed;
+	}
+	if (Play::KeyDown(VK_DOWN))
+	{
+		gamestate.playerstate = STATE_LANDING;
 	}
 }
 
