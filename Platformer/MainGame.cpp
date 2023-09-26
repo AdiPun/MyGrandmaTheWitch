@@ -124,7 +124,9 @@ void UpdatePlayer()
 	{
 	case STATE_LANDING:
 
-		// obj_player.velocity.x *= playerinfo.friction;
+		obj_player.velocity.x *= playerinfo.friction;
+
+		HandlePlayerControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -152,6 +154,7 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
 		}
+
 		HandlePlayerControls();
 
 
