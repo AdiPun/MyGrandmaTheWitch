@@ -41,7 +41,7 @@ struct Platform
 struct GameState
 {
 	PlayerState playerstate = STATE_GROUND;
-	std::vector<Platform> vPlatform;
+	std::vector<Platform> vPlatforms;
 };
 
 PlayerInfo playerinfo;
@@ -50,6 +50,7 @@ GameState gamestate;
 void UpdatePlayer();
 void HandlePlayerControls();
 void HandleAirborneControls();
+void CreatePlatform();
 void Draw();
 void DrawPlatform();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
@@ -229,6 +230,19 @@ void HandleAirborneControls()
 	}
 }
 
+void CreatePlatform()
+{
+	Platform platform;
+
+	// Create floor
+	for (int display_x = 0; display_x < DISPLAY_WIDTH / 32; ++display_x)
+	{
+		int display_fraction = display_x * DISPLAY_WIDTH / 40;
+		gamestate.vPlatforms.push_back(platform);
+		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
+	}
+}
+
 void Draw()
 {
 	Play::DrawBackground();
@@ -240,7 +254,7 @@ void Draw()
 
 void DrawPlatform()
 {
-	for (Platform& p : gamestate.vPlatform)
+	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"))
 	}
