@@ -36,6 +36,7 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
 void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 {
 	Play::CreateManager(DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_SCALE);
+	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 4 }, 0, "idle_right");
 }
@@ -43,8 +44,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
-	Draw();
 	UpdatePlayer();
+	Draw();
 	return Play::KeyDown(VK_ESCAPE);
 }
 
