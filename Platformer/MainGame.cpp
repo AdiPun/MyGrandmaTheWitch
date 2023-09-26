@@ -23,7 +23,7 @@ struct PlayerInfo
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.07f };
 	float animationspeedland { 0.1f };
-	float animationspeedatk2{ 0.3f };
+	float animationspeedatk{ 0.3f };
 	float runspeed{ 4.5f };
 	float jumpspeed{ 4.0f };
 	float fallspeed{ 3.5f };
@@ -143,11 +143,11 @@ void UpdatePlayer()
 
 		if (!playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "atk3_left", playerinfo.animationspeedatk2);
+			Play::SetSprite(obj_player, "atk3_left", playerinfo.animationspeedatk);
 		}
 		else if (playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "atk3_right", playerinfo.animationspeedatk2);
+			Play::SetSprite(obj_player, "atk3_right", playerinfo.animationspeedatk);
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
