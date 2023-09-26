@@ -114,7 +114,7 @@ void HandlePlayerControls()
 		}
 		else if (!playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "jump", playerinfo.animationspeedjump);
+			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
 		}
 	}
 }
