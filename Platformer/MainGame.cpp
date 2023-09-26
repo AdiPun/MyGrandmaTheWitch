@@ -18,7 +18,7 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
-	Vector2D maxyoffset{ 0,30 };
+	Vector2D maxyoffset{ 0,37 };
 	Vector2D groundingboxAABB{ 10,1 };
 	
 	bool facingright = true;
