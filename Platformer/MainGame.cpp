@@ -17,9 +17,11 @@ struct PlayerInfo
 	bool facingright = true;
 	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
-	float animationspeedrun{ 0.25f };
-	float animationspeedjump{ 0.02f };
-	float runspeed{ 4.0f };
+	float animationspeedrun{ 0.3f };
+	float animationspeedjump{ 0.000001f };
+	float runspeed{ 4.5f };
+	float scale{ 2.5f };
+	float gravity{ 0.0f};
 };
 
 struct GameState
@@ -66,19 +68,15 @@ void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	HandlePlayerControls();
-	if (Play::IsLeavingDisplayArea(obj_player))
-	{
-
-	}
 	Play::UpdateGameObject(obj_player);
 }
 
 void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	obj_player.scale = 2.5f;
+	obj_player.scale = playerinfo.scale;
 	obj_player.velocity.x *= 0.9f;
-	obj_player.acceleration.y = 0.5f;
+	obj_player.acceleration.y = playerinfo.gravity;
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
@@ -110,9 +108,14 @@ void HandlePlayerControls()
 
 	if (Play::KeyPressed(VK_UP))
 	{
-		obj_player.velocity.y = -9;
-		Play::SetSprite(obj_player, "jump", playerinfo.animationspeedjump);
-		//Add sound effect!
+		if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
+		}
+		else if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "jump", playerinfo.animationspeedjump);
+		}
 	}
 }
 
