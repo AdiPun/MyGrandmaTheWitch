@@ -229,6 +229,13 @@ void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
+	// Jump
+	if (Play::KeyPressed(VK_UP))
+	{
+		obj_player.velocity.y -= playerinfo.jumpspeed;
+		gamestate.playerstate = STATE_JUMPING;
+	}
+
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
@@ -253,12 +260,6 @@ void HandlePlayerControls()
 		Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 	}
 
-	// Jump
-	if (Play::KeyPressed(VK_UP))
-	{
-		obj_player.velocity.y -= playerinfo.jumpspeed;
-		gamestate.playerstate = STATE_JUMPING;
-	}
 
 	if (Play::KeyPressed(VK_SPACE))
 	{
