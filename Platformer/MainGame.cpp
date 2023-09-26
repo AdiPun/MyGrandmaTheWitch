@@ -32,7 +32,7 @@ struct PlayerInfo
 	float jumpspeed{ 4.0f };
 	float fallspeed{ 3.5f };
 	float scale{ 2.5f };
-	float gravity{ 0.0f};
+	float gravity{ 0.4f};
 };
 
 struct Platform
@@ -101,9 +101,20 @@ int MainGameExit(void)
 void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+
 	obj_player.scale = playerinfo.scale;
 	
-	obj_player.acceleration.y = playerinfo.gravity;
+	if (IsGrounded())
+	{
+		obj_player.acceleration.y = 0;
+		obj_player.velocity.y = 0;
+	}
+	else if (!IsGrounded())
+	{
+		obj_player.acceleration.y = playerinfo.gravity;
+	}
+
 	switch (gamestate.playerstate)
 	{
 	case STATE_LANDING:
@@ -127,6 +138,7 @@ void UpdatePlayer()
 	case STATE_GROUND:
 
 		obj_player.velocity.x *= 0.85f;
+		obj_player.velocity.y = 0;
 		HandlePlayerControls();
 
 
@@ -140,6 +152,7 @@ void UpdatePlayer()
 	case STATE_JUMPING:
 
 		obj_player.velocity.x *= 0.96f;
+
 
 		if (!playerinfo.facingright)
 		{
@@ -173,11 +186,6 @@ void UpdatePlayer()
 
 		HandleAirborneControls();
 
-
-		if (IsGrounded()) 
-		{
-			gamestate.playerstate = STATE_GROUND;
-		}
 		break;
 
 	case STATE_ATTACK:
@@ -232,7 +240,7 @@ void HandlePlayerControls()
 	// Jump
 	if (Play::KeyPressed(VK_UP))
 	{
-		//obj_player.velocity.y -= 5;
+		obj_player.velocity.y -= 5;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
@@ -259,7 +267,7 @@ void HandleAirborneControls()
 		Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
-	if (Play::KeyDown(VK_DOWN)) // if IsGrounded to be implemented later
+	if (IsGrounded()) // if IsGrounded to be implemented later
 	{
 		gamestate.playerstate = STATE_LANDING;
 	}
@@ -298,6 +306,7 @@ void CreatePlatformFloor()
 	}
 }
 
+// Checks player's groundingbox and if it's colliding with a platform
 bool IsGrounded()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
@@ -308,14 +317,14 @@ bool IsGrounded()
 	for (const Platform& platform : gamestate.vPlatforms)
 	{
 		// Calculate the platform's AABB
-		Point2D platformTopLeft = platform.pos - platform.AABB / 2.0f;
-		Point2D platformBottomRight = platform.pos + platform.AABB / 2.0f;
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
 
 		// Check for collision between player's grounding box and the platform
-		if (groundingBoxPos.x + groundingBoxAABB.x / 2.0f > platformTopLeft.x &&
-			groundingBoxPos.x - groundingBoxAABB.x / 2.0f < platformBottomRight.x &&
-			groundingBoxPos.y + groundingBoxAABB.y / 2.0f > platformTopLeft.y &&
-			groundingBoxPos.y - groundingBoxAABB.y / 2.0f < platformBottomRight.y)
+		if (groundingBoxPos.x + groundingBoxAABB.x  > platformTopLeft.x &&
+			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
+			groundingBoxPos.y + groundingBoxAABB.y  > platformTopLeft.y &&
+			groundingBoxPos.y - groundingBoxAABB.y  < platformBottomRight.y)
 		{
 			return true; // Player is grounded
 		}
