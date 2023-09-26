@@ -61,14 +61,13 @@ void UpdatePlayer()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	obj_player.animSpeed = playerinfo.animationspeedidle;
 	Play::UpdateGameObject(obj_player);
-	DrawObjectAABB(obj_player.pos, playerinfo.AABB);
 }
 
 void Draw()
 {
 	Play::DrawBackground();
 	DrawAllGameObjectsByType(TYPE_PLAYER);
-	
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 	Play::PresentDrawingBuffer();
 }
 
