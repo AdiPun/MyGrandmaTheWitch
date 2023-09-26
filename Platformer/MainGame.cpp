@@ -56,9 +56,14 @@ GameState gamestate;
 void UpdatePlayer();
 void HandlePlayerControls();
 void HandleAirborneControls();
+
+
 void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformFloor();
+
+
+
 void Draw();
 void DrawPlatforms();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
@@ -219,6 +224,7 @@ void HandlePlayerControls()
 	}
 }
 
+
 void HandleAirborneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
@@ -235,12 +241,13 @@ void HandleAirborneControls()
 		Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
-	if (Play::KeyDown(VK_DOWN))
+	if (Play::KeyDown(VK_DOWN)) // if IsGrounded to be implemented later
 	{
 		gamestate.playerstate = STATE_LANDING;
 	}
 }
 
+// Creates a single platform tile
 void CreatePlatform(int x, int y)
 {
 	Platform platform;
@@ -248,10 +255,11 @@ void CreatePlatform(int x, int y)
 	gamestate.vPlatforms.back().pos = Point2D{x,y};
 }
 
+// Creates a row of platform tiles
 void CreatePlatformRow(int tiles, int x, int y)
 {
 	Platform platform;
-	for (int i = 0; i<tiles; i++)
+	for (int i = 0; i < tiles; i++)
 	{
 		int tilespacing = 64 * i;
 		gamestate.vPlatforms.push_back(platform);
@@ -259,11 +267,11 @@ void CreatePlatformRow(int tiles, int x, int y)
 	}
 }
 
+// Creates a floor of platform tiles
 void CreatePlatformFloor()
 {
 	Platform platform;
 
-	// Create floor
 	for (int display_x = 0; display_x < DISPLAY_WIDTH / 16; display_x++)
 	{
 		int display_fraction = display_x * DISPLAY_WIDTH / 16;
@@ -283,6 +291,7 @@ void Draw()
 	Play::PresentDrawingBuffer();
 }
 
+// Draws all platforms in vPlatforms
 void DrawPlatforms()
 {
 	for (Platform& p : gamestate.vPlatforms)
@@ -310,6 +319,7 @@ void DrawAllGameObjectsByType(GameObjectType type)
 	}
 }
 
+// Draws a green AABB around the object
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB)
 {
 	Point2D topLeft = objcentre - objAABB;
