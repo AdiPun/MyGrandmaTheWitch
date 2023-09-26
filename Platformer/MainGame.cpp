@@ -18,19 +18,23 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
-	Vector2D maxyoffset{ 0,50 };
+	Vector2D maxyoffset{ 0,40 };
 	Vector2D groundingboxAABB{ 10,1 };
 	
 	bool facingright = true;
-	float animationspeedidle{ 0.15f };
-	float animationspeedrun{ 0.3f };
+	float animationspeedidle{ 0.2f };
+	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.2f };
-	float animationspeedfall{ 0.05f };
-	float animationspeedland { 0.1f };
-	float animationspeedatk{ 0.3f };
+	float animationspeedfall{ 0.2f };
+	float animationspeedland { 0.2f };
+	float animationspeedatk{ 0.2f };
+
+	float friction{ 0.8f };
+
 	float runspeed{ 4.5f };
 	float jumpspeed{ 4.0f };
 	float fallspeed{ 3.5f };
+
 	float scale{ 2.5f };
 	float gravity{ 0.4f};
 };
@@ -119,7 +123,7 @@ void UpdatePlayer()
 	{
 	case STATE_LANDING:
 
-		obj_player.velocity.x *= 0.94f;
+		// obj_player.velocity.x *= playerinfo.friction;
 
 		if (!playerinfo.facingright)
 		{
@@ -137,7 +141,7 @@ void UpdatePlayer()
 
 	case STATE_GROUND:
 
-		obj_player.velocity.x *= 0.85f;
+		obj_player.velocity.x *= playerinfo.friction;
 		obj_player.velocity.y = 0;
 		HandlePlayerControls();
 
@@ -151,7 +155,10 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		obj_player.velocity.x *= 0.96f;
+		obj_player.velocity.x *= playerinfo.friction;
+
+
+		HandleAirborneControls();
 
 
 		if (!playerinfo.facingright)
@@ -163,7 +170,6 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
 		}
 
-
 		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_AIRBORNE;
@@ -172,7 +178,9 @@ void UpdatePlayer()
 
 	case STATE_AIRBORNE:
 
-		obj_player.velocity.x *= 0.96f;
+		HandleAirborneControls();
+
+		obj_player.velocity.x *= playerinfo.friction;
 
 		if (!playerinfo.facingright)
 		{
@@ -184,7 +192,7 @@ void UpdatePlayer()
 		}
 
 
-		HandleAirborneControls();
+		
 
 		break;
 
@@ -218,13 +226,13 @@ void HandlePlayerControls()
 	{
 		playerinfo.facingright = false;
 		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
-		obj_player.velocity.x = -playerinfo.fallspeed;
+		obj_player.velocity.x = -playerinfo.runspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
 		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
-		obj_player.velocity.x = playerinfo.fallspeed;
+		obj_player.velocity.x = playerinfo.runspeed;
 	}
 	
 	// Idle animation
@@ -258,13 +266,13 @@ void HandleAirborneControls()
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
-		Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
+		// Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
 		obj_player.velocity.x = -playerinfo.fallspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
-		Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
+		// Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
 	if (IsGrounded()) // if IsGrounded to be implemented later
@@ -337,10 +345,10 @@ void Draw()
 {
 	Play::DrawBackground();
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
-	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos+playerinfo.maxyoffset, playerinfo.groundingboxAABB);
 	DrawPlatforms();
+	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	Play::PresentDrawingBuffer();
 }
 
