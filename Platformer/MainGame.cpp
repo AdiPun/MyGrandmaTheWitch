@@ -75,6 +75,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
 	CreatePlatform(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4*3);
+	CreatePlatformRow(5, 20, 200);
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -250,9 +251,9 @@ void CreatePlatform(int x, int y)
 void CreatePlatformRow(int tiles, int x, int y)
 {
 	Platform platform;
-	for (int i = 0; tiles > 0; i++)
+	for (int i = 0; i<tiles; i++)
 	{
-		int tilespacing = 64*i
+		int tilespacing = 64 * i;
 		gamestate.vPlatforms.push_back(platform);
 		gamestate.vPlatforms.back().pos = Point2D{ x + tilespacing , y };
 	}
