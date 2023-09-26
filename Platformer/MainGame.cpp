@@ -72,27 +72,13 @@ void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
-	// Turning animation plays if player is 
-	if (Play::KeyPressed(VK_LEFT) && playerinfo.facingright && !playerinfo.hasTurned)
-	{
-		playerinfo.facingright = false;
-		playerinfo.hasTurned = true;
-		Play::SetSprite(obj_player, "turn_left", playerinfo.animationspeedrun); 
-	}
-	if (Play::KeyPressed(VK_RIGHT) && !playerinfo.facingright && !playerinfo.hasTurned)
-	{
-		playerinfo.facingright = true;
-		playerinfo.hasTurned = true;
-		Play::SetSprite(obj_player, "turn_right", playerinfo.animationspeedrun); 
-	}
-		
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.hasTurned = false;
 		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); 
 	}
-	if (Play::KeyDown(VK_RIGHT))
+	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.hasTurned = false;
 		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); 
