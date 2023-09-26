@@ -19,7 +19,7 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	Vector2D maxyoffset{ 0,40 };
-	Vector2D groundingboxAABB{ 10,1 };
+	Vector2D groundingboxAABB{ 15,1 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -109,6 +109,7 @@ void UpdatePlayer()
 
 	obj_player.scale = playerinfo.scale;
 	
+	// Grounded interactions
 	if (IsGrounded())
 	{
 		obj_player.acceleration.y = 0;
@@ -262,20 +263,18 @@ void HandlePlayerControls()
 void HandleAirborneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	// Falling animation
+
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
-		// Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
 		obj_player.velocity.x = -playerinfo.fallspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
-		// Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
-	if (IsGrounded()) // if IsGrounded to be implemented later
+	if (IsGrounded())
 	{
 		gamestate.playerstate = STATE_LANDING;
 	}
