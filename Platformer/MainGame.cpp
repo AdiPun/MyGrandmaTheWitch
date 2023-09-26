@@ -71,17 +71,18 @@ void UpdatePlayer()
 void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	
+	obj_player.scale = 2.5f;
+
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
-		playerinfo.hasTurned = false;
-		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); 
+		playerinfo.facingright = false;
+		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
 	}
-	else if (Play::KeyDown(VK_RIGHT)) 
+	else if (Play::KeyDown(VK_RIGHT))
 	{
-		playerinfo.hasTurned = false;
-		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); 
+		playerinfo.facingright = true;
+		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 	}
 	
 	// Idle animation
@@ -110,7 +111,7 @@ void HandlePlayerControls()
 void Draw()
 {
 	Play::DrawBackground();
-	DrawAllGameObjectsByType(TYPE_PLAYER);
+	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 	Play::PresentDrawingBuffer();
 }
