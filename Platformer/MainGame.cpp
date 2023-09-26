@@ -75,7 +75,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
 	CreatePlatform(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4*3);
-	CreatePlatformRow(5, 20, 200);
+	CreatePlatformRow(5, 100, 400);
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -163,11 +163,11 @@ void UpdatePlayer()
 
 		if (!playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "atk3_left", playerinfo.animationspeedatk);
+			Play::SetSprite(obj_player, "atk_left", playerinfo.animationspeedatk);
 		}
 		else if (playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "atk3_right", playerinfo.animationspeedatk);
+			Play::SetSprite(obj_player, "atk_right", playerinfo.animationspeedatk);
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
@@ -275,10 +275,10 @@ void CreatePlatformFloor()
 void Draw()
 {
 	Play::DrawBackground();
+	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos+playerinfo.maxyoffset, playerinfo.groundingboxAABB);
-	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
 	Play::PresentDrawingBuffer();
 }
