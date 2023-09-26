@@ -34,6 +34,8 @@ GameState gamestate;
 
 void UpdatePlayer();
 void HandlePlayerControls();
+void HandleAirborneControls();
+
 void Draw();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
@@ -67,6 +69,9 @@ int MainGameExit(void)
 void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	obj_player.scale = playerinfo.scale;
+	obj_player.velocity.x *= 0.9f;
+	obj_player.acceleration.y = playerinfo.gravity;
 	HandlePlayerControls();
 	Play::UpdateGameObject(obj_player);
 }
@@ -74,9 +79,7 @@ void UpdatePlayer()
 void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	obj_player.scale = playerinfo.scale;
-	obj_player.velocity.x *= 0.9f;
-	obj_player.acceleration.y = playerinfo.gravity;
+	
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
@@ -108,14 +111,21 @@ void HandlePlayerControls()
 
 	if (Play::KeyPressed(VK_UP))
 	{
-		if (playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
-		}
-		else if (!playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
-		}
+		HandleAirborneControls();
+	}
+}
+
+void HandleAirborneControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (playerinfo.facingright)
+	{
+		Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
+	}
+	else if (!playerinfo.facingright)
+	{
+		Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
 	}
 }
 
