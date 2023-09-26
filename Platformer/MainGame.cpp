@@ -10,6 +10,7 @@ enum PlayerState
 	STATE_GROUND = 0,
 	STATE_AIRBORNE,
 	STATE_LANDING,
+	STATE_JUMPING,
 };
 
 struct PlayerInfo
@@ -82,6 +83,8 @@ void UpdatePlayer()
 	case STATE_GROUND:
 		HandlePlayerControls();
 		break;
+	case STATE_JUMPING:
+
 	case STATE_AIRBORNE:
 		HandleAirborneControls();
 		break;
