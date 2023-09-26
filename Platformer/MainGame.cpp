@@ -9,7 +9,7 @@ enum GameObjectType
 enum PlayerState
 {
 	STATE_GROUND = 0,
-	STATE_AIRBORNE,
+	STATE_FALLING,
 	STATE_LANDING,
 	STATE_JUMPING,
 	STATE_ATTACK,
@@ -32,11 +32,11 @@ struct PlayerInfo
 	float friction{ 0.8f };
 
 	float runspeed{ 4.5f };
-	float jumpspeed{ 4.0f };
+	float jumpspeed{ 12.0f };
 	float fallspeed{ 3.5f };
 
 	float scale{ 2.5f };
-	float gravity{ 0.4f};
+	float gravity{ 0.3f};
 };
 
 struct Platform
@@ -149,7 +149,7 @@ void UpdatePlayer()
 
 		if (!IsGrounded()) 
 		{
-			gamestate.playerstate = STATE_AIRBORNE;
+			gamestate.playerstate = STATE_FALLING;
 		}
 
 		break;
@@ -173,11 +173,11 @@ void UpdatePlayer()
 
 		if (Play::IsAnimationComplete(obj_player))
 		{
-			gamestate.playerstate = STATE_AIRBORNE;
+			gamestate.playerstate = STATE_FALLING;
 		}
 		break;
 
-	case STATE_AIRBORNE:
+	case STATE_FALLING:
 
 		HandleAirborneControls();
 
@@ -191,7 +191,10 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
-
+		if (IsGrounded())
+		{
+			gamestate.playerstate = STATE_LANDING;
+		}
 
 		
 
@@ -249,7 +252,7 @@ void HandlePlayerControls()
 	// Jump
 	if (Play::KeyPressed(VK_UP))
 	{
-		obj_player.velocity.y -= 15;
+		obj_player.velocity.y -= playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
@@ -273,10 +276,6 @@ void HandleAirborneControls()
 	{
 		playerinfo.facingright = true;
 		obj_player.velocity.x = playerinfo.fallspeed;
-	}
-	if (IsGrounded())
-	{
-		gamestate.playerstate = STATE_LANDING;
 	}
 }
 
@@ -346,8 +345,8 @@ void Draw()
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxyoffset, playerinfo.groundingboxAABB);
+	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxyoffset, playerinfo.groundingboxAABB);
 	Play::PresentDrawingBuffer();
 }
 
@@ -357,7 +356,7 @@ void DrawPlatforms()
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
-		DrawObjectAABB(p.pos, platform.AABB);
+		//DrawObjectAABB(p.pos, platform.AABB);
 	}
 }
 
