@@ -286,7 +286,7 @@ void DrawPlatforms()
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
-		DrawObjectAABB(p.pos, {32,32});
+		DrawObjectAABB(p.pos, platform.AABB);
 	}
 }
 
