@@ -84,6 +84,19 @@ void UpdatePlayer()
 		HandlePlayerControls();
 		break;
 	case STATE_JUMPING:
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
+		}
+		if (Play::IsAnimationComplete(obj_player))
+		{
+			gamestate.playerstate = STATE_AIRBORNE;
+		}
+		
 
 	case STATE_AIRBORNE:
 		HandleAirborneControls();
@@ -128,7 +141,7 @@ void HandlePlayerControls()
 	if (Play::KeyPressed(VK_UP))
 	{
 		//obj_player.velocity.y -= 5;
-		gamestate.playerstate = STATE_AIRBORNE;
+		gamestate.playerstate = STATE_JUMPING;
 	}
 }
 
