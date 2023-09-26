@@ -22,6 +22,7 @@ struct PlayerInfo
 	float animationspeedrun{ 0.3f };
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.05f };
+	float animationspeedland { 0.1f };
 	float runspeed{ 4.5f };
 	float fallspeed{ 3.5f };
 	float scale{ 2.5f };
@@ -80,7 +81,14 @@ void UpdatePlayer()
 	{
 	case STATE_LANDING:
 	{
-
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
+		}
 	}
 	case STATE_GROUND:
 		HandlePlayerControls();
