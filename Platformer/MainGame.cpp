@@ -69,7 +69,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
-	CreatePlatform(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2);
+	CreatePlatform(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4*3);
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -280,9 +280,11 @@ void Draw()
 
 void DrawPlatforms()
 {
+
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
+		DrawObjectAABB(p.pos, {32,32});
 	}
 }
 
