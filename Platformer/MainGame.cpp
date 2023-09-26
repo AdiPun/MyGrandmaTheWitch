@@ -62,7 +62,7 @@ void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformFloor();
 
-
+bool IsGrounded();
 
 void Draw();
 void DrawPlatforms();
@@ -128,6 +128,13 @@ void UpdatePlayer()
 
 		obj_player.velocity.x *= 0.85f;
 		HandlePlayerControls();
+
+
+		if (!IsGrounded()) 
+		{
+			gamestate.playerstate = STATE_AIRBORNE;
+		}
+
 		break;
 
 	case STATE_JUMPING:
@@ -142,11 +149,14 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
 		}
+
+
 		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_AIRBORNE;
 		}
 		break;
+
 	case STATE_AIRBORNE:
 
 		obj_player.velocity.x *= 0.96f;
@@ -159,7 +169,15 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
+
+
 		HandleAirborneControls();
+
+
+		if (IsGrounded()) 
+		{
+			gamestate.playerstate = STATE_GROUND;
+		}
 		break;
 
 	case STATE_ATTACK:
@@ -278,6 +296,32 @@ void CreatePlatformFloor()
 		gamestate.vPlatforms.push_back(platform);
 		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
 	}
+}
+
+bool IsGrounded()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxyoffset;
+	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB / 2.0f;
+		Point2D platformBottomRight = platform.pos + platform.AABB / 2.0f;
+
+		// Check for collision between player's grounding box and the platform
+		if (groundingBoxPos.x + groundingBoxAABB.x / 2.0f > platformTopLeft.x &&
+			groundingBoxPos.x - groundingBoxAABB.x / 2.0f < platformBottomRight.x &&
+			groundingBoxPos.y + groundingBoxAABB.y / 2.0f > platformTopLeft.y &&
+			groundingBoxPos.y - groundingBoxAABB.y / 2.0f < platformBottomRight.y)
+		{
+			return true; // Player is grounded
+		}
+	}
+
+	return false; // Player is not grounded
 }
 
 void Draw()
