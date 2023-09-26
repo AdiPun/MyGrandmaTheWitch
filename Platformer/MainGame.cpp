@@ -17,8 +17,9 @@ struct PlayerInfo
 	bool facingright = true;
 	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
-	float animationspeedrun{ 0.2f };
+	float animationspeedrun{ 0.25f };
 	float animationspeedjump{ 0.02f };
+	float runspeed{ 4.0f };
 };
 
 struct GameState
@@ -72,17 +73,19 @@ void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	obj_player.scale = 2.5f;
-
+	obj_player.velocity.x *= 0.9f;
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
 		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
+		obj_player.velocity.x = -playerinfo.runspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
 		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+		obj_player.velocity.x = playerinfo.runspeed;
 	}
 	
 	// Idle animation
