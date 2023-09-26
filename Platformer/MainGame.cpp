@@ -19,14 +19,14 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	Vector2D maxyoffset{ 0,40 };
-	Vector2D groundingboxAABB{ 15,1 };
+	Vector2D groundingboxAABB{ 25,1 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
 	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.2f };
-	float animationspeedland { 0.2f };
+	float animationspeedland { 0.1f };
 	float animationspeedatk{ 0.2f };
 
 	float friction{ 0.8f };
@@ -368,7 +368,7 @@ void DrawPlatforms()
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
-		DrawObjectAABB(p.pos, platform.AABB);
+		// DrawObjectAABB(p.pos, platform.AABB);
 	}
 }
 
