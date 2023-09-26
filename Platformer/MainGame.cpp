@@ -31,9 +31,17 @@ struct PlayerInfo
 	float gravity{ 0.0f};
 };
 
+struct Platform
+{
+	int type = TYPE_PLATFORM;
+	Point2D pos;
+	const Vector2D AABB{ 16,16 };
+};
+
 struct GameState
 {
 	PlayerState playerstate = STATE_GROUND;
+	std::vector<Platform> vPlatform;
 };
 
 PlayerInfo playerinfo;
@@ -43,6 +51,7 @@ void UpdatePlayer();
 void HandlePlayerControls();
 void HandleAirborneControls();
 void Draw();
+void DrawPlatform();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
@@ -100,7 +109,7 @@ void UpdatePlayer()
 
 	case STATE_GROUND:
 
-		obj_player.velocity.x *= 0.9f;
+		obj_player.velocity.x *= 0.85f;
 		HandlePlayerControls();
 		break;
 
@@ -227,6 +236,14 @@ void Draw()
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	Play::PresentDrawingBuffer();
+}
+
+void DrawPlatform()
+{
+	for (Platform& p : gamestate.vPlatform)
+	{
+		Play::DrawSprite(Play::GetSpriteId("tile"))
+	}
 }
 
 void DrawAllGameObjectsByTypeRotated(GameObjectType type)
