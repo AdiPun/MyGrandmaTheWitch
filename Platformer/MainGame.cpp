@@ -43,7 +43,7 @@ struct Platform
 {
 	int type = TYPE_PLATFORM;
 	Point2D pos;
-	const Vector2D AABB{ 32,32 };
+	const Vector2D AABB{ 32,24 };
 };
 
 Platform platform;
