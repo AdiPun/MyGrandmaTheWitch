@@ -126,8 +126,6 @@ void UpdatePlayer()
 
 		obj_player.velocity.x *= playerinfo.friction;
 
-		HandlePlayerControls();
-
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
@@ -146,15 +144,6 @@ void UpdatePlayer()
 
 		obj_player.velocity.x *= playerinfo.friction;
 	
-		if (!playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
-		}
-		else if (playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
-		}
-
 		HandlePlayerControls();
 
 
