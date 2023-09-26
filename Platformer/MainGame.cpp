@@ -1,8 +1,15 @@
 #include "MainGame.h"
 
+enum PlayerState
+{
+	STATE_GROUND = 0,
+	STATE_AIRBORNE,
+	Point2D playerAABB = {112,133},
+};
+
 struct GameState
 {
-
+	PlayerState playerstate = STATE_GROUND,
 };
 
 GameState gamestate;
