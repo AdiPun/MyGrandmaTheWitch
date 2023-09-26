@@ -344,10 +344,10 @@ void Draw()
 {
 	Play::DrawBackground();
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos+playerinfo.maxyoffset, playerinfo.groundingboxAABB);
 	DrawPlatforms();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxyoffset, playerinfo.groundingboxAABB);
 	Play::PresentDrawingBuffer();
 }
 
