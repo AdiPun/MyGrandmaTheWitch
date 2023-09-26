@@ -15,6 +15,7 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 4,8 };
 	bool facingright = true;
+	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.02f };
@@ -70,17 +71,34 @@ void UpdatePlayer()
 void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	if (Play::KeyDown(VK_RIGHT))
-	{
-		playerinfo.facingright = true;
-		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); //Run right
-	}
-	if (Play::KeyDown(VK_LEFT))
+	
+	// Turning animation plays if player is 
+	if (Play::KeyPressed(VK_LEFT) && playerinfo.facingright && !playerinfo.hasTurned)
 	{
 		playerinfo.facingright = false;
-		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); //Run left
+		playerinfo.hasTurned = true;
+		Play::SetSprite(obj_player, "turn_left", playerinfo.animationspeedrun); 
+	}
+	if (Play::KeyPressed(VK_RIGHT) && !playerinfo.facingright && !playerinfo.hasTurned)
+	{
+		playerinfo.facingright = true;
+		playerinfo.hasTurned = true;
+		Play::SetSprite(obj_player, "turn_right", playerinfo.animationspeedrun); 
+	}
+		
+	// Running animation
+	if (Play::KeyDown(VK_LEFT))
+	{
+		playerinfo.hasTurned = false;
+		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); 
+	}
+	if (Play::KeyDown(VK_RIGHT))
+	{
+		playerinfo.hasTurned = false;
+		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); 
 	}
 	
+	// Idle animation
 	if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
 	{
 		Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
