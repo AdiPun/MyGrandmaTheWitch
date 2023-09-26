@@ -78,7 +78,7 @@ void HandlePlayerControls()
 		playerinfo.hasTurned = false;
 		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); 
 	}
-	else if (Play::KeyDown(VK_RIGHT))
+	else if (Play::KeyDown(VK_RIGHT)) 
 	{
 		playerinfo.hasTurned = false;
 		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); 
