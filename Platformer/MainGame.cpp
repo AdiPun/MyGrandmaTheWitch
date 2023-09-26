@@ -124,7 +124,9 @@ void UpdatePlayer()
 	{
 	case STATE_LANDING:
 
-		// obj_player.velocity.x *= playerinfo.friction;
+		obj_player.velocity.x *= playerinfo.friction;
+
+		HandlePlayerControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -143,9 +145,17 @@ void UpdatePlayer()
 	case STATE_GROUND:
 
 		obj_player.velocity.x *= playerinfo.friction;
-		obj_player.velocity.y = 0;
+
 		HandlePlayerControls();
 
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+		}
 
 		if (!IsGrounded()) 
 		{
@@ -226,13 +236,11 @@ void HandlePlayerControls()
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
-		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
 		obj_player.velocity.x = -playerinfo.runspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
-		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		obj_player.velocity.x = playerinfo.runspeed;
 	}
 	
