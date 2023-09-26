@@ -13,7 +13,7 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D AABB{ 4,8 };
+	Vector2D AABB{ 15,20 };
 	bool facingright = true;
 	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
@@ -66,6 +66,10 @@ void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	HandlePlayerControls();
+	if (Play::IsLeavingDisplayArea(obj_player))
+	{
+
+	}
 	Play::UpdateGameObject(obj_player);
 }
 
@@ -74,6 +78,7 @@ void HandlePlayerControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	obj_player.scale = 2.5f;
 	obj_player.velocity.x *= 0.9f;
+	obj_player.acceleration.y = 0.5f;
 	// Running animation
 	if (Play::KeyDown(VK_LEFT))
 	{
