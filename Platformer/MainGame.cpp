@@ -21,7 +21,7 @@ struct PlayerInfo
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.3f };
 	float animationspeedjump{ 0.2f };
-	float animationspeedfall{ 0.05f };
+	float animationspeedfall{ 0.07f };
 	float animationspeedland { 0.1f };
 	float runspeed{ 4.5f };
 	float fallspeed{ 3.5f };
