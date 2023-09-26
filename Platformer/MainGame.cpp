@@ -96,8 +96,7 @@ void UpdatePlayer()
 		{
 			gamestate.playerstate = STATE_AIRBORNE;
 		}
-		
-
+		break;
 	case STATE_AIRBORNE:
 		HandleAirborneControls();
 		break;
