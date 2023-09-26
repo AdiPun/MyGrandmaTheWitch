@@ -250,14 +250,12 @@ void CreatePlatform(int x, int y)
 void CreatePlatformRow(int tiles, int x, int y)
 {
 	Platform platform;
-	for (int display_x = 0; display_x < DISPLAY_WIDTH / 32; ++display_x)
+	for (int i = 0; tiles > 0; i++)
 	{
-		int display_fraction = display_x * DISPLAY_WIDTH / 40;
+		int tilespacing = 64*i
 		gamestate.vPlatforms.push_back(platform);
-		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
+		gamestate.vPlatforms.back().pos = Point2D{ x + tilespacing , y };
 	}
-	gamestate.vPlatforms.push_back(platform);
-	gamestate.vPlatforms.back().pos = Point2D{ x,y };
 }
 
 void CreatePlatformFloor()
@@ -265,9 +263,9 @@ void CreatePlatformFloor()
 	Platform platform;
 
 	// Create floor
-	for (int display_x = 0; display_x < DISPLAY_WIDTH / 32; ++display_x)
+	for (int display_x = 0; display_x < DISPLAY_WIDTH / 16; display_x++)
 	{
-		int display_fraction = display_x * DISPLAY_WIDTH / 40;
+		int display_fraction = display_x * DISPLAY_WIDTH / 16;
 		gamestate.vPlatforms.push_back(platform);
 		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
 	}
@@ -286,7 +284,6 @@ void Draw()
 
 void DrawPlatforms()
 {
-
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
