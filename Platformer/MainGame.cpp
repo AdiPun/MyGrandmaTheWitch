@@ -134,6 +134,12 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
 		}
+		// Jump
+		if (Play::KeyPressed(VK_UP))
+		{
+			obj_player.velocity.y -= playerinfo.jumpspeed;
+			gamestate.playerstate = STATE_JUMPING;
+		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_GROUND;
