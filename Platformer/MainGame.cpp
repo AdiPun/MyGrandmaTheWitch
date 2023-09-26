@@ -21,7 +21,7 @@ struct PlayerInfo
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.3f };
 	float animationspeedjump{ 0.2f };
-	float animationspeedfall{ 0.07f };
+	float animationspeedfall{ 0.05f };
 	float animationspeedland { 0.1f };
 	float animationspeedatk{ 0.3f };
 	float runspeed{ 4.5f };
@@ -42,7 +42,6 @@ GameState gamestate;
 void UpdatePlayer();
 void HandlePlayerControls();
 void HandleAirborneControls();
-
 void Draw();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
@@ -83,7 +82,7 @@ void UpdatePlayer()
 	{
 	case STATE_LANDING:
 
-		obj_player.velocity.x *= 0.96f;
+		obj_player.velocity.x *= 0.94f;
 
 		if (!playerinfo.facingright)
 		{
@@ -107,7 +106,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		obj_player.velocity.x *= 0.99f;
+		obj_player.velocity.x *= 0.96f;
 
 		if (!playerinfo.facingright)
 		{
@@ -124,7 +123,7 @@ void UpdatePlayer()
 		break;
 	case STATE_AIRBORNE:
 
-		obj_player.velocity.x *= 0.99f;
+		obj_player.velocity.x *= 0.96f;
 
 		if (!playerinfo.facingright)
 		{
@@ -167,13 +166,13 @@ void HandlePlayerControls()
 	{
 		playerinfo.facingright = false;
 		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
-		obj_player.velocity.x = -playerinfo.runspeed;
+		obj_player.velocity.x = -playerinfo.fallspeed;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
 		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
-		obj_player.velocity.x = playerinfo.runspeed;
+		obj_player.velocity.x = playerinfo.fallspeed;
 	}
 	
 	// Idle animation
