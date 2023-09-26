@@ -13,7 +13,7 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D AABB{ 100,120 };
+	Vector2D AABB{ 4,8 };
 	float animationspeedidle{ 0.2f };
 };
 
@@ -93,5 +93,5 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB)
 {
 	Point2D topLeft = objcentre - objAABB;
 	Point2D bottomRight = objcentre + objAABB;
-	Play::DrawRect(topLeft, bottomRight, Play::cRed);
+	Play::DrawRect(topLeft, bottomRight, Play::cGreen);
 }
