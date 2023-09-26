@@ -14,7 +14,9 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 4,8 };
-	float animationspeedidle{ 0.2f };
+	float animationspeedidle{ 0.15f };
+	float animationspeedrun{ 0.2f };
+	float animationspeedjump{ 0.02f };
 };
 
 struct GameState
@@ -26,6 +28,7 @@ PlayerInfo playerinfo;
 GameState gamestate;
 
 void UpdatePlayer();
+void HandlePlayerControls();
 void Draw();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
@@ -59,8 +62,37 @@ int MainGameExit(void)
 void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	obj_player.animSpeed = playerinfo.animationspeedidle;
+	HandlePlayerControls();
 	Play::UpdateGameObject(obj_player);
+}
+
+void HandlePlayerControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	if (Play::KeyDown(VK_RIGHT))
+	{
+		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); //Run right
+	}
+	else if (Play::KeyDown(VK_LEFT))
+	{
+		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); //Run left
+	}
+	else /*if (Play::IsAnimationComplete(obj_player))*/
+	{
+		Play::SetSprite(obj_player, "idle", playerinfo.animationspeedidle); //Idle
+	}
+
+	if (Play::KeyPressed(VK_SPACE))
+	{
+		//Add sound effect!
+	}
+
+	if (Play::KeyPressed(VK_UP))
+	{
+		obj_player.velocity.y = -9;
+		Play::SetSprite(obj_player, "jump", playerinfo.animationspeedjump);
+		//Add sound effect!
+	}
 }
 
 void Draw()
