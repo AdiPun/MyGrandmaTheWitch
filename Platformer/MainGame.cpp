@@ -52,6 +52,7 @@ void UpdatePlayer();
 void HandlePlayerControls();
 void HandleAirborneControls();
 void CreatePlatform(int x, int y);
+void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformFloor();
 void Draw();
 void DrawPlatforms();
@@ -68,6 +69,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
+	CreatePlatform(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2);
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -238,6 +240,19 @@ void CreatePlatform(int x, int y)
 	Platform platform;
 	gamestate.vPlatforms.push_back(platform);
 	gamestate.vPlatforms.back().pos = Point2D{x,y};
+}
+
+void CreatePlatformRow(int tiles, int x, int y)
+{
+	Platform platform;
+	for (int display_x = 0; display_x < DISPLAY_WIDTH / 32; ++display_x)
+	{
+		int display_fraction = display_x * DISPLAY_WIDTH / 40;
+		gamestate.vPlatforms.push_back(platform);
+		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
+	}
+	gamestate.vPlatforms.push_back(platform);
+	gamestate.vPlatforms.back().pos = Point2D{ x,y };
 }
 
 void CreatePlatformFloor()
