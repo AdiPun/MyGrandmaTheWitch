@@ -18,6 +18,9 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
+	Vector2D maxyoffset{ 0,30 };
+	Vector2D groundingboxAABB{ 10,1 };
+	
 	bool facingright = true;
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.3f };
@@ -275,6 +278,7 @@ void Draw()
 	Play::DrawBackground();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos+playerinfo.maxyoffset, playerinfo.groundingboxAABB);
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
 	Play::PresentDrawingBuffer();
