@@ -89,6 +89,11 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
 		}
+		if (Play::IsAnimationComplete(obj_player))
+		{
+			gamestate.playerstate = STATE_GROUND;
+		}
+		break;
 	}
 	case STATE_GROUND:
 		HandlePlayerControls();
