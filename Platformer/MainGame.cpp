@@ -14,6 +14,7 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 4,8 };
+	bool facingright = true;
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.02f };
@@ -71,15 +72,22 @@ void HandlePlayerControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	if (Play::KeyDown(VK_RIGHT))
 	{
+		playerinfo.facingright = true;
 		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun); //Run right
 	}
-	else if (Play::KeyDown(VK_LEFT))
+	if (Play::KeyDown(VK_LEFT))
 	{
+		playerinfo.facingright = false;
 		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun); //Run left
 	}
-	else /*if (Play::IsAnimationComplete(obj_player))*/
+	
+	if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
 	{
-		Play::SetSprite(obj_player, "idle", playerinfo.animationspeedidle); //Idle
+		Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
+	}
+	else if (!playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+	{
+		Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 	}
 
 	if (Play::KeyPressed(VK_SPACE))
