@@ -3,6 +3,7 @@
 enum GameObjectType
 {
 	TYPE_PLAYER,
+	TYPE_PLATFORM,
 };
 
 enum PlayerState
@@ -50,9 +51,10 @@ GameState gamestate;
 void UpdatePlayer();
 void HandlePlayerControls();
 void HandleAirborneControls();
-void CreatePlatform();
+void CreatePlatform(int x, int y);
+void CreatePlatformFloor();
 void Draw();
-void DrawPlatform();
+void DrawPlatforms();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
@@ -65,6 +67,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
+	CreatePlatformFloor();
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -230,7 +233,14 @@ void HandleAirborneControls()
 	}
 }
 
-void CreatePlatform()
+void CreatePlatform(int x, int y)
+{
+	Platform platform;
+	gamestate.vPlatforms.push_back(platform);
+	gamestate.vPlatforms.back().pos = Point2D{x,y};
+}
+
+void CreatePlatformFloor()
 {
 	Platform platform;
 
@@ -249,14 +259,15 @@ void Draw()
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
+	DrawPlatforms();
 	Play::PresentDrawingBuffer();
 }
 
-void DrawPlatform()
+void DrawPlatforms()
 {
 	for (Platform& p : gamestate.vPlatforms)
 	{
-		Play::DrawSprite(Play::GetSpriteId("tile"))
+		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
 	}
 }
 
