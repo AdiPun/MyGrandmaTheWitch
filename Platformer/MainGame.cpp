@@ -9,6 +9,7 @@ enum PlayerState
 {
 	STATE_GROUND = 0,
 	STATE_AIRBORNE,
+	STATE_LANDING,
 };
 
 struct PlayerInfo
@@ -18,7 +19,7 @@ struct PlayerInfo
 	bool hasTurned = true;
 	float animationspeedidle{ 0.15f };
 	float animationspeedrun{ 0.3f };
-	float animationspeedjump{ 0.000001f };
+	float animationspeedjump{ 0.2f };
 	float runspeed{ 4.5f };
 	float scale{ 2.5f };
 	float gravity{ 0.0f};
@@ -72,7 +73,19 @@ void UpdatePlayer()
 	obj_player.scale = playerinfo.scale;
 	obj_player.velocity.x *= 0.9f;
 	obj_player.acceleration.y = playerinfo.gravity;
-	HandlePlayerControls();
+	switch (gamestate.playerstate)
+	{
+	case STATE_LANDING:
+	{
+
+	}
+	case STATE_GROUND:
+		HandlePlayerControls();
+		break;
+	case STATE_AIRBORNE:
+		HandleAirborneControls();
+		break;
+	}
 	Play::UpdateGameObject(obj_player);
 }
 
@@ -111,21 +124,26 @@ void HandlePlayerControls()
 
 	if (Play::KeyPressed(VK_UP))
 	{
-		HandleAirborneControls();
+		//obj_player.velocity.y -= 5;
+		gamestate.playerstate = STATE_AIRBORNE;
 	}
 }
 
 void HandleAirborneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	if (playerinfo.facingright)
+	// Running animation
+	if (Play::KeyDown(VK_LEFT))
 	{
-		Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
+		playerinfo.facingright = false;
+		Play::SetSprite(obj_player, "test", playerinfo.animationspeedrun);
+		obj_player.velocity.x = -playerinfo.runspeed;
 	}
-	else if (!playerinfo.facingright)
+	else if (Play::KeyDown(VK_RIGHT))
 	{
-		Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
+		playerinfo.facingright = true;
+		Play::SetSprite(obj_player, "test", playerinfo.animationspeedrun);
+		obj_player.velocity.x = playerinfo.runspeed;
 	}
 }
 
