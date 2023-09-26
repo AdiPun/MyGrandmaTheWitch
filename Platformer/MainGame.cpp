@@ -8,6 +8,7 @@ struct GameState
 GameState gamestate;
 
 void Draw();
+void DrawAllGameObjectsOfTypeRotated(GameObjectType type);
 
 
 // The entry point for a PlayBuffer program
@@ -34,4 +35,13 @@ void Draw()
 {
 	Play::DrawBackground();
 	Play::PresentDrawingBuffer();
+}
+
+void DrawAllGameObjectsOfTypeRotated(GameObjectType type)
+{
+	for (int id : Play::CollectGameObjectIDsByType(type))
+	{
+		GameObject& obj = Play::GetGameObject(id);
+		Play::DrawObjectRotated(obj);
+	}
 }
