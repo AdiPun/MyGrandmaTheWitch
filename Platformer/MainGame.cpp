@@ -133,7 +133,7 @@ void UpdatePlayer()
 	{
 		obj_player.acceleration.y = 0;
 		obj_player.velocity.y = 0;
-		/*obj_player.pos.y = obj_player.oldPos.y-1;*/
+		/*obj_player.pos.y = obj_player.oldPos.y+1;*/
 	}
 	else if (!IsGrounded())
 	{
@@ -145,6 +145,7 @@ void UpdatePlayer()
 	{
 		obj_player.acceleration.x = 0;
 		obj_player.velocity.x = 0;
+		obj_player.pos = obj_player.oldPos;
 	}
 
 	switch (gamestate.playerstate)
@@ -269,6 +270,7 @@ void UpdatePlayer()
 
 
 		break;
+
 	}
 
 	Play::UpdateGameObject(obj_player);
@@ -285,8 +287,7 @@ void HandlePlayerControls()
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
-	// Running animation
-	if (Play::KeyDown(VK_LEFT) && IsGrounded() && )
+	if (Play::KeyDown(VK_LEFT) && IsGrounded())
 	{
 		playerinfo.facingright = false;
 		gamestate.playerstate = STATE_RUNNING;
@@ -308,11 +309,11 @@ void HandlePlayerControls()
 
 	}
 
-
 	if (Play::KeyPressed(VK_SPACE) && IsGrounded())
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
+
 }
 
 
@@ -323,21 +324,17 @@ void HandleAirborneControls()
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
-
-		if (!IsCollidingWithWall())
-		{
-			obj_player.velocity.x = -playerinfo.fallspeed;
-		}
+		
+		obj_player.velocity.x = -playerinfo.fallspeed;
+		
 		
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
 
-		if (!IsCollidingWithWall())
-		{
-			obj_player.velocity.x = playerinfo.fallspeed;
-		}
+		obj_player.velocity.x = playerinfo.fallspeed;
+		
 		
 	}
 }
@@ -398,8 +395,8 @@ bool IsGrounded()
 		// Check for collision between player's grounding box and the platform
 		if (groundingBoxPos.x + groundingBoxAABB.x  > platformTopLeft.x &&
 			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
-			groundingBoxPos.y + groundingBoxAABB.y  > platformTopLeft.y &&
-			groundingBoxPos.y - groundingBoxAABB.y  < platformBottomRight.y)
+			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
+			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
 		{
 			return true; // Player is grounded
 		}
