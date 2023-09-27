@@ -21,9 +21,9 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
-	Vector2D maxoffsetx{ 30,0 };
+	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
-	Vector2D edgeboxAABB{ 1,20 };
+	Vector2D edgeboxAABB{ 1,30 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -133,7 +133,7 @@ void UpdatePlayer()
 	{
 		obj_player.acceleration.y = 0;
 		obj_player.velocity.y = 0;
-		obj_player.pos.y = std::clamp(obj_player.pos.y, 0.f, obj_player.oldPos.y+1);
+		/*obj_player.pos.y = obj_player.oldPos.y-1;*/
 	}
 	else if (!IsGrounded())
 	{
