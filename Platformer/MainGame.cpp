@@ -30,13 +30,13 @@ struct PlayerInfo
 	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.2f };
-	float animationspeedland { 0.1f };
+	float animationspeedland { 0.15f };
 	float animationspeedatk{ 0.2f };
 
 	float friction{ 0.8f };
 
 	float runspeed{ 4.5f };
-	float jumpspeed{ 12.0f };
+	float jumpspeed{ 10.0f };
 	float fallspeed{ 3.5f };
 
 	float scale{ 2.5f };
@@ -135,7 +135,7 @@ void UpdatePlayer()
 		obj_player.velocity.y = 0;
 		HandlePlayerControls();
 	}
-	else if (!IsGrounded())
+	if (!IsGrounded())
 	{
 		obj_player.acceleration.y = playerinfo.gravity;
 		HandleAirborneControls();
@@ -147,13 +147,13 @@ void UpdatePlayer()
 		if (obj_player.velocity.x > 0)
 		{
 			// Moving right, adjust X position and stop horizontal movement
-			obj_player.pos.x = obj_player.oldPos.x-1;
+			obj_player.pos.x = obj_player.oldPos.x;
 			obj_player.velocity.x = 0;
 		}
 		else if (obj_player.velocity.x < 0)
 		{
 			// Moving left, adjust X position and stop horizontal movement
-			obj_player.pos.x = obj_player.oldPos.x+1;
+			obj_player.pos.x = obj_player.oldPos.x;
 			obj_player.velocity.x = 0;
 		}
 	}
@@ -163,11 +163,11 @@ void UpdatePlayer()
 	case STATE_IDLE:
 
 		// Idle animation
-		if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+		if (playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
 		}
-		else if (!playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+		else if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
@@ -226,11 +226,17 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
+
+		if (IsGrounded())
+		{
+			gamestate.playerstate = STATE_LANDING;
+		}
 		
 		break;
 
 	case STATE_LANDING:
 
+		
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
@@ -273,7 +279,7 @@ void HandlePlayerControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
 	// Jump
-	if (Play::KeyPressed(VK_SPACE))
+	if (Play::KeyPressed('W'))
 	{
 		obj_player.velocity.y -= playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
@@ -368,6 +374,8 @@ bool IsGrounded()
 	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
 	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
 
+	Point2D groundingBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
+
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
 	{
@@ -376,13 +384,20 @@ bool IsGrounded()
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
 		// Check for collision between player's grounding box and the platform
-		if (groundingBoxPos.x + groundingBoxAABB.x  > platformTopLeft.x &&
+		if (groundingBoxPos.x + groundingBoxAABB.x > platformTopLeft.x &&
 			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
 			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
 			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
 		{
-			return true; // Player is grounded
+
+
+			// Checks if previous frame was above the platform
+			if (groundingBoxOldPos.y + groundingBoxAABB.y < platformTopLeft.y)
+			{
+				return true; // Player is grounded
+			}
 		}
+		
 	}
 
 	return false; // Player is not grounded
@@ -446,10 +461,12 @@ void Draw()
 // Draws all platforms in vPlatforms
 void DrawPlatforms()
 {
+	Platform platform;
+
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
-		// DrawObjectAABB(p.pos, platform.AABB);
+		DrawObjectAABB(p.pos, platform.AABB);
 	}
 }
 
