@@ -9,10 +9,11 @@ enum GameObjectType
 
 enum PlayerState
 {
-	STATE_GROUND = 0,
+	STATE_IDLE = 0,
+	STATE_RUNNING,
+	STATE_JUMPING,
 	STATE_FALLING,
 	STATE_LANDING,
-	STATE_JUMPING,
 	STATE_ATTACK,
 };
 
@@ -59,7 +60,7 @@ Background background;
 
 struct GameState
 {
-	PlayerState playerstate = STATE_GROUND;
+	PlayerState playerstate = STATE_IDLE;
 	std::vector<Platform> vPlatforms;
 };
 
@@ -154,16 +155,25 @@ void UpdatePlayer()
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
-			gamestate.playerstate = STATE_GROUND;
+			gamestate.playerstate = STATE_IDLE;
 		}
 		break;
 
-	case STATE_GROUND:
+	case STATE_IDLE:
 
 		obj_player.velocity.x *= playerinfo.friction;
 	
 		HandlePlayerControls();
 
+		// Idle animation
+		if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+		{
+			Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
+		}
+		else if (!playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+		{
+			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
+		}
 
 		if (!IsGrounded()) 
 		{
@@ -236,8 +246,32 @@ void UpdatePlayer()
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
-			gamestate.playerstate = STATE_GROUND;
+			gamestate.playerstate = STATE_IDLE;
 		}
+		break;
+
+	case STATE_RUNNING:
+
+		HandlePlayerControls();
+
+		obj_player.velocity.x *= 0.9f;
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
+
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+		}
+
+		if (Play::IsAnimationComplete(obj_player))
+		{
+			gamestate.playerstate = STATE_IDLE;
+		}
+
+
 		break;
 	}
 	Play::UpdateGameObject(obj_player);
@@ -258,24 +292,15 @@ void HandlePlayerControls()
 	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
-		Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
 		obj_player.velocity.x = -playerinfo.runspeed;
+		gamestate.playerstate = STATE_RUNNING;
 	}
 	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
-		Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		obj_player.velocity.x = playerinfo.runspeed;
-	}
-	
-	// Idle animation
-	if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
-	{
-		Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
-	}
-	else if (!playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
-	{
-		Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
+		gamestate.playerstate = STATE_RUNNING;
+
 	}
 
 
