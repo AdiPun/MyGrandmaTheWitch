@@ -147,13 +147,13 @@ void UpdatePlayer()
 		if (obj_player.velocity.x > 0)
 		{
 			// Moving right, adjust X position and stop horizontal movement
-			obj_player.pos.x = platform.pos.x - playerinfo.AABB.x - platform.AABB.x;
+			obj_player.pos.x = obj_player.oldPos.x-1;
 			obj_player.velocity.x = 0;
 		}
 		else if (obj_player.velocity.x < 0)
 		{
 			// Moving left, adjust X position and stop horizontal movement
-			obj_player.pos.x = platform.pos.x + playerinfo.AABB.x + platform.AABB.x;
+			obj_player.pos.x = obj_player.oldPos.x+1;
 			obj_player.velocity.x = 0;
 		}
 	}
@@ -239,12 +239,7 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
 		}
-		// Jump
-		if (Play::KeyPressed(VK_UP))
-		{
-			obj_player.velocity.y -= playerinfo.jumpspeed;
-			gamestate.playerstate = STATE_JUMPING;
-		}
+		
 		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_IDLE;
@@ -323,9 +318,7 @@ void HandleAirborneControls()
 	{
 		playerinfo.facingright = true;
 
-		obj_player.velocity.x = playerinfo.fallspeed;
-		
-		
+		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 }
 
