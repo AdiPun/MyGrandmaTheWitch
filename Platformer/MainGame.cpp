@@ -411,11 +411,18 @@ bool IsCollidingWithWall()
 			edgeBoxPosleft.y + edgeBoxAABB.y  > platformTopLeft.y &&
 			edgeBoxPosleft.y - edgeBoxAABB.y < platformBottomRight.y)
 		{
-			return true; // Player is colliding with edge
+			return true; // Player is colliding with platform side
+		}
+		if (edgeBoxPosright.x + edgeBoxAABB.x > platformTopLeft.x &&
+			edgeBoxPosright.x - edgeBoxAABB.x  < platformBottomRight.x &&
+			edgeBoxPosright.y + edgeBoxAABB.y  > platformTopLeft.y &&
+			edgeBoxPosright.y - edgeBoxAABB.y < platformBottomRight.y)
+		{
+			return true; // Player is colliding with platform side
 		}
 	}
 
-	return false; // Player is not colliding with edge
+	return false; // Player is not colliding with platform side
 }
 
 void Draw()
