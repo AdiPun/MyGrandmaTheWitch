@@ -36,7 +36,7 @@ struct PlayerInfo
 	float friction{ 0.8f };
 
 	float runspeed{ 4.5f };
-	float jumpspeed{ 10.0f };
+	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
 
 	float scale{ 2.5f };
@@ -78,7 +78,7 @@ void CreatePlatformFloor();
 
 void CreateBackground();
 
-bool IsGrounded();
+bool FloorCollisionStarted();
 bool IsCollidingWithWall();
 
 
@@ -127,19 +127,7 @@ void UpdatePlayer()
 
 	obj_player.velocity.x *= playerinfo.friction;
 
-	
-	// Grounded interactions
-	if (IsGrounded())
-	{
-		obj_player.acceleration.y = 0;
-		obj_player.velocity.y = 0;
-		HandlePlayerControls();
-	}
-	if (!IsGrounded())
-	{
-		obj_player.acceleration.y = playerinfo.gravity;
-		HandleAirborneControls();
-	}
+
 
 	// Wall interactions
 	if (IsCollidingWithWall())
@@ -162,6 +150,8 @@ void UpdatePlayer()
 	{
 	case STATE_IDLE:
 
+		HandlePlayerControls();
+
 		// Idle animation
 		if (playerinfo.facingright)
 		{
@@ -171,16 +161,13 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
-
-		if (!IsGrounded()) 
-		{
-			gamestate.playerstate = STATE_FALLING;
-		}
+			
 
 		break;
 
 	case STATE_RUNNING:
 
+		HandlePlayerControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -192,12 +179,13 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
-		gamestate.playerstate = STATE_IDLE;
-
-
 		break;
 
 	case STATE_JUMPING:
+
+		HandleAirborneControls();
+
+		obj_player.acceleration.y = playerinfo.gravity;
 
 		if (!playerinfo.facingright)
 		{
@@ -208,14 +196,24 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
 		}
 
-		if (Play::IsAnimationComplete(obj_player))
+		if (Play::IsAnimationComplete(obj_player)) // Change when velocity.y = 0
 		{
 			gamestate.playerstate = STATE_FALLING;
+		}
+
+		if (FloorCollisionStarted())
+		{
+			gamestate.playerstate = STATE_LANDING;
+			obj_player.pos.y = obj_player.oldPos.y;
 		}
 		
 		break;
 
 	case STATE_FALLING:
+
+		HandleAirborneControls();
+
+		obj_player.acceleration.y = playerinfo.gravity;
 
 
 		if (!playerinfo.facingright)
@@ -227,16 +225,21 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
 
-		if (IsGrounded())
+		if (FloorCollisionStarted())
 		{
 			gamestate.playerstate = STATE_LANDING;
+			obj_player.pos.y = obj_player.oldPos.y;
 		}
 		
 		break;
 
 	case STATE_LANDING:
 
-		
+		//HandlePlayerControls();
+
+		obj_player.velocity.y = 0;
+		obj_player.acceleration.y = 0;
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
@@ -253,6 +256,8 @@ void UpdatePlayer()
 		break;	
 
 	case STATE_ATTACK:
+
+		HandlePlayerControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -278,11 +283,9 @@ void HandlePlayerControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
-	// Jump
-	if (Play::KeyPressed('W'))
+	if (Play::KeyDown('A') == false && Play::KeyDown('D') == false)
 	{
-		obj_player.velocity.y -= playerinfo.jumpspeed;
-		gamestate.playerstate = STATE_JUMPING;
+		gamestate.playerstate = STATE_IDLE;
 	}
 
 	if (Play::KeyDown('A'))
@@ -290,7 +293,7 @@ void HandlePlayerControls()
 		playerinfo.facingright = false;
 		gamestate.playerstate = STATE_RUNNING;
 		obj_player.velocity.x = -playerinfo.runspeed;
-	
+
 	}
 	else if (Play::KeyDown('D'))
 	{
@@ -305,6 +308,12 @@ void HandlePlayerControls()
 		gamestate.playerstate = STATE_ATTACK;
 	}
 
+	// Jump
+	if (Play::KeyPressed('W'))
+	{
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		gamestate.playerstate = STATE_JUMPING;
+	}
 }
 
 
@@ -368,7 +377,7 @@ void CreateBackground()
 }
 
 // Checks player's groundingbox and if it's colliding with a platform
-bool IsGrounded()
+bool FloorCollisionStarted()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
