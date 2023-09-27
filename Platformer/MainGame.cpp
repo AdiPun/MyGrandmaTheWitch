@@ -286,17 +286,25 @@ void HandlePlayerControls()
 	}
 
 	// Running animation
-	if (Play::KeyDown(VK_LEFT) && IsGrounded() && !IsCollidingWithWall())
+	if (Play::KeyDown(VK_LEFT) && IsGrounded() && )
 	{
 		playerinfo.facingright = false;
-		obj_player.velocity.x = -playerinfo.runspeed;
 		gamestate.playerstate = STATE_RUNNING;
+
+		if (!IsCollidingWithWall())
+		{
+			obj_player.velocity.x = -playerinfo.runspeed;
+		}
 	}
-	else if (Play::KeyDown(VK_RIGHT) && IsGrounded() && !IsCollidingWithWall())
+	else if (Play::KeyDown(VK_RIGHT) && IsGrounded())
 	{
 		playerinfo.facingright = true;
-		obj_player.velocity.x = playerinfo.runspeed;
 		gamestate.playerstate = STATE_RUNNING;
+
+		if (!IsCollidingWithWall())
+		{
+			obj_player.velocity.x = playerinfo.runspeed;
+		}
 
 	}
 
@@ -312,15 +320,25 @@ void HandleAirborneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	if (Play::KeyDown(VK_LEFT) && !IsCollidingWithWall())
+	if (Play::KeyDown(VK_LEFT))
 	{
 		playerinfo.facingright = false;
-		obj_player.velocity.x = -playerinfo.fallspeed;
+
+		if (!IsCollidingWithWall())
+		{
+			obj_player.velocity.x = -playerinfo.fallspeed;
+		}
+		
 	}
-	else if (Play::KeyDown(VK_RIGHT) && !IsCollidingWithWall())
+	else if (Play::KeyDown(VK_RIGHT))
 	{
 		playerinfo.facingright = true;
-		obj_player.velocity.x = playerinfo.fallspeed;
+
+		if (!IsCollidingWithWall())
+		{
+			obj_player.velocity.x = playerinfo.fallspeed;
+		}
+		
 	}
 }
 
