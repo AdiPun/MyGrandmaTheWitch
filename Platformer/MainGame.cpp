@@ -20,8 +20,10 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
-	Vector2D maxyoffset{ 0,40 };
+	Vector2D maxoffsety{ 0,40 };
+	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
+	Vector2D edgeboxAABB{ 20,1 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -120,6 +122,9 @@ void UpdatePlayer()
 
 
 	obj_player.scale = playerinfo.scale;
+
+	obj_player.velocity.x *= playerinfo.friction;
+
 	
 	// Grounded interactions
 	if (IsGrounded())
@@ -136,8 +141,6 @@ void UpdatePlayer()
 	switch (gamestate.playerstate)
 	{
 	case STATE_LANDING:
-
-		obj_player.velocity.x *= playerinfo.friction;
 
 		if (!playerinfo.facingright)
 		{
@@ -161,8 +164,6 @@ void UpdatePlayer()
 
 	case STATE_IDLE:
 
-		obj_player.velocity.x *= playerinfo.friction;
-	
 		HandlePlayerControls();
 
 		// Idle animation
@@ -184,11 +185,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		obj_player.velocity.x *= playerinfo.friction;
-
-
 		HandleAirborneControls();
-
 
 		if (!playerinfo.facingright)
 		{
@@ -213,8 +210,6 @@ void UpdatePlayer()
 
 		HandleAirborneControls();
 
-		obj_player.velocity.x *= playerinfo.friction;
-
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
@@ -228,13 +223,9 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_LANDING;
 		}
 
-		
-
 		break;
 
 	case STATE_ATTACK:
-
-		obj_player.velocity.x *= 0.9f;
 
 		if (!playerinfo.facingright)
 		{
@@ -248,13 +239,12 @@ void UpdatePlayer()
 		{
 			gamestate.playerstate = STATE_IDLE;
 		}
+
 		break;
 
 	case STATE_RUNNING:
 
 		HandlePlayerControls();
-
-		obj_player.velocity.x *= 0.9f;
 
 		if (!playerinfo.facingright)
 		{
@@ -265,15 +255,13 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
-
-		if (Play::IsAnimationComplete(obj_player))
-		{
-			gamestate.playerstate = STATE_IDLE;
-		}
+		
+		gamestate.playerstate = STATE_IDLE;
 
 
 		break;
 	}
+
 	Play::UpdateGameObject(obj_player);
 }
 
@@ -282,20 +270,20 @@ void HandlePlayerControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
 	// Jump
-	if (Play::KeyPressed(VK_UP))
+	if (Play::KeyPressed(VK_UP) && IsGrounded())
 	{
 		obj_player.velocity.y -= playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
 	// Running animation
-	if (Play::KeyDown(VK_LEFT))
+	if (Play::KeyDown(VK_LEFT) && IsGrounded())
 	{
 		playerinfo.facingright = false;
 		obj_player.velocity.x = -playerinfo.runspeed;
 		gamestate.playerstate = STATE_RUNNING;
 	}
-	else if (Play::KeyDown(VK_RIGHT))
+	else if (Play::KeyDown(VK_RIGHT) && IsGrounded())
 	{
 		playerinfo.facingright = true;
 		obj_player.velocity.x = playerinfo.runspeed;
@@ -304,7 +292,7 @@ void HandlePlayerControls()
 	}
 
 
-	if (Play::KeyPressed(VK_SPACE))
+	if (Play::KeyPressed(VK_SPACE) && IsGrounded())
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
@@ -370,7 +358,7 @@ void CreateBackground()
 bool IsGrounded()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxyoffset;
+	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
 	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
 
 	// Iterate through all platforms to check for collisions
@@ -400,7 +388,8 @@ void Draw()
 	DrawPlatforms();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxyoffset, playerinfo.groundingboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 	Play::PresentDrawingBuffer();
 }
 
