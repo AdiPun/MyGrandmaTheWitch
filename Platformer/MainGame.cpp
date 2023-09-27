@@ -21,7 +21,7 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
-	Vector2D maxoffsetx{ 22,0 };
+	Vector2D maxoffsetx{ 30,0 };
 	Vector2D groundingboxAABB{ 20,1 };
 	Vector2D edgeboxAABB{ 1,20 };
 	
@@ -137,6 +137,14 @@ void UpdatePlayer()
 	else if (!IsGrounded())
 	{
 		obj_player.acceleration.y = playerinfo.gravity;
+	}
+
+	// Wall interactions
+	if (IsCollidingWithWall())
+	{
+		obj_player.acceleration.x = 0;
+		obj_player.velocity.x = 0;
+		obj_player.pos.x = std::clamp(obj_player.pos.x, 0.f, obj_player.oldPos.x+1);
 	}
 
 	switch (gamestate.playerstate)
