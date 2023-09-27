@@ -21,9 +21,9 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
-	Vector2D maxoffsetx{ 20,0 };
+	Vector2D maxoffsetx{ 22,0 };
 	Vector2D groundingboxAABB{ 20,1 };
-	Vector2D edgeboxAABB{ 20,1 };
+	Vector2D edgeboxAABB{ 1,20 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -81,6 +81,7 @@ void CreatePlatformFloor();
 void CreateBackground();
 
 bool IsGrounded();
+bool IsCollidingWithWall();
 
 void Draw();
 void DrawPlatforms();
@@ -387,9 +388,15 @@ void Draw()
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
+
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
+
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+
 	Play::PresentDrawingBuffer();
 }
 
