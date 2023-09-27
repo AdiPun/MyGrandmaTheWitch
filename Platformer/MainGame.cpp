@@ -4,6 +4,7 @@ enum GameObjectType
 {
 	TYPE_PLAYER,
 	TYPE_PLATFORM,
+	TYPE_BACKGROUND,
 };
 
 enum PlayerState
@@ -19,7 +20,7 @@ struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
 	Vector2D maxyoffset{ 0,40 };
-	Vector2D groundingboxAABB{ 25,1 };
+	Vector2D groundingboxAABB{ 20,1 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -48,6 +49,14 @@ struct Platform
 
 Platform platform;
 
+struct Background
+{
+	int type = TYPE_BACKGROUND;
+	Point2D pos;
+};
+
+Background background;
+
 struct GameState
 {
 	PlayerState playerstate = STATE_GROUND;
@@ -65,6 +74,8 @@ void HandleAirborneControls();
 void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformFloor();
+
+void CreateBackground();
 
 bool IsGrounded();
 
@@ -322,6 +333,12 @@ void CreatePlatformFloor()
 		gamestate.vPlatforms.push_back(platform);
 		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
 	}
+}
+
+void CreateBackground()
+{
+	Background background;
+
 }
 
 // Checks player's groundingbox and if it's colliding with a platform
