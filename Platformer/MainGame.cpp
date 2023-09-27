@@ -83,6 +83,8 @@ void CreateBackground();
 bool IsGrounded();
 bool IsCollidingWithWall();
 
+void WallCollision();
+
 void Draw();
 void DrawPlatforms();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
@@ -133,23 +135,102 @@ void UpdatePlayer()
 	{
 		obj_player.acceleration.y = 0;
 		obj_player.velocity.y = 0;
-		/*obj_player.pos.y = obj_player.oldPos.y+1;*/
+		HandlePlayerControls();
 	}
 	else if (!IsGrounded())
 	{
 		obj_player.acceleration.y = playerinfo.gravity;
+		HandleAirborneControls();
 	}
 
 	// Wall interactions
 	if (IsCollidingWithWall())
 	{
-		obj_player.acceleration.x = 0;
-		obj_player.velocity.x = 0;
-		obj_player.pos = obj_player.oldPos;
+		if (obj_player.velocity.x > 0)
+		{
+			// Moving right, adjust X position and stop horizontal movement
+			obj_player.pos.x = platform.pos.x - playerinfo.AABB.x - platform.AABB.x;
+			obj_player.velocity.x = 0;
+		}
+		else if (obj_player.velocity.x < 0)
+		{
+			// Moving left, adjust X position and stop horizontal movement
+			obj_player.pos.x = platform.pos.x + playerinfo.AABB.x + platform.AABB.x;
+			obj_player.velocity.x = 0;
+		}
 	}
 
 	switch (gamestate.playerstate)
 	{
+	case STATE_IDLE:
+
+		// Idle animation
+		if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+		{
+			Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
+		}
+		else if (!playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
+		{
+			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
+		}
+
+		if (!IsGrounded()) 
+		{
+			gamestate.playerstate = STATE_FALLING;
+		}
+
+		break;
+
+	case STATE_RUNNING:
+
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
+
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+		}
+
+		gamestate.playerstate = STATE_IDLE;
+
+
+		break;
+
+	case STATE_JUMPING:
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
+		}
+
+		if (Play::IsAnimationComplete(obj_player))
+		{
+			gamestate.playerstate = STATE_FALLING;
+		}
+		
+		break;
+
+	case STATE_FALLING:
+
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
+		}
+		
+		break;
+
 	case STATE_LANDING:
 
 		if (!playerinfo.facingright)
@@ -170,70 +251,7 @@ void UpdatePlayer()
 		{
 			gamestate.playerstate = STATE_IDLE;
 		}
-		break;
-
-	case STATE_IDLE:
-
-		HandlePlayerControls();
-
-		// Idle animation
-		if (playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
-		{
-			Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
-		}
-		else if (!playerinfo.facingright && !Play::KeyDown(VK_LEFT) && !Play::KeyDown(VK_RIGHT))
-		{
-			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
-		}
-
-		if (!IsGrounded()) 
-		{
-			gamestate.playerstate = STATE_FALLING;
-		}
-
-		break;
-
-	case STATE_JUMPING:
-
-		HandleAirborneControls();
-
-		if (!playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
-		}
-		else if (playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
-		}
-
-		if (Play::IsAnimationComplete(obj_player))
-		{
-			gamestate.playerstate = STATE_FALLING;
-		}
-		if (IsGrounded())
-		{
-			gamestate.playerstate = STATE_LANDING;
-		}
-		break;
-
-	case STATE_FALLING:
-
-		HandleAirborneControls();
-
-		if (!playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
-		}
-		else if (playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
-		}
-		if (IsGrounded())
-		{
-			gamestate.playerstate = STATE_LANDING;
-		}
-
-		break;
+		break;	
 
 	case STATE_ATTACK:
 
@@ -251,26 +269,7 @@ void UpdatePlayer()
 		}
 
 		break;
-
-	case STATE_RUNNING:
-
-		HandlePlayerControls();
-
-		if (!playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
-
-		}
-		else if (playerinfo.facingright)
-		{
-			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
-		}
-		
-		gamestate.playerstate = STATE_IDLE;
-
-
-		break;
-
+	
 	}
 
 	Play::UpdateGameObject(obj_player);
@@ -281,20 +280,20 @@ void HandlePlayerControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
 	// Jump
-	if (Play::KeyPressed(VK_UP) && IsGrounded())
+	if (Play::KeyPressed(VK_UP) )
 	{
 		obj_player.velocity.y -= playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
-	if (Play::KeyDown(VK_LEFT) && IsGrounded())
+	if (Play::KeyDown(VK_LEFT) )
 	{
 		playerinfo.facingright = false;
 		gamestate.playerstate = STATE_RUNNING;
 		obj_player.velocity.x = -playerinfo.runspeed;
 	
 	}
-	else if (Play::KeyDown(VK_RIGHT) && IsGrounded())
+	else if (Play::KeyDown(VK_RIGHT) )
 	{
 		playerinfo.facingright = true;
 		gamestate.playerstate = STATE_RUNNING;
@@ -302,7 +301,7 @@ void HandlePlayerControls()
 
 	}
 
-	if (Play::KeyPressed(VK_SPACE) && IsGrounded())
+	if (Play::KeyPressed(VK_SPACE))
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
