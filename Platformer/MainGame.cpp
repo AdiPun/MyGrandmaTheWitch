@@ -83,7 +83,6 @@ void CreateBackground();
 bool IsGrounded();
 bool IsCollidingWithWall();
 
-void UpdateWallCollisions();
 
 void Draw();
 void DrawPlatforms();
@@ -144,7 +143,21 @@ void UpdatePlayer()
 	}
 
 	// Wall interactions
-	UpdateWallCollisions();
+	if (IsCollidingWithWall())
+	{
+		if (obj_player.velocity.x > 0)
+		{
+			// Moving right, adjust X position and stop horizontal movement
+			obj_player.pos.x = p.pos.x - playerinfo.AABB.x - platform.AABB.x;
+			obj_player.velocity.x = 0;
+		}
+		else if (obj_player.velocity.x < 0)
+		{
+			// Moving left, adjust X position and stop horizontal movement
+			obj_player.pos.x = p.pos.x + playerinfo.AABB.x + platform.AABB.x;
+			obj_player.velocity.x = 0;
+		}
+	}
 
 	switch (gamestate.playerstate)
 	{
@@ -393,7 +406,7 @@ bool IsCollidingWithWall()
 	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
 	// Iterate through all platforms to check for collisions
-	for (const Platform& platform : gamestate.vPlatforms)
+	for (Platform& platform : gamestate.vPlatforms)
 	{
 		// Calculate the platform's AABB
 		Point2D platformTopLeft = platform.pos - platform.AABB;
@@ -419,27 +432,6 @@ bool IsCollidingWithWall()
 	return false; // Player is not colliding with platform side
 }
 
-void UpdateWallCollisions()
-{
-	for (const Platform& platform : platforms)
-	{
-		if (IsCollidingWithWall())
-		{
-			if (obj_player.velocity.x > 0)
-			{
-				// Moving right, adjust X position and stop horizontal movement
-				obj_player.pos.x = platform.pos.x - playerinfo.AABB.x - platform.AABB.x;
-				obj_player.velocity.x = 0;
-			}
-			else if (obj_player.velocity.x < 0)
-			{
-				// Moving left, adjust X position and stop horizontal movement
-				obj_player.pos.x = platform.pos.x + playerinfo.AABB.x + platform.AABB.x;
-				obj_player.velocity.x = 0;
-			}
-		}
-	}
-}
 
 void Draw()
 {
