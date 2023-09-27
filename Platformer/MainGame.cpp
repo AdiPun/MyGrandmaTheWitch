@@ -50,8 +50,6 @@ struct Platform
 	const Vector2D AABB{ 32,24 };
 };
 
-Platform platform;
-
 struct Background
 {
 	int type = TYPE_BACKGROUND;
@@ -123,6 +121,7 @@ void UpdatePlayer()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
+	Platform platform;
 
 	obj_player.scale = playerinfo.scale;
 
@@ -148,13 +147,13 @@ void UpdatePlayer()
 		if (obj_player.velocity.x > 0)
 		{
 			// Moving right, adjust X position and stop horizontal movement
-			obj_player.pos.x = p.pos.x - playerinfo.AABB.x - platform.AABB.x;
+			obj_player.pos.x = platform.pos.x - playerinfo.AABB.x - platform.AABB.x;
 			obj_player.velocity.x = 0;
 		}
 		else if (obj_player.velocity.x < 0)
 		{
 			// Moving left, adjust X position and stop horizontal movement
-			obj_player.pos.x = p.pos.x + playerinfo.AABB.x + platform.AABB.x;
+			obj_player.pos.x = platform.pos.x + playerinfo.AABB.x + platform.AABB.x;
 			obj_player.velocity.x = 0;
 		}
 	}
@@ -279,20 +278,20 @@ void HandlePlayerControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
 	// Jump
-	if (Play::KeyPressed(VK_UP) )
+	if (Play::KeyPressed(VK_SPACE))
 	{
 		obj_player.velocity.y -= playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
-	if (Play::KeyDown(VK_LEFT) )
+	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
 		gamestate.playerstate = STATE_RUNNING;
 		obj_player.velocity.x = -playerinfo.runspeed;
 	
 	}
-	else if (Play::KeyDown(VK_RIGHT) )
+	else if (Play::KeyDown('D'))
 	{
 		playerinfo.facingright = true;
 		gamestate.playerstate = STATE_RUNNING;
@@ -300,7 +299,7 @@ void HandlePlayerControls()
 
 	}
 
-	if (Play::KeyPressed(VK_SPACE))
+	if (Play::KeyPressed('E'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
@@ -312,7 +311,7 @@ void HandleAirborneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	if (Play::KeyDown(VK_LEFT))
+	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
 		
@@ -320,7 +319,7 @@ void HandleAirborneControls()
 		
 		
 	}
-	else if (Play::KeyDown(VK_RIGHT))
+	else if (Play::KeyDown('D'))
 	{
 		playerinfo.facingright = true;
 
