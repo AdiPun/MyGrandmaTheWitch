@@ -98,8 +98,9 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
-	CreatePlatform(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4*3);
-	CreatePlatformRow(5, 100, 400);
+	CreatePlatform(DISPLAY_WIDTH / 6*5, DISPLAY_HEIGHT / 6*5);
+	CreatePlatform(DISPLAY_WIDTH*0.60f, DISPLAY_HEIGHT * 0.60f);
+	CreatePlatformRow(5, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4 * 3);
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -144,7 +145,6 @@ void UpdatePlayer()
 	{
 		obj_player.acceleration.x = 0;
 		obj_player.velocity.x = 0;
-		obj_player.pos.x = std::clamp(obj_player.pos.x, 0.f, obj_player.oldPos.x+1);
 	}
 
 	switch (gamestate.playerstate)
@@ -390,13 +390,14 @@ bool IsGrounded()
 	return false; // Player is not grounded
 }
 
-// Check's player's edgebox and if it's colliding with the sides of a platform
+// Check's player's edgebox and if it's going to collide with the sides of a platform
 bool IsCollidingWithWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
 	Point2D edgeBoxPosright = obj_player.pos + playerinfo.maxoffsetx;
 	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
+	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)

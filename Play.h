@@ -1505,7 +1505,6 @@ struct GameObject
 
 	// Add your own data members here if you want to
 	PLAY_ADD_GAMEOBJECT_MEMBERS
-
 	int GetId() { return m_id; }
 
 private:
