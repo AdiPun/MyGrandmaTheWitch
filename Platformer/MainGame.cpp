@@ -291,21 +291,14 @@ void HandlePlayerControls()
 	{
 		playerinfo.facingright = false;
 		gamestate.playerstate = STATE_RUNNING;
-
-		if (!IsCollidingWithWall())
-		{
-			obj_player.velocity.x = -playerinfo.runspeed;
-		}
+		obj_player.velocity.x = -playerinfo.runspeed;
+	
 	}
 	else if (Play::KeyDown(VK_RIGHT) && IsGrounded())
 	{
 		playerinfo.facingright = true;
 		gamestate.playerstate = STATE_RUNNING;
-
-		if (!IsCollidingWithWall())
-		{
-			obj_player.velocity.x = playerinfo.runspeed;
-		}
+		obj_player.velocity.x = playerinfo.runspeed;
 
 	}
 
