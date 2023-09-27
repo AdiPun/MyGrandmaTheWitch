@@ -382,6 +382,34 @@ bool IsGrounded()
 	return false; // Player is not grounded
 }
 
+// Check's player's edgebox and if it's colliding with the sides of a platform
+bool IsCollidingWithWall()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
+	Point2D edgeBoxPosright = obj_player.pos + playerinfo.maxoffsetx;
+	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's edge box and the platform side
+		if (edgeBoxPosleft.x + edgeBoxAABB.x > platformTopLeft.x &&
+			edgeBoxPosleft.x - edgeBoxAABB.x  < platformBottomRight.x &&
+			edgeBoxPosleft.y + edgeBoxAABB.y  > platformTopLeft.y &&
+			edgeBoxPosleft.y - edgeBoxAABB.y < platformBottomRight.y)
+		{
+			return true; // Player is colliding with edge
+		}
+	}
+
+	return false; // Player is not colliding with edge
+}
+
 void Draw()
 {
 	Play::DrawBackground();
