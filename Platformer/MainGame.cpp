@@ -83,7 +83,7 @@ void CreateBackground();
 bool IsGrounded();
 bool IsCollidingWithWall();
 
-void WallCollision();
+void UpdateWallCollisions();
 
 void Draw();
 void DrawPlatforms();
@@ -144,21 +144,7 @@ void UpdatePlayer()
 	}
 
 	// Wall interactions
-	if (IsCollidingWithWall())
-	{
-		if (obj_player.velocity.x > 0)
-		{
-			// Moving right, adjust X position and stop horizontal movement
-			obj_player.pos.x = platform.pos.x - playerinfo.AABB.x - platform.AABB.x;
-			obj_player.velocity.x = 0;
-		}
-		else if (obj_player.velocity.x < 0)
-		{
-			// Moving left, adjust X position and stop horizontal movement
-			obj_player.pos.x = platform.pos.x + playerinfo.AABB.x + platform.AABB.x;
-			obj_player.velocity.x = 0;
-		}
-	}
+	UpdateWallCollisions();
 
 	switch (gamestate.playerstate)
 	{
@@ -431,6 +417,28 @@ bool IsCollidingWithWall()
 	}
 
 	return false; // Player is not colliding with platform side
+}
+
+void UpdateWallCollisions()
+{
+	for (const Platform& platform : platforms)
+	{
+		if (IsCollidingWithWall())
+		{
+			if (obj_player.velocity.x > 0)
+			{
+				// Moving right, adjust X position and stop horizontal movement
+				obj_player.pos.x = platform.pos.x - playerinfo.AABB.x - platform.AABB.x;
+				obj_player.velocity.x = 0;
+			}
+			else if (obj_player.velocity.x < 0)
+			{
+				// Moving left, adjust X position and stop horizontal movement
+				obj_player.pos.x = platform.pos.x + playerinfo.AABB.x + platform.AABB.x;
+				obj_player.velocity.x = 0;
+			}
+		}
+	}
 }
 
 void Draw()
