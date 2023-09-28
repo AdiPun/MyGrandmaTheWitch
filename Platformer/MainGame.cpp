@@ -165,6 +165,10 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
 			
+		if (IsGrounded() == false)
+		{
+			gamestate.playerstate = STATE_FALLING;
+		}
 
 		break;
 
@@ -180,6 +184,11 @@ void UpdatePlayer()
 		else if (playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+		}
+
+		if (IsGrounded() == false)
+		{
+			gamestate.playerstate = STATE_FALLING;
 		}
 
 		break;
