@@ -22,9 +22,10 @@ struct PlayerInfo
 	Vector2D AABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
-	Vector2D minoffsetx{ -20,0 };
+	Vector2D minoffsety{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
 	Vector2D edgeboxAABB{ 1,30 };
+	Vector2D headboxAABB{ 20,1 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -84,6 +85,7 @@ void CreateBackground();
 bool IsGrounded();
 bool FloorCollisionStarted();
 bool IsCollidingWithSide();
+bool IsCollidingWithHead();
 
 
 void Draw();
@@ -446,8 +448,6 @@ bool IsGrounded()
 	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
 	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
 
-	Point2D groundingBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
-
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
 	{
@@ -503,6 +503,36 @@ bool IsCollidingWithSide()
 	}
 
 	return false; // Player is not colliding with platform side
+}
+
+// Check's player's headbox and if it's colliding with the bottom of a platform
+bool IsCollidingWithHead()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	Point2D headboxPos = obj_player.pos - playerinfo.maxoffsety;
+
+	Vector2D headboxAABB = playerinfo.headboxAABB;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's grounding box and the platform
+		if (headboxPos.x + headboxAABB.x > platformTopLeft.x &&
+			headboxPos.x - headboxAABB.x  < platformBottomRight.x &&
+			headboxPos.y + headboxAABB.y > platformTopLeft.y &&
+			headboxPos.y - headboxAABB.y < platformBottomRight.y)
+		{
+			return true; // Player is hitting head
+		}
+
+	}
+
+	return false; // Player is not hitting head
 }
 
 
