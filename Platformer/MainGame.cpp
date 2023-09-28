@@ -68,8 +68,10 @@ PlayerInfo playerinfo;
 GameState gamestate;
 
 void UpdatePlayer();
-void HandlePlayerControls();
-void HandleAirborneControls();
+void HandleGroundedControls();
+void HandleAirControls();
+void HandleGroundedAttackControls();
+void HandleAirAttackControls();
 
 
 void CreatePlatform(int x, int y);
@@ -78,6 +80,7 @@ void CreatePlatformFloor();
 
 void CreateBackground();
 
+bool IsGrounded();
 bool FloorCollisionStarted();
 bool IsCollidingWithWall();
 
@@ -150,7 +153,7 @@ void UpdatePlayer()
 	{
 	case STATE_IDLE:
 
-		HandlePlayerControls();
+		HandleGroundedControls();
 
 		// Idle animation
 		if (playerinfo.facingright)
@@ -162,12 +165,16 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
 			
+		if (IsGrounded() == false)
+		{
+			gamestate.playerstate = STATE_FALLING;
+		}
 
 		break;
 
 	case STATE_RUNNING:
 
-		HandlePlayerControls();
+		HandleGroundedControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -179,11 +186,16 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
+		if (IsGrounded() == false)
+		{
+			gamestate.playerstate = STATE_FALLING;
+		}
+
 		break;
 
 	case STATE_JUMPING:
 
-		HandleAirborneControls();
+		HandleAirControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -211,7 +223,7 @@ void UpdatePlayer()
 
 	case STATE_FALLING:
 
-		HandleAirborneControls();
+		HandleAirControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -257,7 +269,7 @@ void UpdatePlayer()
 
 	case STATE_ATTACK:
 
-		HandlePlayerControls();
+		HandleGroundedAttackControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -279,7 +291,8 @@ void UpdatePlayer()
 	Play::UpdateGameObject(obj_player);
 }
 
-void HandlePlayerControls()
+// Controls when player is in a state where their grounding box is on the top of a platform 
+void HandleGroundedControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
@@ -316,8 +329,8 @@ void HandlePlayerControls()
 	}
 }
 
-
-void HandleAirborneControls()
+// Controls when player is in a state where their grounding box is on the top of a platform
+void HandleAirControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
@@ -335,6 +348,20 @@ void HandleAirborneControls()
 
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
+}
+
+
+void HandleGroundedAttackControls()
+{
+	// If attack is pressed, play attack 2
+	// Set a timer so if attack is pressed within 5? 6? frames? research best timings
+	// Play attack 3
+}
+
+void HandleAirAttackControls()
+{
+	// If attack is pressed, play smash down
+	// Make player drop down quick y value increase
 }
 
 // Creates a single platform tile
@@ -407,6 +434,35 @@ bool FloorCollisionStarted()
 			}
 		}
 		
+	}
+
+	return false; // Player is not grounded
+}
+
+bool IsGrounded()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
+	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
+
+	Point2D groundingBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's grounding box and the platform
+		if (groundingBoxPos.x + groundingBoxAABB.x > platformTopLeft.x &&
+			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
+			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
+			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
+		{
+			return true; // Player is grounded
+		}
+
 	}
 
 	return false; // Player is not grounded
