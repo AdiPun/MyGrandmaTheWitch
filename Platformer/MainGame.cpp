@@ -68,8 +68,10 @@ PlayerInfo playerinfo;
 GameState gamestate;
 
 void UpdatePlayer();
-void HandlePlayerControls();
-void HandleAirborneControls();
+void HandleGroundedControls();
+void HandleAirControls();
+void HandleGroundedAttackControls();
+void HandleAirAttackControls();
 
 
 void CreatePlatform(int x, int y);
@@ -150,7 +152,7 @@ void UpdatePlayer()
 	{
 	case STATE_IDLE:
 
-		HandlePlayerControls();
+		HandleGroundedControls();
 
 		// Idle animation
 		if (playerinfo.facingright)
@@ -167,7 +169,7 @@ void UpdatePlayer()
 
 	case STATE_RUNNING:
 
-		HandlePlayerControls();
+		HandleGroundedControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -183,7 +185,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		HandleAirborneControls();
+		HandleAirControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -211,7 +213,7 @@ void UpdatePlayer()
 
 	case STATE_FALLING:
 
-		HandleAirborneControls();
+		HandleAirControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -257,7 +259,7 @@ void UpdatePlayer()
 
 	case STATE_ATTACK:
 
-		HandlePlayerControls();
+		HandleGroundedControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -279,7 +281,8 @@ void UpdatePlayer()
 	Play::UpdateGameObject(obj_player);
 }
 
-void HandlePlayerControls()
+// Controls when player is in a state where their grounding box is on the top of a platform 
+void HandleGroundedControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
@@ -316,8 +319,8 @@ void HandlePlayerControls()
 	}
 }
 
-
-void HandleAirborneControls()
+// Controls when player is in a state where their grounding box is on the top of a platform
+void HandleAirControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
@@ -335,6 +338,17 @@ void HandleAirborneControls()
 
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
+}
+
+
+void HandleGroundedAttackControls()
+{
+
+}
+
+void HandleAirAttackControls()
+{
+
 }
 
 // Creates a single platform tile
