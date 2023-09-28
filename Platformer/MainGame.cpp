@@ -80,6 +80,7 @@ void CreatePlatformFloor();
 
 void CreateBackground();
 
+bool IsGrounded();
 bool FloorCollisionStarted();
 bool IsCollidingWithWall();
 
@@ -259,7 +260,7 @@ void UpdatePlayer()
 
 	case STATE_ATTACK:
 
-		HandleGroundedControls();
+		HandleGroundedAttackControls();
 
 		if (!playerinfo.facingright)
 		{
@@ -343,12 +344,15 @@ void HandleAirControls()
 
 void HandleGroundedAttackControls()
 {
-
+	// If attack is pressed, play attack 2
+	// Set a timer so if attack is pressed within 5? 6? frames? research best timings
+	// Play attack 3
 }
 
 void HandleAirAttackControls()
 {
-
+	// If attack is pressed, play smash down
+	// Make player drop down quick y value increase
 }
 
 // Creates a single platform tile
@@ -421,6 +425,35 @@ bool FloorCollisionStarted()
 			}
 		}
 		
+	}
+
+	return false; // Player is not grounded
+}
+
+bool IsGrounded()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
+	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
+
+	Point2D groundingBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's grounding box and the platform
+		if (groundingBoxPos.x + groundingBoxAABB.x > platformTopLeft.x &&
+			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
+			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
+			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
+		{
+			return true; // Player is grounded
+		}
+
 	}
 
 	return false; // Player is not grounded
