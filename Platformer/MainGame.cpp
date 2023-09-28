@@ -21,9 +21,16 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D AABB{ 10,20 };
+	Vector2D standingAABB{ 10,20 };
+	Vector2D slidingAABB{ 10,10 };
+
+
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
+
+	Vector2D edgeboxAABB{ 1,30 };
+
 	Vector2D standingedgeboxAABB{ 1,30 };
 	Vector2D slidingedgeboxAABB{ 1,10 };
 	
@@ -36,7 +43,7 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction{ 0.8f };
-	float slidingfriction{ 0.99999f };
+	float slidingfriction{ 0.99f };
 
 	float runspeed{ 4.5f };
 	float jumpspeed{ -10.0f };
@@ -201,6 +208,8 @@ void UpdatePlayer()
 
 		HandleSlidingControls();
 
+		playerinfo.edgeboxAABB = playerinfo.slidingedgeboxAABB;
+
 		obj_player.velocity *= playerinfo.slidingfriction;
 
 		if (!playerinfo.facingright)
@@ -211,9 +220,17 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedjump);
 		}
-		if (obj_player.velocity.x < 1 && obj_player.velocity.x > -1)
+		
+		if (obj_player.velocity.x < 2.5f && obj_player.velocity.x > -2.5f)
 		{
+			playerinfo.edgeboxAABB = playerinfo.standingedgeboxAABB;
 			gamestate.playerstate = STATE_IDLE;
+		}
+
+		if (IsGrounded() == false)
+		{
+			playerinfo.edgeboxAABB = playerinfo.standingedgeboxAABB;
+			gamestate.playerstate = STATE_FALLING;
 		}
 
 		break;
@@ -326,27 +343,28 @@ void HandleGroundedControls()
 		gamestate.playerstate = STATE_IDLE;
 	}
 
+
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
 		gamestate.playerstate = STATE_RUNNING;
 		obj_player.velocity.x = -playerinfo.runspeed;
-
 	}
 	else if (Play::KeyDown('D'))
 	{
 		playerinfo.facingright = true;
 		gamestate.playerstate = STATE_RUNNING;
 		obj_player.velocity.x = playerinfo.runspeed;
-
 	}
 
-	if (Play::KeyDown('S') && obj_player.velocity.x > 2.0 )
+	if (obj_player.velocity.x > 4.4f || obj_player.velocity.x < -4.4f)
 	{
-		gamestate.playerstate = STATE_SLIDING;
+		if (Play::KeyDown('S'))
+		{
+			gamestate.playerstate = STATE_SLIDING;
+		}
 	}
-	 
-
+	
 	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
@@ -388,10 +406,12 @@ void HandleSlidingControls()
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
+		obj_player.velocity.x = -playerinfo.fallspeed;
 	}
 	else if (Play::KeyDown('D'))
 	{
-		playerinfo.facingright = true;
+		obj_player.velocity.x = playerinfo.fallspeed;
+		playerinfo.facingright = true; 
 	}
 }
 
@@ -519,7 +539,7 @@ bool IsCollidingWithWall()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
 	Point2D edgeBoxPosright = obj_player.pos + playerinfo.maxoffsetx;
-	Vector2D edgeBoxAABB = playerinfo.standingedgeboxAABB;
+	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
 	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
 	// Iterate through all platforms to check for collisions
@@ -561,9 +581,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.standingedgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.standingedgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
 	Play::PresentDrawingBuffer();
 }
