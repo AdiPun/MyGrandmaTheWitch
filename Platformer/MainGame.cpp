@@ -22,6 +22,7 @@ struct PlayerInfo
 	Vector2D AABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
+	Vector2D minoffsetx{ -20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
 	Vector2D edgeboxAABB{ 1,30 };
 	
@@ -82,7 +83,7 @@ void CreateBackground();
 
 bool IsGrounded();
 bool FloorCollisionStarted();
-bool IsCollidingWithWall();
+bool IsCollidingWithSide();
 
 
 void Draw();
@@ -133,7 +134,7 @@ void UpdatePlayer()
 
 
 	// Wall interactions
-	if (IsCollidingWithWall())
+	if (IsCollidingWithSide())
 	{
 		if (obj_player.velocity.x > 0)
 		{
@@ -469,7 +470,7 @@ bool IsGrounded()
 }
 
 // Check's player's edgebox and if it's going to collide with the sides of a platform
-bool IsCollidingWithWall()
+bool IsCollidingWithSide()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
