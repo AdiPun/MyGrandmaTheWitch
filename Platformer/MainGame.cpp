@@ -24,7 +24,8 @@ struct PlayerInfo
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
-	Vector2D edgeboxAABB{ 1,30 };
+	Vector2D standingedgeboxAABB{ 1,30 };
+	Vector2D slidingedgeboxAABB{ 1,10 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -35,6 +36,7 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction{ 0.8f };
+	float slidingfriction{ 0.99999f };
 
 	float runspeed{ 4.5f };
 	float jumpspeed{ -10.0f };
@@ -132,9 +134,7 @@ void UpdatePlayer()
 
 	obj_player.scale = playerinfo.scale;
 
-	obj_player.velocity.x *= playerinfo.friction;
-
-
+	
 
 	// Wall interactions
 	if (IsCollidingWithWall())
@@ -158,7 +158,7 @@ void UpdatePlayer()
 	case STATE_IDLE:
 
 		HandleGroundedControls();
-
+		obj_player.velocity.x *= playerinfo.friction;
 		// Idle animation
 		if (playerinfo.facingright)
 		{
@@ -179,7 +179,7 @@ void UpdatePlayer()
 	case STATE_RUNNING:
 
 		HandleGroundedControls();
-
+		obj_player.velocity.x *= playerinfo.friction;
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
@@ -199,13 +199,29 @@ void UpdatePlayer()
 
 	case STATE_SLIDING:
 
+		HandleSlidingControls();
+
+		obj_player.velocity *= playerinfo.slidingfriction;
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedjump);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedjump);
+		}
+		if (obj_player.velocity.x < 1 && obj_player.velocity.x > -1)
+		{
+			gamestate.playerstate = STATE_IDLE;
+		}
 
 		break;
 
 	case STATE_JUMPING:
 
 		HandleAirControls();
-
+		obj_player.velocity.x *= playerinfo.friction;
 		obj_player.acceleration.y = playerinfo.gravity;
 
 		if (!playerinfo.facingright)
@@ -233,7 +249,7 @@ void UpdatePlayer()
 	case STATE_FALLING:
 
 		HandleAirControls();
-
+		obj_player.velocity.x *= playerinfo.friction;
 		obj_player.acceleration.y = playerinfo.gravity;
 
 
@@ -255,11 +271,9 @@ void UpdatePlayer()
 		break;
 
 	case STATE_LANDING:
-
-		//HandlePlayerControls();
-
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
+		obj_player.velocity.x *= playerinfo.friction;
 
 		if (!playerinfo.facingright)
 		{
@@ -277,8 +291,8 @@ void UpdatePlayer()
 		break;	
 
 	case STATE_ATTACK:
-
 		HandleGroundedAttackControls();
+		obj_player.velocity.x *= playerinfo.friction;
 
 		if (!playerinfo.facingright)
 		{
@@ -327,12 +341,10 @@ void HandleGroundedControls()
 
 	}
 
-	
-
-	/*if (Play::KeyDown('S') && obj_player.velocity.x > 2.0 )
+	if (Play::KeyDown('S') && obj_player.velocity.x > 2.0 )
 	{
 		gamestate.playerstate = STATE_SLIDING;
-	}*/
+	}
 	 
 
 	if (Play::KeyPressed('L'))
@@ -376,14 +388,10 @@ void HandleSlidingControls()
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
-
-		obj_player.velocity.x = -playerinfo.slidespeed;
 	}
 	else if (Play::KeyDown('D'))
 	{
 		playerinfo.facingright = true;
-
-		obj_player.velocity.x = playerinfo.slidespeed;
 	}
 }
 
@@ -511,7 +519,7 @@ bool IsCollidingWithWall()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
 	Point2D edgeBoxPosright = obj_player.pos + playerinfo.maxoffsetx;
-	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
+	Vector2D edgeBoxAABB = playerinfo.standingedgeboxAABB;
 	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
 	// Iterate through all platforms to check for collisions
@@ -553,9 +561,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.standingedgeboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.standingedgeboxAABB);
 
 	Play::PresentDrawingBuffer();
 }
