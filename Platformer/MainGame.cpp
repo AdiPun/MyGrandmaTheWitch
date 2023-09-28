@@ -11,6 +11,7 @@ enum PlayerState
 {
 	STATE_IDLE = 0,
 	STATE_RUNNING,
+	STATE_SLIDING,
 	STATE_JUMPING,
 	STATE_FALLING,
 	STATE_LANDING,
@@ -38,6 +39,7 @@ struct PlayerInfo
 	float runspeed{ 4.5f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
+	float slidespeed{ 4.0f };
 
 	float scale{ 2.5f };
 	float gravity{ 0.3f};
@@ -70,6 +72,7 @@ GameState gamestate;
 void UpdatePlayer();
 void HandleGroundedControls();
 void HandleAirControls();
+void HandleSlidingControls();
 void HandleGroundedAttackControls();
 void HandleAirAttackControls();
 
@@ -91,6 +94,7 @@ void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
 
+float DistanceBetweenPoints(Point2D pointA, Point2D pointB);
 
 // The entry point for a PlayBuffer program
 void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
@@ -190,6 +194,11 @@ void UpdatePlayer()
 		{
 			gamestate.playerstate = STATE_FALLING;
 		}
+
+		break;
+
+	case STATE_SLIDING:
+
 
 		break;
 
@@ -296,6 +305,8 @@ void HandleGroundedControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
+
+	
 	if (Play::KeyDown('A') == false && Play::KeyDown('D') == false)
 	{
 		gamestate.playerstate = STATE_IDLE;
@@ -316,7 +327,15 @@ void HandleGroundedControls()
 
 	}
 
-	if (Play::KeyPressed('E'))
+	
+
+	/*if (Play::KeyDown('S') && obj_player.velocity.x > 2.0 )
+	{
+		gamestate.playerstate = STATE_SLIDING;
+	}*/
+	 
+
+	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
@@ -347,6 +366,24 @@ void HandleAirControls()
 		playerinfo.facingright = true;
 
 		obj_player.velocity.x = playerinfo.fallspeed;	
+	}
+}
+
+void HandleSlidingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+
+		obj_player.velocity.x = -playerinfo.slidespeed;
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x = playerinfo.slidespeed;
 	}
 }
 
@@ -559,4 +596,13 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB)
 	Point2D topLeft = objcentre - objAABB;
 	Point2D bottomRight = objcentre + objAABB;
 	Play::DrawRect(topLeft, bottomRight, Play::cGreen);
+}
+
+float DistanceBetweenPoints(Point2D pointA, Point2D pointB)
+{
+	int distancesquared = (pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y);
+
+	int distance = sqrt(distancesquared);
+
+	return distance;
 }
