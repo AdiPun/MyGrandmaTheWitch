@@ -86,6 +86,7 @@ GameState gamestate;
 void UpdatePlayer();
 void HandleGroundedControls();
 void HandleJumpingControls();
+void HandleJumpingDownControls();
 
 void HandleFallingControls();
 void HandleGroundedAttackControls();
@@ -371,6 +372,11 @@ void HandleJumpingControls()
 
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
+}
+
+void HandleJumpingDownControls()
+{
+
 }
 
 // Controls when player is in a state where their grounding box is on the top of a platform
