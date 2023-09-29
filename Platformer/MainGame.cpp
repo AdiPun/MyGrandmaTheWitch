@@ -24,6 +24,7 @@ struct PlayerInfo
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
+	Vector2D topboxAABB{ 20,1 };
 	Vector2D edgeboxAABB{ 1,30 };
 	
 	bool facingright = true;
@@ -119,7 +120,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
 	CreatePlatform(DISPLAY_WIDTH / 6*5, DISPLAY_HEIGHT / 6*5);
-	CreatePlatform(DISPLAY_WIDTH*0.60f, DISPLAY_HEIGHT * 0.60f);
+	CreatePlatform(DISPLAY_WIDTH * 0.60f, DISPLAY_HEIGHT * 0.60f);
 	CreatePlatformRow(5, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4 * 3);
 }
 
@@ -183,7 +184,7 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
-			
+		
 		if (IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
@@ -245,7 +246,6 @@ void UpdatePlayer()
 		HandleJumpingControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
-
 
 		if (!playerinfo.facingright)
 		{
@@ -351,19 +351,23 @@ void HandleGroundedControls()
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
+
 		gamestate.playerstate = STATE_RUNNING;
+
 		obj_player.velocity.x = -playerinfo.runspeed;
 
 	}
 	else if (Play::KeyDown('D'))
 	{
 		playerinfo.facingright = true;
+
 		gamestate.playerstate = STATE_RUNNING;
+
 		obj_player.velocity.x = playerinfo.runspeed;
 
 	}
 
-	if (Play::KeyPressed('E'))
+	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
@@ -385,7 +389,6 @@ void HandleJumpingControls()
 		playerinfo.facingright = false;
 
 		obj_player.velocity.x = -playerinfo.fallspeed;
-
 
 	}
 	else if (Play::KeyDown('D'))
@@ -595,6 +598,8 @@ void Draw()
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsety, playerinfo.topboxAABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
