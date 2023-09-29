@@ -121,7 +121,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformFloor();
 	CreatePlatform(DISPLAY_WIDTH / 6*5, DISPLAY_HEIGHT / 6*5);
-	CreatePlatform(DISPLAY_WIDTH * 0.60f, DISPLAY_HEIGHT * 0.60f);
+	CreatePlatform(DISPLAY_WIDTH * 0.20f, DISPLAY_HEIGHT * 0.60f);
 	CreatePlatformRow(5, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4 * 3);
 }
 
@@ -173,7 +173,7 @@ void UpdatePlayer()
 	if (CeilingCollisionStarted())
 	{
 		obj_player.pos.y = obj_player.oldPos.y;
-		obj_player.velocity.y = 0;
+		obj_player.velocity.y *= 0.9f;
 	}
 
 	switch (gamestate.playerstate)
