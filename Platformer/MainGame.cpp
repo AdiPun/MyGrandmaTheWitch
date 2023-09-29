@@ -354,6 +354,40 @@ void HandleAirControls()
 }
 
 
+// Controls when player is in a state where their grounding box is on the top of a platform
+void HandleFallingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	float timer = 0;
+	timer += gamestate.elapsedTime;
+
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+		
+		obj_player.velocity.x = -playerinfo.fallspeed;
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x = playerinfo.fallspeed;	
+	}
+
+	coyotejump.coyoteTimeCounter -= timer;
+
+	// If there's still coyotetimecounter left, you can jump
+	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W'))
+	{
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		//coyotejump.coyoteTimeCounter = 0;
+		gamestate.playerstate = STATE_JUMPING;
+	}
+
+}
+
+
 void HandleGroundedAttackControls()
 {
 	// If attack is pressed, play attack 2
