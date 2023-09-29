@@ -119,7 +119,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
-	gamestate.time += elapsedTime/60;
+	gamestate.time = elapsedTime;
 	UpdatePlayer();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -366,7 +366,8 @@ void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	float time = gamestate.time;
+	float timer = 0;
+	timer += gamestate.time;
 
 	if (Play::KeyDown('A'))
 	{
@@ -381,9 +382,14 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
-	coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
-	
-	coyotejump.coyoteTimeCounter -= time;
+	if (IsGrounded())
+	{
+		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
+	}
+	else
+	{
+		coyotejump.coyoteTimeCounter -= timer;
+	}
 	
 
 	// If there's still coyotetimecounter left, you can jump
@@ -565,6 +571,8 @@ void Draw()
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+
+	Play::DrawFontText("font64px", "SCORE: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 
 	Play::PresentDrawingBuffer();
 }
