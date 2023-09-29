@@ -87,7 +87,7 @@ GameState gamestate;
 
 void UpdatePlayer();
 void HandleGroundedControls();
-void HandleJumpingControls();
+void HandleAirBorneControls();
 
 void HandleFallingControls();
 void HandleGroundedAttackControls();
@@ -109,7 +109,7 @@ bool IsCollidingWithWall();
 
 void Draw();
 void DrawPlatforms();
-void DrawPlatformsAABB()
+void DrawPlatformsAABB();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
@@ -226,7 +226,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		HandleJumpingControls();
+		HandleAirBorneControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -254,7 +254,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPINGDOWN:
 		
-		HandleJumpingControls();
+		HandleAirBorneControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -391,7 +391,7 @@ void HandleGroundedControls()
 	}
 }
 
-void HandleJumpingControls()
+void HandleAirBorneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
@@ -661,6 +661,7 @@ void Draw()
 	Play::DrawBackground();
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
+	DrawPlatformsAABB();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
