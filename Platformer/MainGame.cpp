@@ -89,7 +89,6 @@ void UpdatePlayer();
 void HandleGroundedControls();
 void HandleAirBorneControls();
 
-void HandleLandingControls();
 
 void HandleFallingControls();
 void HandleGroundedAttackControls();
@@ -157,6 +156,17 @@ void UpdatePlayer()
 
 	obj_player.velocity.x *= playerinfo.friction;
 
+	float timer = gamestate.elapsedTime;
+
+	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
+	{
+		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
+	}
+	else
+	{
+
+		jumpbuffer.jumpbufferTimeCounter -= timer;
+	}
 
 
 	// Wall interactions
@@ -305,8 +315,6 @@ void UpdatePlayer()
 
 	case STATE_LANDING:
 
-		HandleLandingControls();
-
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
 		
@@ -324,6 +332,12 @@ void UpdatePlayer()
 		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_IDLE;
+		}
+
+		if (jumpbuffer.jumpbufferTimeCounter > 0.0f)
+		{
+			obj_player.velocity.y = playerinfo.jumpspeed;
+			gamestate.playerstate = STATE_JUMPING;
 		}
 		break;	
 
@@ -412,30 +426,6 @@ void HandleAirBorneControls()
 	}
 }
 
-void HandleLandingControls()
-{
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	float timer = 0;
-	timer += gamestate.elapsedTime;
-
-	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
-	{
-		jumpbuffer.jumpbufferTimeCounter -= timer;
-	}
-	else
-	{
-		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime
-	}
-
-	if (Play::KeyDown('W') && jumpbuffer.jumpbufferTimeCounter > 0)
-	{
-		obj_player.velocity.y = playerinfo.jumpspeed;
-		jumpbuffer.jumpbufferTimeCounter = 0;
-		gamestate.playerstate = STATE_JUMPING;
-	}
-}
-
 
 // Controls when player is in a state where their grounding box is on the top of a platform
 void HandleFallingControls()
@@ -464,7 +454,7 @@ void HandleFallingControls()
 	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W'))
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
-		//coyotejump.coyoteTimeCounter = 0;
+		jumpbuffer.jumpbufferTimeCounter = 0;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
@@ -698,7 +688,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
-	Play::DrawFontText("font64px", "coyoteTimeCounter: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
+	Play::DrawFontText("font64px", "coyote Time Counter: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
+	
+	Play::DrawFontText("font64px", "Jump buffer Time Counter: " + std::to_string(jumpbuffer.jumpbufferTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 * 2 }, Play::CENTRE);
 
 	Play::PresentDrawingBuffer();
 }
