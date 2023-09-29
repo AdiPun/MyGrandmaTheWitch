@@ -21,8 +21,7 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D collisionAABB{ 20,40 };
-	Vector2D collisionAABBy{ 0,40 };
-	Vector2D collisionAABBx{ 20,0 };
+
 	Vector2D hitboxAABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
