@@ -297,6 +297,8 @@ void UpdatePlayer()
 
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
+		
+		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime; // Reset coyotetimecounter when landing
 
 		if (!playerinfo.facingright)
 		{
@@ -414,11 +416,6 @@ void HandleJumpingDownControls()
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
 
-	if (IsGrounded())
-	{
-		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
-	}
-
 }
 
 // Controls when player is in a state where their grounding box is on the top of a platform
@@ -442,21 +439,14 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
-	if (IsGrounded())
-	{
-		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
-	}
-	else
-	{
-		coyotejump.coyoteTimeCounter -= timer;
-	}
-	
+	coyotejump.coyoteTimeCounter -= timer;
+		
 
 	// If there's still coyotetimecounter left, you can jump
 	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W'))
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
-		coyotejump.coyoteTimeCounter = 0;
+		//coyotejump.coyoteTimeCounter = 0;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
