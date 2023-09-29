@@ -107,8 +107,6 @@ void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformColumn(int tiles, int x, int y);
 void CreatePlatformFloor();
 
-void CreateBackground();
-
 bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
@@ -524,11 +522,6 @@ void CreatePlatformFloor()
 	}
 }
 
-void CreateBackground()
-{
-	Background background;
-
-}
 
 // Checks player's AABBmaxY and if it's collided with a platform's minY
 bool FloorCollisionStarted()
@@ -692,9 +685,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
-	Play::DrawFontText("font64px", "coyote Time Counter: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
+	//Play::DrawFontText("font64px", "coyote Time Counter: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
-	Play::DrawFontText("font64px", "Jump buffer Time Counter: " + std::to_string(jumpbuffer.jumpbufferTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 * 2 }, Play::CENTRE);
+	//Play::DrawFontText("font64px", "Jump buffer Time Counter: " + std::to_string(jumpbuffer.jumpbufferTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 * 2 }, Play::CENTRE);
 
 	Play::PresentDrawingBuffer();
 }
