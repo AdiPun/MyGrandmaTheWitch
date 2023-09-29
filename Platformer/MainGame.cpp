@@ -62,7 +62,7 @@ struct Platform
 {
 	int type = TYPE_PLATFORM;
 	Point2D pos;
-	const Vector2D AABB{ 32,24 };
+	const Vector2D AABB{ 32,32 };
 };
 
 struct Background
@@ -121,7 +121,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
-	CreatePlatformRow(20,0,DISPLAY_HEIGHT);
+	CreatePlatformRow(20,0,DISPLAY_HEIGHT-50);
+	CreatePlatformColumn(3, DISPLAY_WIDTH * 0.6f, DISPLAY_HEIGHT * 0.8f);
 	CreatePlatform(DISPLAY_WIDTH / 6*5, DISPLAY_HEIGHT / 6*5);
 	CreatePlatform(DISPLAY_WIDTH * 0.20f, DISPLAY_HEIGHT * 0.60f);
 	CreatePlatformRow(5, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4 * 3);
