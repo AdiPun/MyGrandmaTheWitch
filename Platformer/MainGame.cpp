@@ -20,13 +20,12 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D collisionAABB{ 20,40 };
+	Vector2D collisionAABB{ 15,30 };
 
-	Vector2D hitboxAABB{ 10,20 };
+	Vector2D hitboxAABB{ 5,10 };
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
-	Vector2D headboxAABB{ 20,1 };
-	Vector2D edgeboxAABB{ 1,30 };
+	Vector2D edgeboxAABB{ 1,10 };
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -42,8 +41,15 @@ struct PlayerInfo
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
 
-	float scale{ 2.5f };
+	float scale{ 2.0f };
 	float gravity{ 0.3f};
+};
+
+struct VariableJump 
+{
+	float jumpStartTime;
+	float jumpTime;
+	bool isJumping;
 };
 
 struct CoyoteJump
@@ -79,6 +85,7 @@ struct GameState
 	std::vector<Platform> vPlatforms;
 };
 
+VariableJump variablejump;
 CoyoteJump coyotejump;
 JumpBuffer jumpbuffer;
 Background background;
@@ -164,7 +171,6 @@ void UpdatePlayer()
 	}
 	else
 	{
-
 		jumpbuffer.jumpbufferTimeCounter -= timer;
 	}
 
@@ -334,7 +340,7 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_IDLE;
 		}
 
-		if (jumpbuffer.jumpbufferTimeCounter > 0.0f)
+		if (jumpbuffer.jumpbufferTimeCounter > 0.0f) // If the W button is being held, the jumpbuffertimecounter is set to 0.2f so you jump when you hold your jump.
 		{
 			obj_player.velocity.y = playerinfo.jumpspeed;
 			gamestate.playerstate = STATE_JUMPING;
@@ -681,8 +687,6 @@ void Draw()
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
-
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsety, playerinfo.headboxAABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
