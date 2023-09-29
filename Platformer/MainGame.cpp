@@ -440,7 +440,6 @@ void HandleFallingControls()
 	}
 
 	coyotejump.coyoteTimeCounter -= timer;
-		
 
 	// If there's still coyotetimecounter left, you can jump
 	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W'))
@@ -622,7 +621,7 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
-	Play::DrawFontText("font64px", "SCORE: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
+	Play::DrawFontText("font64px", "coyoteTimeCounter: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 
 	Play::PresentDrawingBuffer();
 }
