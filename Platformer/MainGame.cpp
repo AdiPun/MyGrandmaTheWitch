@@ -45,7 +45,7 @@ struct PlayerInfo
 
 struct CoyoteJump
 {
-	const float coyoteTime = 0.2f;
+	const float coyoteTime = 2.0f;
 	float coyoteTimeCounter;
 	bool coyoteJumped = false;
 };
@@ -66,6 +66,7 @@ struct Background
 
 struct GameState
 {
+	float time = 0;
 	PlayerState playerstate = STATE_IDLE;
 	std::vector<Platform> vPlatforms;
 };
@@ -118,6 +119,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
+	gamestate.time += elapsedTime/100;
 	UpdatePlayer();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -364,8 +366,6 @@ void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	float time = elapsedTime;
-
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
@@ -379,20 +379,19 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
-	if (IsGrounded()) // When grounded, the counter remains at 0.2f
-	{
-		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
-		coyotejump.coyoteJumped = false;
-	}
-	else // if we are not grounded we let coyoteTimeCounter count down by subtracting time from it
-	{
-		coyotejump.coyoteTimeCounter -= time;
-	}
+	coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
 
-	// If 
-	if (coyotejump.coyoteTimeCounter > 0 && Play::KeyPressed('W') && coyotejump.coyoteJumped = false)
+
+	//coyotejump.coyoteJumped = false;
+
+	
+	coyotejump.coyoteTimeCounter -= gamestate.time;
+	
+
+	// If there's still coyotetimecounter left, you can jump
+	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W')) //&& coyotejump.coyoteJumped)
 	{
-		coyotejump.coyoteJumped = false;
+		//coyotejump.coyoteJumped = true;
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
 	}
