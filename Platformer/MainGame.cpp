@@ -24,7 +24,7 @@ struct PlayerInfo
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
-	Vector2D topboxAABB{ 20,1 };
+	Vector2D headboxAABB{ 20,1 };
 	Vector2D edgeboxAABB{ 1,30 };
 	
 	bool facingright = true;
@@ -101,6 +101,7 @@ void CreateBackground();
 
 bool IsGrounded();
 bool FloorCollisionStarted();
+bool CeilingCollisionStarted();
 bool IsCollidingWithWall();
 
 
@@ -522,6 +523,43 @@ bool FloorCollisionStarted()
 	return false; // Player is not grounded
 }
 
+
+bool CeilingCollisionStarted()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Point2D headBoxPos = obj_player.pos + playerinfo.maxoffsety;
+	Vector2D headBoxAABB = playerinfo.headboxAABB;
+
+	Point2D headBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's grounding box and the platform
+		if (groundingBoxPos.x + groundingBoxAABB.x > platformTopLeft.x &&
+			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
+			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
+			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
+		{
+
+
+			// Checks if previous frame was above the platform
+			if (groundingBoxOldPos.y + groundingBoxAABB.y < platformTopLeft.y)
+			{
+				return true; // Player is grounded
+			}
+		}
+
+	}
+
+	return false; // Player is not grounded
+}
+
+
 bool IsGrounded()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
@@ -550,6 +588,7 @@ bool IsGrounded()
 
 	return false; // Player is not grounded
 }
+
 
 // Check's player's edgebox and if it's going to collide with the sides of a platform
 bool IsCollidingWithWall()
