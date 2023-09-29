@@ -69,6 +69,8 @@ GameState gamestate;
 
 void UpdatePlayer();
 void HandleGroundedControls();
+void HandleJumpingControls();
+
 void HandleAirControls();
 void HandleGroundedAttackControls();
 void HandleAirAttackControls();
@@ -195,7 +197,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		HandleAirControls();
+		HandleJumpingControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
