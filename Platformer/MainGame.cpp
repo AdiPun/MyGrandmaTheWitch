@@ -73,7 +73,7 @@ struct Background
 struct GameState
 {
 	float elapsedTime = 0;
-	PlayerState playerstate = STATE_IDLE;
+	PlayerState playerstate = STATE_JUMPINGDOWN;
 	std::vector<Platform> vPlatforms;
 };
 
@@ -230,7 +230,7 @@ void UpdatePlayer()
 
 		if (Play::IsAnimationComplete(obj_player)) // Change when velocity.y = 0
 		{
-			gamestate.playerstate = STATE_FALLING;
+			gamestate.playerstate = STATE_JUMPINGDOWN;
 		}
 
 		if (FloorCollisionStarted())
@@ -242,7 +242,28 @@ void UpdatePlayer()
 		break;
 
 	case STATE_JUMPINGDOWN:
+		
+		HandleJumpingControls();
 
+		obj_player.acceleration.y = playerinfo.gravity;
+
+
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "fall_left", playerinfo.animationspeedfall);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
+		}
+
+		if (FloorCollisionStarted())
+		{
+			gamestate.playerstate = STATE_LANDING;
+			obj_player.pos.y = obj_player.oldPos.y;
+		}
+
+		break;
 
 		break;
 
@@ -376,6 +397,22 @@ void HandleJumpingControls()
 
 void HandleJumpingDownControls()
 {
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+
+		obj_player.velocity.x = -playerinfo.fallspeed;
+
+
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x = playerinfo.fallspeed;
+	}
 
 }
 
