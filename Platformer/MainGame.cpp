@@ -86,7 +86,6 @@ GameState gamestate;
 void UpdatePlayer();
 void HandleGroundedControls();
 void HandleJumpingControls();
-void HandleJumpingDownControls();
 
 void HandleFallingControls();
 void HandleGroundedAttackControls();
@@ -397,26 +396,6 @@ void HandleJumpingControls()
 	}
 }
 
-void HandleJumpingDownControls()
-{
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	if (Play::KeyDown('A'))
-	{
-		playerinfo.facingright = false;
-
-		obj_player.velocity.x = -playerinfo.fallspeed;
-
-
-	}
-	else if (Play::KeyDown('D'))
-	{
-		playerinfo.facingright = true;
-
-		obj_player.velocity.x = playerinfo.fallspeed;
-	}
-
-}
 
 // Controls when player is in a state where their grounding box is on the top of a platform
 void HandleFallingControls()
