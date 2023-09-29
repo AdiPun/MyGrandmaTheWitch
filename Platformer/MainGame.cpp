@@ -12,6 +12,7 @@ enum PlayerState
 	STATE_IDLE = 0,
 	STATE_RUNNING,
 	STATE_JUMPING,
+	STATE_JUMPINGDOWN,
 	STATE_FALLING,
 	STATE_LANDING,
 	STATE_ATTACK,
@@ -71,13 +72,13 @@ struct Background
 
 struct GameState
 {
-	float time = 0;
+	float elapsedTime = 0;
 	PlayerState playerstate = STATE_IDLE;
 	std::vector<Platform> vPlatforms;
 };
 
 CoyoteJump coyotejump;
-JumpBuffer jumpbufer;
+JumpBuffer jumpbuffer;
 Background background;
 PlayerInfo playerinfo;
 GameState gamestate;
@@ -125,7 +126,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
-	gamestate.time = elapsedTime;
+	gamestate.elapsedTime = elapsedTime;
 	UpdatePlayer();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -237,6 +238,11 @@ void UpdatePlayer()
 			obj_player.pos.y = obj_player.oldPos.y;
 		}
 		
+		break;
+
+	case STATE_JUMPINGDOWN:
+
+
 		break;
 
 	case STATE_FALLING:
@@ -373,7 +379,7 @@ void HandleFallingControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
 	float timer = 0;
-	timer += gamestate.time;
+	timer += gamestate.elapsedTime;
 
 	if (Play::KeyDown('A'))
 	{
