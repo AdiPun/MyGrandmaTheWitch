@@ -414,6 +414,11 @@ void HandleJumpingDownControls()
 		obj_player.velocity.x = playerinfo.fallspeed;
 	}
 
+	if (IsGrounded())
+	{
+		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
+	}
+
 }
 
 // Controls when player is in a state where their grounding box is on the top of a platform
