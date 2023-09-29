@@ -45,7 +45,7 @@ struct PlayerInfo
 
 struct CoyoteJump
 {
-	float coyoteTime = 0.2f;
+	const float coyoteTime = 0.2f;
 	float coyoteTimeCounter;
 	bool coyoteJumped = false;
 };
@@ -364,15 +364,13 @@ void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-
+	float time = elapsedTime;
 
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
 		
 		obj_player.velocity.x = -playerinfo.fallspeed;
-		
-		
 	}
 	else if (Play::KeyDown('D'))
 	{
@@ -381,7 +379,23 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
+	if (IsGrounded()) // When grounded, the counter remains at 0.2f
+	{
+		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
+		coyotejump.coyoteJumped = false;
+	}
+	else // if we are not grounded we let coyoteTimeCounter count down by subtracting time from it
+	{
+		coyotejump.coyoteTimeCounter -= time;
+	}
 
+	// If 
+	if (coyotejump.coyoteTimeCounter > 0 && Play::KeyPressed('W') && coyotejump.coyoteJumped = false)
+	{
+		coyotejump.coyoteJumped = false;
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		gamestate.playerstate = STATE_JUMPING;
+	}
 
 }
 
