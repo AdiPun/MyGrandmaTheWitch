@@ -109,6 +109,7 @@ bool IsCollidingWithWall();
 
 void Draw();
 void DrawPlatforms();
+void DrawPlatformsAABB()
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
@@ -683,9 +684,19 @@ void DrawPlatforms()
 	for (Platform& p : gamestate.vPlatforms)
 	{
 		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
+	}
+}
+
+void DrawPlatformsAABB()
+{
+	Platform platform;
+
+	for (Platform& p : gamestate.vPlatforms)
+	{
 		DrawObjectAABB(p.pos, platform.AABB);
 	}
 }
+
 
 void DrawAllGameObjectsByTypeRotated(GameObjectType type)
 {
