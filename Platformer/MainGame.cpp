@@ -43,6 +43,13 @@ struct PlayerInfo
 	float gravity{ 0.3f};
 };
 
+struct CoyoteJump
+{
+	const float coyoteTime = 2.0f;
+	float coyoteTimeCounter;
+	bool coyoteJumped = false;
+};
+
 struct Platform
 {
 	int type = TYPE_PLATFORM;
@@ -56,20 +63,24 @@ struct Background
 	Point2D pos;
 };
 
-Background background;
 
 struct GameState
 {
+	float time = 0;
 	PlayerState playerstate = STATE_IDLE;
 	std::vector<Platform> vPlatforms;
 };
 
+CoyoteJump coyotejump;
+Background background;
 PlayerInfo playerinfo;
 GameState gamestate;
 
 void UpdatePlayer();
 void HandleGroundedControls();
-void HandleAirControls();
+void HandleJumpingControls();
+
+void HandleFallingControls();
 void HandleGroundedAttackControls();
 void HandleAirAttackControls();
 
@@ -108,6 +119,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
+	gamestate.time += elapsedTime/100;
 	UpdatePlayer();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -195,7 +207,7 @@ void UpdatePlayer()
 
 	case STATE_JUMPING:
 
-		HandleAirControls();
+		HandleJumpingControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -223,7 +235,7 @@ void UpdatePlayer()
 
 	case STATE_FALLING:
 
-		HandleAirControls();
+		HandleFallingControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -329,8 +341,28 @@ void HandleGroundedControls()
 	}
 }
 
+void HandleJumpingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+
+		obj_player.velocity.x = -playerinfo.fallspeed;
+
+
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x = playerinfo.fallspeed;
+	}
+}
+
 // Controls when player is in a state where their grounding box is on the top of a platform
-void HandleAirControls()
+void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
@@ -339,8 +371,6 @@ void HandleAirControls()
 		playerinfo.facingright = false;
 		
 		obj_player.velocity.x = -playerinfo.fallspeed;
-		
-		
 	}
 	else if (Play::KeyDown('D'))
 	{
@@ -348,6 +378,24 @@ void HandleAirControls()
 
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
+
+	coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
+
+
+	//coyotejump.coyoteJumped = false;
+
+	
+	coyotejump.coyoteTimeCounter -= gamestate.time;
+	
+
+	// If there's still coyotetimecounter left, you can jump
+	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W')) //&& coyotejump.coyoteJumped)
+	{
+		//coyotejump.coyoteJumped = true;
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		gamestate.playerstate = STATE_JUMPING;
+	}
+
 }
 
 
