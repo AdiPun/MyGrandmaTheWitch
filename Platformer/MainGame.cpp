@@ -89,6 +89,8 @@ void UpdatePlayer();
 void HandleGroundedControls();
 void HandleAirBorneControls();
 
+void HandleLandingControls();
+
 void HandleFallingControls();
 void HandleGroundedAttackControls();
 void HandleAirAttackControls();
@@ -303,7 +305,7 @@ void UpdatePlayer()
 
 	case STATE_LANDING:
 
-		//HandlePlayerControls();
+		HandleLandingControls();
 
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
@@ -407,6 +409,30 @@ void HandleAirBorneControls()
 		playerinfo.facingright = true;
 
 		obj_player.velocity.x = playerinfo.fallspeed;
+	}
+}
+
+void HandleLandingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	float timer = 0;
+	timer += gamestate.elapsedTime;
+
+	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
+	{
+		jumpbuffer.jumpbufferTimeCounter -= timer;
+	}
+	else
+	{
+		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime
+	}
+
+	if (Play::KeyDown('W') && jumpbuffer.jumpbufferTimeCounter > 0)
+	{
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		jumpbuffer.jumpbufferTimeCounter = 0;
+		gamestate.playerstate = STATE_JUMPING;
 	}
 }
 
