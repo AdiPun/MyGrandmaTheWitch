@@ -170,6 +170,12 @@ void UpdatePlayer()
 		}
 	}
 
+	if (CeilingCollisionStarted())
+	{
+		obj_player.pos.y = obj_player.oldPos.y;
+		obj_player.velocity.y = 0;
+	}
+
 	switch (gamestate.playerstate)
 	{
 	case STATE_IDLE:
@@ -527,7 +533,7 @@ bool FloorCollisionStarted()
 bool CeilingCollisionStarted()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D headBoxPos = obj_player.pos + playerinfo.maxoffsety;
+	Point2D headBoxPos = obj_player.pos - playerinfo.maxoffsety;
 	Vector2D headBoxAABB = playerinfo.headboxAABB;
 
 	Point2D headBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
@@ -539,24 +545,24 @@ bool CeilingCollisionStarted()
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's grounding box and the platform
-		if (groundingBoxPos.x + groundingBoxAABB.x > platformTopLeft.x &&
-			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
-			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
-			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
+		// Check for collision between player's head box and the platform
+		if (headBoxPos.x + headBoxAABB.x > platformTopLeft.x &&
+			headBoxPos.x - headBoxAABB.x  < platformBottomRight.x &&
+			headBoxPos.y + headBoxAABB.y > platformTopLeft.y &&
+			headBoxPos.y - headBoxAABB.y < platformBottomRight.y)
 		{
 
 
-			// Checks if previous frame was above the platform
-			if (groundingBoxOldPos.y + groundingBoxAABB.y < platformTopLeft.y)
+			// Checks if previous frame was below the platform
+			if (headBoxOldPos.y - headBoxAABB.y > platformBottomRight.y)
 			{
-				return true; // Player is grounded
+				return true; // Player is hitting head
 			}
 		}
 
 	}
 
-	return false; // Player is not grounded
+	return false; // Player is not hitting head
 }
 
 
@@ -638,7 +644,7 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsety, playerinfo.topboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsety, playerinfo.headboxAABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
