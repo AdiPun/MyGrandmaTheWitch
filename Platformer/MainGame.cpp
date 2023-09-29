@@ -20,7 +20,10 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D AABB{ 10,20 };
+	Vector2D collisionAABB{ 20,40 };
+	Vector2D collisionAABBy{ 0,40 };
+	Vector2D collisionAABBx{ 20,0 };
+	Vector2D hitboxAABB{ 10,20 };
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D groundingboxAABB{ 20,1 };
@@ -493,14 +496,16 @@ void CreateBackground()
 
 }
 
-// Checks player's groundingbox and if it's colliding with a platform
+// Checks player's AABBmaxY and if it's collided with a platform's minY
 bool FloorCollisionStarted()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D groundingBoxPos = obj_player.pos + playerinfo.maxoffsety;
-	Vector2D groundingBoxAABB = playerinfo.groundingboxAABB;
 
-	Point2D groundingBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+
+	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
+	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -510,15 +515,15 @@ bool FloorCollisionStarted()
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
 		// Check for collision between player's grounding box and the platform
-		if (groundingBoxPos.x + groundingBoxAABB.x > platformTopLeft.x &&
-			groundingBoxPos.x - groundingBoxAABB.x  < platformBottomRight.x &&
-			groundingBoxPos.y + groundingBoxAABB.y > platformTopLeft.y &&
-			groundingBoxPos.y - groundingBoxAABB.y < platformBottomRight.y)
+		if (playerBottomRight.x > platformTopLeft.x &&
+			playerTopLeft.x  < platformBottomRight.x &&
+			playerBottomRight.y > platformTopLeft.y &&
+			playerTopLeft.y < platformBottomRight.y)
 		{
 
 
-			// Checks if previous frame was above the platform
-			if (groundingBoxOldPos.y + groundingBoxAABB.y < platformTopLeft.y)
+			// Checks if previous frame playermaxY was above the platformminY
+			if (playerOldBottomRight.y < platformTopLeft.y)
 			{
 				return true; // Player is grounded
 			}
@@ -640,7 +645,7 @@ void Draw()
 	DrawPlatforms();
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.AABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsety, playerinfo.groundingboxAABB);
 
