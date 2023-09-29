@@ -47,7 +47,12 @@ struct CoyoteJump
 {
 	const float coyoteTime = 0.2f;
 	float coyoteTimeCounter;
-	bool coyoteJumped = false;
+};
+
+struct JumpBuffer
+{
+	const float jumpbufferTime = 0.2f;
+	float jumpbufferTimeCounter;
 };
 
 struct Platform
@@ -72,6 +77,7 @@ struct GameState
 };
 
 CoyoteJump coyotejump;
+JumpBuffer jumpbufer;
 Background background;
 PlayerInfo playerinfo;
 GameState gamestate;
