@@ -45,7 +45,7 @@ struct PlayerInfo
 
 struct CoyoteJump
 {
-	const float coyoteTime = 2.0f;
+	const float coyoteTime = 0.2f;
 	float coyoteTimeCounter;
 	bool coyoteJumped = false;
 };
@@ -119,7 +119,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 // Called by PlayBuffer every frame (60 times a second!)
 bool MainGameUpdate(float elapsedTime)
 {
-	gamestate.time += elapsedTime/100;
+	gamestate.time += elapsedTime/60;
 	UpdatePlayer();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -366,6 +366,8 @@ void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
+	float time = gamestate.time;
+
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
@@ -380,19 +382,15 @@ void HandleFallingControls()
 	}
 
 	coyotejump.coyoteTimeCounter = coyotejump.coyoteTime;
-
-
-	//coyotejump.coyoteJumped = false;
-
 	
-	coyotejump.coyoteTimeCounter -= gamestate.time;
+	coyotejump.coyoteTimeCounter -= time;
 	
 
 	// If there's still coyotetimecounter left, you can jump
-	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W')) //&& coyotejump.coyoteJumped)
+	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W'))
 	{
-		//coyotejump.coyoteJumped = true;
 		obj_player.velocity.y = playerinfo.jumpspeed;
+		coyotejump.coyoteTimeCounter = 0;
 		gamestate.playerstate = STATE_JUMPING;
 	}
 
