@@ -43,6 +43,13 @@ struct PlayerInfo
 	float gravity{ 0.3f};
 };
 
+struct CoyoteJump
+{
+	float coyoteTime = 0.2f;
+	float coyoteTimeCounter;
+	bool coyoteJumped = false;
+};
+
 struct Platform
 {
 	int type = TYPE_PLATFORM;
@@ -56,7 +63,6 @@ struct Background
 	Point2D pos;
 };
 
-Background background;
 
 struct GameState
 {
@@ -64,6 +70,8 @@ struct GameState
 	std::vector<Platform> vPlatforms;
 };
 
+CoyoteJump coyotejump;
+Background background;
 PlayerInfo playerinfo;
 GameState gamestate;
 
@@ -71,7 +79,7 @@ void UpdatePlayer();
 void HandleGroundedControls();
 void HandleJumpingControls();
 
-void HandleAirControls();
+void HandleFallingControls();
 void HandleGroundedAttackControls();
 void HandleAirAttackControls();
 
@@ -225,7 +233,7 @@ void UpdatePlayer()
 
 	case STATE_FALLING:
 
-		HandleAirControls();
+		HandleFallingControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -331,10 +339,32 @@ void HandleGroundedControls()
 	}
 }
 
-// Controls when player is in a state where their grounding box is on the top of a platform
-void HandleAirControls()
+void HandleJumpingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+
+		obj_player.velocity.x = -playerinfo.fallspeed;
+
+
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x = playerinfo.fallspeed;
+	}
+}
+
+// Controls when player is in a state where their grounding box is on the top of a platform
+void HandleFallingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+
 
 	if (Play::KeyDown('A'))
 	{
@@ -350,6 +380,9 @@ void HandleAirControls()
 
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
+
+
+
 }
 
 
