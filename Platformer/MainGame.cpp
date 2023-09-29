@@ -96,6 +96,7 @@ void HandleAirAttackControls();
 
 void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
+void CreatePlatformColumn(int tiles, int x, int y);
 void CreatePlatformFloor();
 
 void CreateBackground();
@@ -120,7 +121,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
-	CreatePlatformFloor();
+	CreatePlatformRow(20,0,DISPLAY_HEIGHT);
 	CreatePlatform(DISPLAY_WIDTH / 6*5, DISPLAY_HEIGHT / 6*5);
 	CreatePlatform(DISPLAY_WIDTH * 0.20f, DISPLAY_HEIGHT * 0.60f);
 	CreatePlatformRow(5, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4 * 3);
@@ -475,6 +476,17 @@ void CreatePlatformRow(int tiles, int x, int y)
 	}
 }
 
+void CreatePlatformColumn(int tiles, int x, int y)
+{
+	Platform platform;
+	for (int i = 0; i < tiles; i++)
+	{
+		int tilespacing = 64 * i;
+		gamestate.vPlatforms.push_back(platform);
+		gamestate.vPlatforms.back().pos = Point2D{ x , y - tilespacing };
+	}
+}
+
 // Creates a floor of platform tiles
 void CreatePlatformFloor()
 {
@@ -536,10 +548,12 @@ bool FloorCollisionStarted()
 bool CeilingCollisionStarted()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D headBoxPos = obj_player.pos - playerinfo.maxoffsety;
-	Vector2D headBoxAABB = playerinfo.headboxAABB;
 
-	Point2D headBoxOldPos = obj_player.oldPos + playerinfo.maxoffsety;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+
+	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
+	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -549,15 +563,15 @@ bool CeilingCollisionStarted()
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
 		// Check for collision between player's head box and the platform
-		if (headBoxPos.x + headBoxAABB.x > platformTopLeft.x &&
-			headBoxPos.x - headBoxAABB.x  < platformBottomRight.x &&
-			headBoxPos.y + headBoxAABB.y > platformTopLeft.y &&
-			headBoxPos.y - headBoxAABB.y < platformBottomRight.y)
+		if (playerBottomRight.x > platformTopLeft.x &&
+			playerTopLeft.x  < platformBottomRight.x &&
+			playerBottomRight.y > platformTopLeft.y &&
+			playerTopLeft.y < platformBottomRight.y)
 		{
 
 
 			// Checks if previous frame was below the platform
-			if (headBoxOldPos.y - headBoxAABB.y > platformBottomRight.y)
+			if (playerOldTopLeft.y > platformBottomRight.y)
 			{
 				return true; // Player is hitting head
 			}
