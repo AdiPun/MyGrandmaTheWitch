@@ -29,11 +29,11 @@ struct PlayerInfo
 	Vector2D headboxAABB{ 15,1 };
 	
 
-	Vector2D edgeboxoffsetx{ 20,0 };
-	Vector2D edgeboxoffsety{ 0,10 };
-	Vector2D slidingedgeboxoffsety{ 0,20 };
+	Vector2D edgeboxoffsetx{ 15,0 };
+	Vector2D edgeboxoffsety{ 0,5 };
+	Vector2D slidingedgeboxoffsety{ 0,-5 };
 	
-	Vector2D edgeboxAABB{ 1,15 };
+	Vector2D edgeboxAABB{ 1,5 };
 	
 
 	Vector2D PlatformToPlayerDistance;
@@ -47,7 +47,7 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction;
-	float slidingfriction{0.88f};
+	float slidingfriction{0.85f};
 	float runningandjumpingfriction{0.8f};
 
 
