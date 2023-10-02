@@ -23,9 +23,10 @@ struct PlayerInfo
 {
 	Vector2D collisionAABB{ 15,30 };
 	Vector2D hitboxAABB{ 5,10 };
-	Vector2D maxoffsety{ 0,40 };
-	Vector2D maxoffsetx{ 20,0 };
-	Vector2D edgeboxAABB{ 1,10 };
+	Vector2D edgeboxoffsetx{ 20,0 };
+	Vector2D edgeboxoffsety{ 0,10 };
+	
+	Vector2D edgeboxAABB{ 1,15 };
 	Vector2D slidingedgeboxAABB{ 1,3 };
 	
 
@@ -314,7 +315,7 @@ void UpdatePlayer()
 		
 		if (IsUnderCeiling())
 		{
-			gamestate.playerstate = STATE_SLIDING
+			gamestate.playerstate = STATE_SLIDING;
 		}
 
 		if (IsGrounded() == false)
@@ -803,8 +804,8 @@ bool IsGrounded()
 bool IsCollidingWithWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
-	Point2D edgeBoxPosright = obj_player.pos + playerinfo.maxoffsetx;
+	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.edgeboxoffsetx.x + playerinfo.edgeboxoffsety;
+	Point2D edgeBoxPosright = obj_player.pos + playerinfo.edgeboxoffsetx + playerinfo.edgeboxoffsety;
 	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
 	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
@@ -846,9 +847,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx, playerinfo.edgeboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx, playerinfo.edgeboxAABB);
 
 	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
