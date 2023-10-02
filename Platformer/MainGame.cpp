@@ -77,7 +77,8 @@ struct Platform
 
 struct PlatformInfo
 {
-	int CeilingCollidedPos;
+	Point2D CeilingCollidedPos;
+	int PlatformToPlayerDistanceX;
 };
 
 struct Background
@@ -202,6 +203,7 @@ void UpdatePlayer()
 
 	if (CeilingCollisionStarted())
 	{
+		CornerCorrection(); // ADD ELSE THIS BELOW
 		obj_player.pos.y = obj_player.oldPos.y;
 		obj_player.velocity.y *= 0.9f;
 	}
@@ -604,7 +606,7 @@ bool CeilingCollisionStarted()
 			// Checks if previous frame was below the platform
 			if (playerOldTopLeft.y > platformBottomRight.y)
 			{
-				platforminfo.CeilingCollidedPos = obj_player.pos.y - playerinfo.collisionAABB.y;
+				platforminfo.PlatformToPlayerDistanceX = platform.pos.x - obj_player.pos.x;
 				return true; // Player is hitting head
 			}
 		}
@@ -616,9 +618,21 @@ bool CeilingCollisionStarted()
 
 void CornerCorrection()
 {
-	if (CeilingCollisionStarted())
-	{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Platform platform;
+	PlatformInfo platforminfo;
 
+	int maxdistancebetweenplatformandplayer = platform.AABB.x + playerinfo.collisionAABB.x;
+
+	float percentagedistance = (platforminfo.PlatformToPlayerDistanceX / maxdistancebetweenplatformandplayer) * 100;
+
+	if (percentagedistance < 10)
+	{
+		obj_player.pos.x -= 10;
+	}
+	else if (percentagedistance > 90)
+	{
+		obj_player.pos.x += 10;
 	}
 }
 
