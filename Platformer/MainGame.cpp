@@ -39,7 +39,7 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction;
-	float slidingfriction{0.99f};
+	float slidingfriction{0.8f};
 	float runningandjumpingfriction{0.8f};
 
 
@@ -179,9 +179,9 @@ void UpdatePlayer()
 
 	obj_player.scale = playerinfo.scale;
 
-	obj_player.velocity.x *= playerinfo.friction;
+	obj_player.velocity.x *= playerinfo.friction; // Friction
 
-	obj_player.velocity.y = std::clamp(obj_player.velocity.y, -10.0f, playerinfo.terminalvelocity);// Terminal velocity
+	obj_player.velocity.y = std::clamp(obj_player.velocity.y, -20.0f, playerinfo.terminalvelocity);// Terminal velocity
 
 	float timer = gamestate.elapsedTime;
 
@@ -212,6 +212,7 @@ void UpdatePlayer()
 		}
 	}
 
+	// Ceiling interactions
 	if (CeilingCollisionStarted())
 	{
 		obj_player.pos.y = obj_player.oldPos.y;
@@ -275,22 +276,19 @@ void UpdatePlayer()
 		
 		HandleSlidingControls();
 
+		playerinfo.friction = playerinfo.slidingfriction;
+
 
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
-			obj_player.velocity.x -= playerinfo.slidespeed;
+		
 
 		}
 		else if (playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
-			obj_player.velocity.x += playerinfo.slidespeed;
-		}
-
-		if (obj_player.velocity.x < 0.1f && obj_player.velocity.x > -0.1f)
-		{
-			gamestate.playerstate = STATE_IDLE;
+		
 		}
 
 		if (IsGrounded() == false)
@@ -355,7 +353,6 @@ void UpdatePlayer()
 
 		break;
 
-		break;
 
 	case STATE_FALLING:
 
@@ -486,10 +483,34 @@ void HandleSlidingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
+	playerinfo.slidespeed -= gamestate.elapsedTime;
+	
+	if (obj_player.velocity.x < 0.3f && obj_player.velocity.x > -0.3f)
+	{
+		gamestate.playerstate = STATE_IDLE;
+		playerinfo.slidespeed = 1.0f;
+	}
+
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+
+		obj_player.velocity.x -= playerinfo.slidespeed;
+
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x += playerinfo.slidespeed;
+
+	}
+
 	// Slide Attack
 	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
+		playerinfo.slidespeed = 1.0f;
 	}
 
 	// Jump
@@ -497,6 +518,7 @@ void HandleSlidingControls()
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
+		playerinfo.slidespeed = 1.0f;
 	}
 }
 
