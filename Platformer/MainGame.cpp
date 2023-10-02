@@ -39,11 +39,12 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction;
-	float slidingfriction{0.9f};
+	float slidingfriction{0.99f};
 	float runningandjumpingfriction{0.8f};
 
 
 	float runspeed{ 4.5f };
+	float slidespeed{ 0.5f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
 	const float terminalvelocity{ 5.0f };
@@ -272,16 +273,17 @@ void UpdatePlayer()
 		
 		HandleSlidingControls();
 
-		//obj_player.velocity.x *= playerinfo.slidingfriction;
-		
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
+			obj_player.velocity.x -= playerinfo.slidespeed;
 
 		}
 		else if (playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
+			obj_player.velocity.x += playerinfo.slidespeed;
 		}
 
 		if (obj_player.velocity.x < 0.1f && obj_player.velocity.x > -0.1f)
@@ -483,15 +485,6 @@ void HandleGroundedControls()
 void HandleSlidingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	if (Play::KeyDown('A') || Play::KeyDown('D'))
-	{
-		playerinfo.friction = playerinfo.slidingfriction;
-	}
-	else
-	{
-		playerinfo.friction = playerinfo.slidingfriction;
-	}
 
 	// Slide Attack
 	if (Play::KeyPressed('L'))
