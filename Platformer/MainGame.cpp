@@ -122,7 +122,6 @@ void CreatePlatformFloor();
 bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
-void CornerCorrection();
 bool IsCollidingWithWall();
 
 
@@ -617,49 +616,6 @@ bool CeilingCollisionStarted()
 	return false; // Player is not hitting head
 }
 
-void CornerCorrection()
-{
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	PlatformInfo platforminfo;
-
-	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
-
-	// Iterate through all platforms to check for collisions
-	for (const Platform& platform : gamestate.vPlatforms)
-	{
-		// Calculate the platform's AABB
-		Point2D platformTopLeft = platform.pos - platform.AABB;
-		Point2D platformBottomRight = platform.pos + platform.AABB;
-		
-		float maxdistancebetweenplatformandplayer = platform.AABB.x + playerinfo.collisionAABB.x;
-
-		// Check for collision between player's collision box and the platform
-		if (playerBottomRight.x > platformTopLeft.x &&
-			playerTopLeft.x  < platformBottomRight.x &&
-			playerBottomRight.y > platformTopLeft.y &&
-			playerTopLeft.y < platformBottomRight.y)
-		{
-			
-			float PlatformToPlayerDistanceX;
-
-			PlatformToPlayerDistanceX = platform.pos.x - obj_player.pos.x;
-
-			float percentagedistance = (PlatformToPlayerDistanceX / maxdistancebetweenplatformandplayer) * 100;
-
-			if (percentagedistance < 1)
-			{
-				obj_player.pos.x -= 10;
-			}
-			else if (percentagedistance > 99)
-			{
-				obj_player.pos.x += 10;
-			}
-		}
-
-	}
-
-}
 
 bool IsGrounded()
 {
