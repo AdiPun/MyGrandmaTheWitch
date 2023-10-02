@@ -31,9 +31,9 @@ struct PlayerInfo
 
 	Vector2D edgeboxoffsetx{ 20,0 };
 	Vector2D edgeboxoffsety{ 0,10 };
+	Vector2D slidingedgeboxoffsety{ 0,20 };
 	
 	Vector2D edgeboxAABB{ 1,15 };
-	Vector2D slidingedgeboxAABB{ 1,3 };
 	
 
 	Vector2D PlatformToPlayerDistance;
@@ -195,6 +195,16 @@ void UpdatePlayer()
 	float timer = gamestate.elapsedTime;
 
 
+	if (gamestate.playerstate == STATE_SLIDING)
+	{
+		playerinfo.edgeboxoffsety = playerinfo.slidingedgeboxoffsety;
+	}
+	else
+	{
+		playerinfo.edgeboxoffsety = { 0,10 };
+
+	}
+	
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
 		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
@@ -235,7 +245,7 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -260,7 +270,7 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -289,8 +299,6 @@ void UpdatePlayer()
 	case STATE_SLIDING:
 		
 		HandleSlidingControls();
-
-		playerinfo.edgeboxAABB = playerinfo.slidingedgeboxAABB;
 
 		playerinfo.friction = playerinfo.slidingfriction;
 
@@ -352,7 +360,7 @@ void UpdatePlayer()
 
 		HandleAirBorneControls();
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -384,7 +392,7 @@ void UpdatePlayer()
 		
 		HandleAirBorneControls();
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -412,7 +420,7 @@ void UpdatePlayer()
 
 		HandleFallingControls();
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -443,7 +451,7 @@ void UpdatePlayer()
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -474,7 +482,7 @@ void UpdatePlayer()
 
 		HandleGroundedAttackControls();
 
-		playerinfo.edgeboxAABB = { 1,10 };
+		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -833,8 +841,8 @@ bool IsGrounded()
 bool IsCollidingWithWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.edgeboxoffsetx + playerinfo.edgeboxoffsety;
-	Point2D edgeBoxPosright = obj_player.pos + playerinfo.edgeboxoffsetx + playerinfo.edgeboxoffsety;
+	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety;
+	Point2D edgeBoxPosright = obj_player.pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety;
 	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
 	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
@@ -876,9 +884,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
 
 	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
