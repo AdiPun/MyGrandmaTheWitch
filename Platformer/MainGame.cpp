@@ -310,17 +310,11 @@ void UpdatePlayer()
 			{
 				if (playerinfo.facingright == false)
 				{
-
-					obj_player.velocity.x -= playerinfo.slidespeed;
-					Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
-
+					obj_player.velocity.x -= playerinfo.slidespeed;				
 				}
 				else if (playerinfo.facingright == true)
 				{
-
 					obj_player.velocity.x += playerinfo.slidespeed;
-					Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
-
 				}
 			}
 			else
@@ -761,39 +755,30 @@ bool FloorCollisionStarted()
 // Checks if player is under ceiling
 bool IsUnderCeiling()
 {
-	
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	PlatformInfo platforminfo;
-
-	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
-
-	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
-	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
+	Point2D headBoxPos = obj_player.pos - playerinfo.headboxoffset;
+		
+	Vector2D headboxAABB = playerinfo.headboxAABB;
 
 	// Iterate through all platforms to check for collisions
-	for (const Platform& platform : gamestate.vPlatforms)
+	for (Platform& platform : gamestate.vPlatforms)
 	{
 		// Calculate the platform's AABB
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's collision box and the platform
-		if (playerBottomRight.x > platformTopLeft.x &&
-			playerTopLeft.x  < platformBottomRight.x &&
-			playerBottomRight.y > platformTopLeft.y &&
-			playerTopLeft.y < platformBottomRight.y)
+		// Check for collision between player's edge box and the platform side
+		if (headBoxPos.x + headboxAABB.x > platformTopLeft.x &&
+			headBoxPos.x - headboxAABB.x  < platformBottomRight.x &&
+			headBoxPos.y + headboxAABB.y  > platformTopLeft.y &&
+			headBoxPos.y - headboxAABB.y < platformBottomRight.y)
 		{
-
-
-	
-			return true; // Player is under ceiling
-			
+			return true; // Player is colliding with platform side
 		}
-
+			
 	}
 
-	return false; // Player is not under ceiling
+	return false; // Player is not colliding with platform side
 }
 
 bool CeilingCollisionStarted()
@@ -919,6 +904,8 @@ void Draw()
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);
 
 	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
