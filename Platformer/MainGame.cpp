@@ -26,6 +26,8 @@ struct PlayerInfo
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D edgeboxAABB{ 1,10 };
+
+	Vector2D PlatformToPlayerDistance;
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -78,7 +80,7 @@ struct Platform
 struct PlatformInfo
 {
 	Point2D CeilingCollidedPos;
-	int PlatformToPlayerDistanceX;
+	
 };
 
 struct Background
@@ -595,7 +597,7 @@ bool CeilingCollisionStarted()
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's head box and the platform
+		// Check for collision between player's collision box and the platform
 		if (playerBottomRight.x > platformTopLeft.x &&
 			playerTopLeft.x  < platformBottomRight.x &&
 			playerBottomRight.y > platformTopLeft.y &&
@@ -606,7 +608,6 @@ bool CeilingCollisionStarted()
 			// Checks if previous frame was below the platform
 			if (playerOldTopLeft.y > platformBottomRight.y)
 			{
-				platforminfo.PlatformToPlayerDistanceX = platform.pos.x - obj_player.pos.x;
 				return true; // Player is hitting head
 			}
 		}
@@ -619,21 +620,45 @@ bool CeilingCollisionStarted()
 void CornerCorrection()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Platform platform;
 	PlatformInfo platforminfo;
 
-	int maxdistancebetweenplatformandplayer = platform.AABB.x + playerinfo.collisionAABB.x;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
 
-	float percentagedistance = (platforminfo.PlatformToPlayerDistanceX / maxdistancebetweenplatformandplayer) * 100;
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+		
+		float maxdistancebetweenplatformandplayer = platform.AABB.x + playerinfo.collisionAABB.x;
 
-	if (percentagedistance < 10)
-	{
-		obj_player.pos.x -= 10;
+		// Check for collision between player's collision box and the platform
+		if (playerBottomRight.x > platformTopLeft.x &&
+			playerTopLeft.x  < platformBottomRight.x &&
+			playerBottomRight.y > platformTopLeft.y &&
+			playerTopLeft.y < platformBottomRight.y)
+		{
+			
+			float PlatformToPlayerDistanceX;
+
+			PlatformToPlayerDistanceX = platform.pos.x - obj_player.pos.x;
+
+			float percentagedistance = (PlatformToPlayerDistanceX / maxdistancebetweenplatformandplayer) * 100;
+
+			if (percentagedistance < 1)
+			{
+				obj_player.pos.x -= 10;
+			}
+			else if (percentagedistance > 99)
+			{
+				obj_player.pos.x += 10;
+			}
+		}
+
 	}
-	else if (percentagedistance > 90)
-	{
-		obj_player.pos.x += 10;
-	}
+
 }
 
 bool IsGrounded()
