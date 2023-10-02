@@ -133,7 +133,7 @@ bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
 bool IsCollidingWithWall();
-
+bool IsUnderCeiling();
 
 
 void Draw();
@@ -268,7 +268,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
-		if (Play::KeyPressed('S'))
+		if (Play::KeyPressed('S') && IsCollidingWithWall() == false)
 		{
 			gamestate.playerstate = STATE_SLIDING;
 		}
@@ -288,17 +288,33 @@ void UpdatePlayer()
 
 		playerinfo.friction = playerinfo.slidingfriction;
 
+		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 
-		if (!playerinfo.facingright)
+		if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
 		{
+			gamestate.playerstate = STATE_IDLE;
+			playerinfo.slidespeedCounter = playerinfo.slidespeed;
+		}
+
+
+		if (playerinfo.facingright == false)
+		{
+
+			obj_player.velocity.x -= playerinfo.slidespeedCounter;
 			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
-		
 
 		}
-		else if (playerinfo.facingright)
+		else if (playerinfo.facingright == true)
 		{
+
+			obj_player.velocity.x += playerinfo.slidespeedCounter;
 			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
+
+		}
 		
+		if (IsUnderCeiling())
+		{
+			gamestate.playerstate = STATE_SLIDING
 		}
 
 		if (IsGrounded() == false)
@@ -505,26 +521,7 @@ void HandleSlidingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 	
-	if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
-	{
-		gamestate.playerstate = STATE_IDLE;
-		playerinfo.slidespeedCounter = playerinfo.slidespeed;
-	}
-
-	if (playerinfo.facingright == false)
-	{
-
-		obj_player.velocity.x -= playerinfo.slidespeedCounter;
-
-	}
-	else if (playerinfo.facingright == true)
-	{
-
-		obj_player.velocity.x += playerinfo.slidespeedCounter;
-
-	}
 
 	// Slide Attack
 	if (Play::KeyPressed('L'))
