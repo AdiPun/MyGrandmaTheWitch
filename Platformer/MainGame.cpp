@@ -11,6 +11,7 @@ enum PlayerState
 {
 	STATE_IDLE = 0,
 	STATE_RUNNING,
+	STATE_SLIDING,
 	STATE_JUMPING,
 	STATE_JUMPINGDOWN,
 	STATE_FALLING,
@@ -37,7 +38,10 @@ struct PlayerInfo
 	float animationspeedland { 0.15f };
 	float animationspeedatk{ 0.2f };
 
-	float friction{ 0.8f };
+	float friction;
+	float slidingfriction{0.9f};
+	float runningandjumpingfriction{0.8f};
+
 
 	float runspeed{ 4.5f };
 	float jumpspeed{ -10.0f };
@@ -106,6 +110,9 @@ GameState gamestate;
 
 void UpdatePlayer();
 void HandleGroundedControls();
+
+void HandleSlidingControls();
+
 void HandleAirBorneControls();
 
 
@@ -204,7 +211,6 @@ void UpdatePlayer()
 
 	if (CeilingCollisionStarted())
 	{
-		CornerCorrection(); // ADD ELSE THIS BELOW
 		obj_player.pos.y = obj_player.oldPos.y;
 		obj_player.velocity.y *= 0.9f;
 	}
@@ -214,6 +220,8 @@ void UpdatePlayer()
 	case STATE_IDLE:
 
 		HandleGroundedControls();
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		// Idle animation
 		if (playerinfo.facingright)
@@ -236,6 +244,8 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
@@ -244,6 +254,39 @@ void UpdatePlayer()
 		else if (playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+		}
+
+		if (Play::KeyPressed('S'))
+		{
+			gamestate.playerstate = STATE_SLIDING;
+		}
+
+		if (IsGrounded() == false)
+		{
+			gamestate.playerstate = STATE_FALLING;
+		}
+
+		break;
+
+	case STATE_SLIDING:
+		
+		HandleSlidingControls();
+
+		//obj_player.velocity.x *= playerinfo.slidingfriction;
+		
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
+
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
+		}
+
+		if (obj_player.velocity.x < 0.1f && obj_player.velocity.x > -0.1f)
+		{
+			gamestate.playerstate = STATE_IDLE;
 		}
 
 		if (IsGrounded() == false)
@@ -256,6 +299,8 @@ void UpdatePlayer()
 	case STATE_JUMPING:
 
 		HandleAirBorneControls();
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -285,6 +330,8 @@ void UpdatePlayer()
 		
 		HandleAirBorneControls();
 
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		obj_player.acceleration.y = playerinfo.gravity;
 
 		if (!playerinfo.facingright)
@@ -309,6 +356,8 @@ void UpdatePlayer()
 	case STATE_FALLING:
 
 		HandleFallingControls();
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
 		if (obj_player.velocity.y > playerinfo.terminalvelocity)
@@ -337,7 +386,9 @@ void UpdatePlayer()
 
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
-		
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime; // Reset coyotetimecounter when landing
 
 		if (!playerinfo.facingright)
@@ -364,6 +415,8 @@ void UpdatePlayer()
 	case STATE_ATTACK:
 
 		HandleGroundedAttackControls();
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		if (!playerinfo.facingright)
 		{
@@ -427,6 +480,33 @@ void HandleGroundedControls()
 	}
 }
 
+void HandleSlidingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (Play::KeyDown('A') || Play::KeyDown('D'))
+	{
+		playerinfo.friction = playerinfo.slidingfriction;
+	}
+	else
+	{
+		playerinfo.friction = playerinfo.slidingfriction;
+	}
+
+	// Slide Attack
+	if (Play::KeyPressed('L'))
+	{
+		gamestate.playerstate = STATE_ATTACK;
+	}
+
+	// Jump
+	if (Play::KeyPressed('W'))
+	{
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		gamestate.playerstate = STATE_JUMPING;
+	}
+}
+
 void HandleAirBorneControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
@@ -452,7 +532,7 @@ void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	float timer = 0;
+	float timer = 0.0f;
 	timer += gamestate.elapsedTime;
 
 	if (Play::KeyDown('A'))
