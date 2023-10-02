@@ -22,12 +22,12 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D collisionAABB{ 15,30 };
-	Vector2D slidingcollisionAABB{ 15,15 };
-
 	Vector2D hitboxAABB{ 5,10 };
 	Vector2D maxoffsety{ 0,40 };
 	Vector2D maxoffsetx{ 20,0 };
 	Vector2D edgeboxAABB{ 1,10 };
+	Vector2D slidingedgeboxAABB{ 1,3 };
+	
 
 	Vector2D PlatformToPlayerDistance;
 	
@@ -40,7 +40,7 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction;
-	float slidingfriction{0.8f};
+	float slidingfriction{0.88f};
 	float runningandjumpingfriction{0.8f};
 
 
@@ -188,14 +188,6 @@ void UpdatePlayer()
 
 	float timer = gamestate.elapsedTime;
 
-	if (gamestate.playerstate == STATE_SLIDING)
-	{
-
-	}
-	else
-	{
-		collisionAABB = { 15,30 };
-	}
 
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
@@ -237,6 +229,8 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		// Idle animation
@@ -259,6 +253,8 @@ void UpdatePlayer()
 	case STATE_RUNNING:
 
 		HandleGroundedControls();
+
+		playerinfo.edgeboxAABB = { 1,10 };
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -288,6 +284,8 @@ void UpdatePlayer()
 		
 		HandleSlidingControls();
 
+		playerinfo.edgeboxAABB = playerinfo.slidingedgeboxAABB;
+
 		playerinfo.friction = playerinfo.slidingfriction;
 
 
@@ -314,6 +312,8 @@ void UpdatePlayer()
 	case STATE_JUMPING:
 
 		HandleAirBorneControls();
+
+		playerinfo.edgeboxAABB = { 1,10 };
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -345,6 +345,8 @@ void UpdatePlayer()
 		
 		HandleAirBorneControls();
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
@@ -370,6 +372,8 @@ void UpdatePlayer()
 	case STATE_FALLING:
 
 		HandleFallingControls();
+
+		playerinfo.edgeboxAABB = { 1,10 };
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -399,6 +403,8 @@ void UpdatePlayer()
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime; // Reset coyotetimecounter when landing
@@ -427,6 +433,8 @@ void UpdatePlayer()
 	case STATE_ATTACK:
 
 		HandleGroundedAttackControls();
+
+		playerinfo.edgeboxAABB = { 1,10 };
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -499,7 +507,7 @@ void HandleSlidingControls()
 
 	playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 	
-	if (obj_player.velocity.x < 0.3f && obj_player.velocity.x > -0.3f)
+	if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
 	{
 		gamestate.playerstate = STATE_IDLE;
 		playerinfo.slidespeedCounter = playerinfo.slidespeed;
