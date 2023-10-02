@@ -758,10 +758,42 @@ bool FloorCollisionStarted()
 	return false; // Player is not grounded
 }
 
+// Checks if player is under ceiling
 bool IsUnderCeiling()
 {
 	
-	return false;
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	PlatformInfo platforminfo;
+
+	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+
+	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
+	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
+
+	// Iterate through all platforms to check for collisions
+	for (const Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's collision box and the platform
+		if (playerBottomRight.x > platformTopLeft.x &&
+			playerTopLeft.x  < platformBottomRight.x &&
+			playerBottomRight.y > platformTopLeft.y &&
+			playerTopLeft.y < platformBottomRight.y)
+		{
+
+
+	
+			return true; // Player is under ceiling
+			
+		}
+
+	}
+
+	return false; // Player is not under ceiling
 }
 
 bool CeilingCollisionStarted()
