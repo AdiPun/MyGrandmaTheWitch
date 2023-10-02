@@ -4,7 +4,7 @@
 
 ## Hello!
 
-Welcome to Platformer, a shooting platformer game I developed using [SumoDigital's Playbuffer](https://github.com/sumo-digital-academy/playbuffer), a single-header C++ library for making simple 2D games.
+Welcome to Platformer, a platformer game I developed using [SumoDigital's Playbuffer](https://github.com/sumo-digital-academy/playbuffer), a single-header C++ library for making simple 2D games.
 
 ### The game and using Playbuffer
 
