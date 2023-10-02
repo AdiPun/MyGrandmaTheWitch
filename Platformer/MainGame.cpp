@@ -40,6 +40,7 @@ struct PlayerInfo
 	float runspeed{ 4.5f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
+	const float terminalvelocity{ 5.0f };
 
 	float scale{ 2.0f };
 	float gravity{ 0.3f};
@@ -110,6 +111,7 @@ void CreatePlatformFloor();
 bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
+void CornerCorrection();
 bool IsCollidingWithWall();
 
 
@@ -298,7 +300,10 @@ void UpdatePlayer()
 		HandleFallingControls();
 
 		obj_player.acceleration.y = playerinfo.gravity;
-
+		if (obj_player.velocity.y > playerinfo.terminalvelocity)
+		{
+			obj_player.acceleration.y = 0;
+		}
 
 		if (!playerinfo.facingright)
 		{
@@ -599,6 +604,10 @@ bool CeilingCollisionStarted()
 	return false; // Player is not hitting head
 }
 
+void CornerCorrection()
+{
+
+}
 
 bool IsGrounded()
 {
@@ -685,7 +694,7 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
 
-	//Play::DrawFontText("font64px", "coyote Time Counter: " + std::to_string(coyotejump.coyoteTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
+	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
 	//Play::DrawFontText("font64px", "Jump buffer Time Counter: " + std::to_string(jumpbuffer.jumpbufferTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 * 2 }, Play::CENTRE);
 
