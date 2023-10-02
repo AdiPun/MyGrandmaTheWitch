@@ -125,7 +125,6 @@ void HandleSlidingControls();
 
 void HandleAirBorneControls();
 
-
 void HandleFallingControls();
 void HandleGroundedAttackControls();
 void HandleAirAttackControls();
@@ -440,6 +439,7 @@ void UpdatePlayer()
 
 	case STATE_LANDING:
 
+
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
 
@@ -582,6 +582,32 @@ void HandleAirBorneControls()
 	}
 }
 
+void HandleLandingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	float timer = 0;
+	timer += gamestate.elapsedTime;
+
+	if (Play::KeyDown('W')) // Holding W down countsdown your jumpbuffer time
+	{
+		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
+	}
+	else
+	{
+		jumpbuffer.jumpbufferTimeCounter -= timer;
+	}
+
+
+	// If there's still jumpbuffertime left, you jump
+	if (jumpbuffer.jumpbufferTimeCounter > 0.0f)
+	{
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		
+		gamestate.playerstate = STATE_JUMPING;
+	}
+}
+
 
 // Controls when player is in a state where their grounding box is on the top of a platform
 void HandleFallingControls()
@@ -604,10 +630,21 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
+	if (Play::KeyDown('W')) // Holding W down countsdown your jumpbuffer time
+	{
+		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
+	}
+	else
+	{
+		jumpbuffer.jumpbufferTimeCounter -= timer;
+	}
+
+	
 	coyotejump.coyoteTimeCounter -= timer;
 
-	// If there's still coyotetimecounter left, you can jump
-	if (coyotejump.coyoteTimeCounter > 0.0f && Play::KeyPressed('W'))
+	// If there's still coyotetimecounter left AND
+	// If there's still jumpbuffertime left, you jump
+	if (coyotejump.coyoteTimeCounter > 0.0f && jumpbuffer.jumpbufferTimeCounter > 0.0f)
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		jumpbuffer.jumpbufferTimeCounter = 0;
