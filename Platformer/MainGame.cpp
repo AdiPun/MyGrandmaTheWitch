@@ -11,6 +11,7 @@ enum PlayerState
 {
 	STATE_IDLE = 0,
 	STATE_RUNNING,
+	STATE_SLIDING,
 	STATE_JUMPING,
 	STATE_JUMPINGDOWN,
 	STATE_FALLING,
@@ -23,9 +24,19 @@ struct PlayerInfo
 	Vector2D collisionAABB{ 15,30 };
 
 	Vector2D hitboxAABB{ 5,10 };
-	Vector2D maxoffsety{ 0,40 };
-	Vector2D maxoffsetx{ 20,0 };
-	Vector2D edgeboxAABB{ 1,10 };
+
+	Vector2D headboxoffset{ 0,25 };
+	Vector2D headboxAABB{ 15,1 };
+	
+
+	Vector2D edgeboxoffsetx{ 20,0 };
+	Vector2D edgeboxoffsety{ 0,10 };
+	
+	Vector2D edgeboxAABB{ 1,15 };
+	Vector2D slidingedgeboxAABB{ 1,3 };
+	
+
+	Vector2D PlatformToPlayerDistance;
 	
 	bool facingright = true;
 	float animationspeedidle{ 0.2f };
@@ -35,12 +46,17 @@ struct PlayerInfo
 	float animationspeedland { 0.15f };
 	float animationspeedatk{ 0.2f };
 
-	float friction{ 0.8f };
+	float friction;
+	float slidingfriction{0.88f};
+	float runningandjumpingfriction{0.8f};
+
 
 	float runspeed{ 4.5f };
+	float slidespeedCounter{ 1.0f };
+	const float slidespeed{ 1.0f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
-	const float terminalvelocity{ 5.0f };
+	const float terminalvelocity{ 6.0f };
 
 	float scale{ 2.0f };
 	float gravity{ 0.3f};
@@ -78,7 +94,7 @@ struct Platform
 struct PlatformInfo
 {
 	Point2D CeilingCollidedPos;
-	int PlatformToPlayerDistanceX;
+	
 };
 
 struct Background
@@ -104,6 +120,9 @@ GameState gamestate;
 
 void UpdatePlayer();
 void HandleGroundedControls();
+
+void HandleSlidingControls();
+
 void HandleAirBorneControls();
 
 void HandleFallingControls();
@@ -119,7 +138,7 @@ void CreatePlatformFloor();
 bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
-void CornerCorrection();
+bool IsUnderCeiling();
 bool IsCollidingWithWall();
 
 
@@ -169,9 +188,12 @@ void UpdatePlayer()
 
 	obj_player.scale = playerinfo.scale;
 
-	obj_player.velocity.x *= playerinfo.friction;
+	obj_player.velocity.x *= playerinfo.friction; // Friction
+
+	obj_player.velocity.y = std::clamp(obj_player.velocity.y, -20.0f, playerinfo.terminalvelocity);// Terminal velocity
 
 	float timer = gamestate.elapsedTime;
+
 
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
@@ -200,9 +222,9 @@ void UpdatePlayer()
 		}
 	}
 
+	// Ceiling interactions
 	if (CeilingCollisionStarted())
 	{
-		CornerCorrection(); // ADD ELSE THIS BELOW
 		obj_player.pos.y = obj_player.oldPos.y;
 		obj_player.velocity.y *= 0.9f;
 	}
@@ -212,6 +234,10 @@ void UpdatePlayer()
 	case STATE_IDLE:
 
 		HandleGroundedControls();
+
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		// Idle animation
 		if (playerinfo.facingright)
@@ -234,6 +260,10 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
@@ -244,9 +274,76 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
+		if (Play::KeyPressed('S') && IsCollidingWithWall() == false)
+		{
+			gamestate.playerstate = STATE_SLIDING;
+		}
+
 		if (IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
+		}
+
+		break;
+
+	case STATE_SLIDING:
+		
+		HandleSlidingControls();
+
+		playerinfo.edgeboxAABB = playerinfo.slidingedgeboxAABB;
+
+		playerinfo.friction = playerinfo.slidingfriction;
+
+		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
+
+		if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
+		{
+			if (IsUnderCeiling())
+			{
+				if (playerinfo.facingright == false)
+				{
+
+					obj_player.velocity.x -= playerinfo.slidespeed;
+					Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
+
+				}
+				else if (playerinfo.facingright == true)
+				{
+
+					obj_player.velocity.x += playerinfo.slidespeed;
+					Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
+
+				}
+			}
+			else
+			{
+				gamestate.playerstate = STATE_IDLE;
+				playerinfo.slidespeedCounter = playerinfo.slidespeed;
+			}
+		}
+
+
+		if (playerinfo.facingright == false)
+		{
+
+			obj_player.velocity.x -= playerinfo.slidespeedCounter;
+			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
+
+		}
+		else if (playerinfo.facingright == true)
+		{
+
+			obj_player.velocity.x += playerinfo.slidespeedCounter;
+			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
+
+		}
+		
+		
+
+		if (IsGrounded() == false)
+		{
+			gamestate.playerstate = STATE_FALLING;
+			playerinfo.slidespeedCounter = playerinfo.slidespeed;
 		}
 
 		break;
@@ -255,6 +352,9 @@ void UpdatePlayer()
 
 		HandleAirBorneControls();
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
@@ -284,6 +384,10 @@ void UpdatePlayer()
 		
 		HandleAirBorneControls();
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		obj_player.acceleration.y = playerinfo.gravity;
 
 		if (!playerinfo.facingright)
@@ -303,17 +407,18 @@ void UpdatePlayer()
 
 		break;
 
-		break;
 
 	case STATE_FALLING:
 
 		HandleFallingControls();
 
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		obj_player.acceleration.y = playerinfo.gravity;
-		if (obj_player.velocity.y > playerinfo.terminalvelocity)
-		{
-			obj_player.acceleration.y = 0;
-		}
+		
+		
 
 		if (!playerinfo.facingright)
 		{
@@ -337,7 +442,11 @@ void UpdatePlayer()
 
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
-		
+
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
+
 		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime; // Reset coyotetimecounter when landing
 
 		if (!playerinfo.facingright)
@@ -364,6 +473,10 @@ void UpdatePlayer()
 	case STATE_ATTACK:
 
 		HandleGroundedAttackControls();
+
+		playerinfo.edgeboxAABB = { 1,10 };
+
+		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		if (!playerinfo.facingright)
 		{
@@ -414,6 +527,7 @@ void HandleGroundedControls()
 
 	}
 
+
 	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
@@ -424,6 +538,28 @@ void HandleGroundedControls()
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
+	}
+}
+
+void HandleSlidingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	
+
+	// Slide Attack
+	if (Play::KeyPressed('L'))
+	{
+		gamestate.playerstate = STATE_ATTACK;
+		playerinfo.slidespeedCounter = playerinfo.slidespeed;
+	}
+
+	// Jump
+	if (Play::KeyPressed('W'))
+	{
+		obj_player.velocity.y = playerinfo.jumpspeed;
+		gamestate.playerstate = STATE_JUMPING;
+		playerinfo.slidespeedCounter = playerinfo.slidespeed;
 	}
 }
 
@@ -478,7 +614,7 @@ void HandleFallingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	float timer = 0;
+	float timer = 0.0f;
 	timer += gamestate.elapsedTime;
 
 	if (Play::KeyDown('A'))
@@ -614,6 +750,11 @@ bool FloorCollisionStarted()
 	return false; // Player is not grounded
 }
 
+bool IsUnderCeiling()
+{
+	
+	return false;
+}
 
 bool CeilingCollisionStarted()
 {
@@ -633,7 +774,7 @@ bool CeilingCollisionStarted()
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's head box and the platform
+		// Check for collision between player's collision box and the platform
 		if (playerBottomRight.x > platformTopLeft.x &&
 			playerTopLeft.x  < platformBottomRight.x &&
 			playerBottomRight.y > platformTopLeft.y &&
@@ -644,7 +785,6 @@ bool CeilingCollisionStarted()
 			// Checks if previous frame was below the platform
 			if (playerOldTopLeft.y > platformBottomRight.y)
 			{
-				platforminfo.PlatformToPlayerDistanceX = platform.pos.x - obj_player.pos.x;
 				return true; // Player is hitting head
 			}
 		}
@@ -654,25 +794,6 @@ bool CeilingCollisionStarted()
 	return false; // Player is not hitting head
 }
 
-void CornerCorrection()
-{
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Platform platform;
-	PlatformInfo platforminfo;
-
-	int maxdistancebetweenplatformandplayer = platform.AABB.x + playerinfo.collisionAABB.x;
-
-	float percentagedistance = (platforminfo.PlatformToPlayerDistanceX / maxdistancebetweenplatformandplayer) * 100;
-
-	if (percentagedistance < 10)
-	{
-		obj_player.pos.x -= 10;
-	}
-	else if (percentagedistance > 90)
-	{
-		obj_player.pos.x += 10;
-	}
-}
 
 bool IsGrounded()
 {
@@ -712,8 +833,8 @@ bool IsGrounded()
 bool IsCollidingWithWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.maxoffsetx;
-	Point2D edgeBoxPosright = obj_player.pos + playerinfo.maxoffsetx;
+	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.edgeboxoffsetx + playerinfo.edgeboxoffsety;
+	Point2D edgeBoxPosright = obj_player.pos + playerinfo.edgeboxoffsetx + playerinfo.edgeboxoffsety;
 	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
 	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
@@ -755,9 +876,9 @@ void Draw()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx, playerinfo.edgeboxAABB);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.maxoffsetx, playerinfo.edgeboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx, playerinfo.edgeboxAABB);
 
 	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
