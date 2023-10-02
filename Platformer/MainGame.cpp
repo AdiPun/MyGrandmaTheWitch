@@ -46,6 +46,8 @@ struct PlayerInfo
 	float gravity{ 0.3f};
 };
 
+
+
 struct VariableJump 
 {
 	float jumpStartTime;
@@ -69,7 +71,13 @@ struct Platform
 {
 	int type = TYPE_PLATFORM;
 	Point2D pos;
-	const Vector2D AABB{ 32,32 };
+	Vector2D AABB{ 32,32 };
+	
+};
+
+struct PlatformInfo
+{
+	int CeilingCollidedPos;
 };
 
 struct Background
@@ -570,6 +578,7 @@ bool FloorCollisionStarted()
 bool CeilingCollisionStarted()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	PlatformInfo platforminfo;
 
 	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
 	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
@@ -595,6 +604,7 @@ bool CeilingCollisionStarted()
 			// Checks if previous frame was below the platform
 			if (playerOldTopLeft.y > platformBottomRight.y)
 			{
+				platforminfo.CeilingCollidedPos = obj_player.pos.y - playerinfo.collisionAABB.y;
 				return true; // Player is hitting head
 			}
 		}
@@ -606,7 +616,10 @@ bool CeilingCollisionStarted()
 
 void CornerCorrection()
 {
+	if (CeilingCollisionStarted())
+	{
 
+	}
 }
 
 bool IsGrounded()
