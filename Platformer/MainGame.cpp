@@ -22,6 +22,7 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D collisionAABB{ 15,30 };
+	Vector2D slidingcollisionAABB{ 15,15 };
 
 	Vector2D hitboxAABB{ 5,10 };
 	Vector2D maxoffsety{ 0,40 };
@@ -44,7 +45,8 @@ struct PlayerInfo
 
 
 	float runspeed{ 4.5f };
-	float slidespeed{ 1.0f };
+	float slidespeedCounter{ 1.0f };
+	const float slidespeed{ 1.0f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
 	const float terminalvelocity{ 6.0f };
@@ -133,6 +135,7 @@ bool CeilingCollisionStarted();
 bool IsCollidingWithWall();
 
 
+
 void Draw();
 void DrawPlatforms();
 void DrawPlatformsAABB();
@@ -184,6 +187,15 @@ void UpdatePlayer()
 	obj_player.velocity.y = std::clamp(obj_player.velocity.y, -20.0f, playerinfo.terminalvelocity);// Terminal velocity
 
 	float timer = gamestate.elapsedTime;
+
+	if (gamestate.playerstate == STATE_SLIDING)
+	{
+
+	}
+	else
+	{
+		collisionAABB = { 15,30 };
+	}
 
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
@@ -294,6 +306,7 @@ void UpdatePlayer()
 		if (IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
+			playerinfo.slidespeedCounter = playerinfo.slidespeed;
 		}
 
 		break;
@@ -466,6 +479,7 @@ void HandleGroundedControls()
 
 	}
 
+
 	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
@@ -483,26 +497,24 @@ void HandleSlidingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	playerinfo.slidespeed -= gamestate.elapsedTime;
+	playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 	
 	if (obj_player.velocity.x < 0.3f && obj_player.velocity.x > -0.3f)
 	{
 		gamestate.playerstate = STATE_IDLE;
-		playerinfo.slidespeed = 1.0f;
+		playerinfo.slidespeedCounter = playerinfo.slidespeed;
 	}
 
-	if (Play::KeyDown('A'))
+	if (playerinfo.facingright == false)
 	{
-		playerinfo.facingright = false;
 
-		obj_player.velocity.x -= playerinfo.slidespeed;
+		obj_player.velocity.x -= playerinfo.slidespeedCounter;
 
 	}
-	else if (Play::KeyDown('D'))
+	else if (playerinfo.facingright == true)
 	{
-		playerinfo.facingright = true;
 
-		obj_player.velocity.x += playerinfo.slidespeed;
+		obj_player.velocity.x += playerinfo.slidespeedCounter;
 
 	}
 
@@ -510,7 +522,7 @@ void HandleSlidingControls()
 	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
-		playerinfo.slidespeed = 1.0f;
+		playerinfo.slidespeedCounter = playerinfo.slidespeed;
 	}
 
 	// Jump
@@ -518,7 +530,7 @@ void HandleSlidingControls()
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
-		playerinfo.slidespeed = 1.0f;
+		playerinfo.slidespeedCounter = playerinfo.slidespeed;
 	}
 }
 
