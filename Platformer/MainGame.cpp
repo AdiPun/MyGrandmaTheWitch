@@ -44,10 +44,10 @@ struct PlayerInfo
 
 
 	float runspeed{ 4.5f };
-	float slidespeed{ 0.5f };
+	float slidespeed{ 1.0f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
-	const float terminalvelocity{ 5.0f };
+	const float terminalvelocity{ 6.0f };
 
 	float scale{ 2.0f };
 	float gravity{ 0.3f};
@@ -180,6 +180,8 @@ void UpdatePlayer()
 	obj_player.scale = playerinfo.scale;
 
 	obj_player.velocity.x *= playerinfo.friction;
+
+	obj_player.velocity.y = std::clamp(obj_player.velocity.y, -10.0f, playerinfo.terminalvelocity);// Terminal velocity
 
 	float timer = gamestate.elapsedTime;
 
@@ -362,10 +364,8 @@ void UpdatePlayer()
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
-		if (obj_player.velocity.y > playerinfo.terminalvelocity)
-		{
-			obj_player.acceleration.y = 0;
-		}
+		
+		
 
 		if (!playerinfo.facingright)
 		{
