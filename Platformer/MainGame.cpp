@@ -134,6 +134,8 @@ bool CeilingCollisionStarted();
 bool IsUnderCeiling();
 bool WillCollideWithWall();
 bool IsInsideWall();
+bool PlayerIsOnTheLeft(Platform& platform);
+
 
 void Draw();
 void DrawPlatforms();
@@ -212,17 +214,12 @@ void UpdatePlayer()
 	// Wall interactions
 	if (WillCollideWithWall())
 	{
-		if (obj_player.velocity.x > 0)
+		obj_player.pos.x = obj_player.oldPos.x;
+		obj_player.velocity.x = 0;
+
+		if (IsInsideWall())
 		{
-			// Moving right, adjust X position and stop horizontal movement
-			obj_player.pos.x = obj_player.oldPos.x;
-			obj_player.velocity.x = 0;
-		}
-		else if (obj_player.velocity.x < 0)
-		{
-			// Moving left, adjust X position and stop horizontal movement
-			obj_player.pos.x = obj_player.oldPos.x;
-			obj_player.velocity.x = 0;
+			
 		}
 	}
 
@@ -871,7 +868,7 @@ bool WillCollideWithWall()
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's edge box and the platform side
+		// Check for collision between player's edge box and the platform
 		if (playernextposBottomRight.x > platformTopLeft.x &&
 			playernextposTopLeft.x  < platformBottomRight.x &&
 			playernextposBottomRight.y  > platformTopLeft.y &&
@@ -887,7 +884,48 @@ bool WillCollideWithWall()
 	return false; // Player is not colliding with platform side
 }
 
+bool IsInsideWall()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
+	Point2D playerTopLeft = obj_player.pos - playerinfo.wallcollisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.wallcollisionAABB;
+
+	// Iterate through all platforms to check for collisions
+	for (Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's edge box and the platform
+		if (playerBottomRight.x > platformTopLeft.x &&
+			playerTopLeft.x  < platformBottomRight.x &&
+			playerBottomRight.y  > platformTopLeft.y &&
+			playerTopLeft.y < platformBottomRight.y)
+		{
+			PlayerIsOnTheLeft();
+			return true; // Player is inside platform
+		}
+
+	}
+
+	return false; // Player is not inside platform
+}
+
+bool PlayerIsOnTheLeft(Platform& platform)
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	if (obj_player.pos.x < platform.pos.x)
+	{
+		return true;
+	}
+	else if (obj_player.pos.x > platform.pos.x)
+	{
+		return false;
+	}
+}
 
 void Draw()
 {
