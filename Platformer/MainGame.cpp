@@ -149,6 +149,8 @@ void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
 void DrawPlayerNextPositionAABB();
+void DrawDebug();
+
 
 
 // The entry point for a PlayBuffer program
@@ -1010,4 +1012,9 @@ void DrawPlayerNextPositionAABB();
 	
 
 	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
+}
+
+void DrawDebug();
+{
+
 }
