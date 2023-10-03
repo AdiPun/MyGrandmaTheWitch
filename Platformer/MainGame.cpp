@@ -435,6 +435,7 @@ void UpdatePlayer()
 		{
 			gamestate.playerstate = STATE_LANDING;
 			obj_player.pos.y = obj_player.oldPos.y;
+			Play::PlayAudio("Landing")
 		}
 		
 		break;
