@@ -22,13 +22,11 @@ enum PlayerState
 struct PlayerInfo
 {
 	Vector2D collisionAABB{ 15,30 };
-
 	Vector2D wallcollisionAABB{ 15,20 };
+	Vector2D damageAABB{ 5,10 };
 
-	Vector2D hitboxAABB{ 5,10 };
-
-	Vector2D headboxoffset{ 0,25 };
 	Vector2D headboxAABB{ 15,1 };
+	Vector2D headboxoffset{ 0,25 };
 	
 
 	Vector2D PlatformToPlayerDistance;
@@ -134,8 +132,8 @@ bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
 bool IsUnderCeiling();
-bool IsCollidingWithWall();
-
+bool WillCollideWithWall();
+bool IsInsideWall();
 
 void Draw();
 void DrawPlatforms();
@@ -192,15 +190,14 @@ void UpdatePlayer()
 	float timer = gamestate.elapsedTime;
 
 
-	if (gamestate.playerstate == STATE_SLIDING)
+	/*if (gamestate.playerstate == STATE_SLIDING)
 	{
-		playerinfo.edgeboxoffsety = playerinfo.slidingedgeboxoffsety;
+		
 	}
 	else
 	{
-		playerinfo.edgeboxoffsety = { 0,10 };
-
-	}
+		
+	}*/
 	
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
@@ -213,7 +210,7 @@ void UpdatePlayer()
 
 
 	// Wall interactions
-	if (IsCollidingWithWall())
+	if (WillCollideWithWall())
 	{
 		if (obj_player.velocity.x > 0)
 		{
@@ -281,7 +278,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
-		if (Play::KeyPressed('S') && IsCollidingWithWall() == false)
+		if (Play::KeyPressed('S') && WillCollideWithWall() == false)
 		{
 			gamestate.playerstate = STATE_SLIDING;
 		}
@@ -855,7 +852,7 @@ bool IsGrounded()
 }
 
 // Check's player's edgebox and if it's going to collide with the sides of a platform
-bool IsCollidingWithWall()
+bool WillCollideWithWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
@@ -889,6 +886,8 @@ bool IsCollidingWithWall()
 
 	return false; // Player is not colliding with platform side
 }
+
+
 
 void Draw()
 {
