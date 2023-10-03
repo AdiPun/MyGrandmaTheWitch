@@ -148,6 +148,7 @@ void DrawPlatformsAABB();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
+void DrawPlayerNextPositionAABB();
 
 
 // The entry point for a PlayBuffer program
@@ -944,7 +945,7 @@ void Draw()
 
 	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 	
-	//Play::DrawFontText("font64px", "Jump buffer Time Counter: " + std::to_string(jumpbuffer.jumpbufferTimeCounter), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 * 2 }, Play::CENTRE);
+	
 
 	Play::PresentDrawingBuffer();
 }
@@ -995,4 +996,18 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB)
 	Point2D topLeft = objcentre - objAABB;
 	Point2D bottomRight = objcentre + objAABB;
 	Play::DrawRect(topLeft, bottomRight, Play::cGreen);
+}
+
+void DrawPlayerNextPositionAABB();
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	
+	Vector2D playernextPosition = obj_player.pos + obj_player.velocity;
+
+	Point2D playernextposTopLeft = playernextPosition - playerinfo.collisionAABB;
+
+	Point2D playernextposBottomRight = playernextPosition + playerinfo.collisionAABB;
+	
+
+	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
 }
