@@ -58,6 +58,7 @@ struct PlayerInfo
 	float gravity{ 0.3f};
 
 	bool playerleftofplatform;
+	bool headboxleftofplatform;
 };
 
 
@@ -301,7 +302,7 @@ void UpdatePlayer()
 		
 		HandleSlidingControls();
 
-		playerinfo.friction = playerinfo.slidingfriction;
+		//playerinfo.friction = playerinfo.slidingfriction;
 
 		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 
@@ -310,6 +311,7 @@ void UpdatePlayer()
 		{
 
 			obj_player.velocity.x -= playerinfo.slidespeedCounter;
+			obj_player.velocity.x = std::clamp(obj_player.velocity.x, 0.0f, -20.0f);
 			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
 
 		}
@@ -317,34 +319,28 @@ void UpdatePlayer()
 		{
 
 			obj_player.velocity.x += playerinfo.slidespeedCounter;
+			obj_player.velocity.x = std::clamp(obj_player.velocity.x, 0.0f, 20.0f);
 			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
 
 		}
 		
-		float slidetimer;
-		slidetimer = playerinfo.slidetimer;
-		slidetimer -= gamestate.elapsedTime;
-		
+			
 
-		if (slidetimer < 0)
+		if (obj_player.velocity.x == 0 && IsUnderCeiling())
 		{
-			if (IsUnderCeiling())
+			if (playerinfo.headboxleftofplatform)
 			{
-				if (playerinfo.facingright == false)
-				{
-					obj_player.pos.x -= 1;
-				}
-				else if (playerinfo.facingright == true)
-				{
-					obj_player.pos.x += 1;
-				}
+				obj_player.pos.x -= 1;
 			}
-			else
+			else if (playerinfo.headboxleftofplatform == false)
 			{
-				gamestate.playerstate = STATE_IDLE;
-				playerinfo.slidespeedCounter = playerinfo.slidespeed;
+				obj_player.pos.x += 1;
 			}
-
+			
+		else
+		{
+			gamestate.playerstate = STATE_IDLE;
+				//playerinfo.slidespeedCounter = playerinfo.slidespeed;
 		}
 
 		
@@ -948,7 +944,17 @@ void CheckPlayerIsLeftOfPLatform(Platform& platform)
 
 void CheckHeadboxIsLeftOfPlatform(Platform& platform)
 {
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
+	if (obj_player.pos.x < platform.pos.x)
+	{
+		playerinfo.headboxleftofplatform = true;
+	}
+	else if (obj_player.pos.x > platform.pos.x)
+	{
+		playerinfo.headboxleftofplatform = false;
+
+	}
 }
 
 void Draw()
