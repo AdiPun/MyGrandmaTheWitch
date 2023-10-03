@@ -21,8 +21,10 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D collisionAABB{ 15,30 };
+	Vector2D verticalcollisionAABB{ 15,30 };
 	Vector2D wallcollisionAABB{ 15,20 };
+	Vector2D slidingAABB{ 15,1 };
+	Vector2D standingAABB{ 15,20 };
 	Vector2D damageAABB{ 5,10 };
 
 	Vector2D headboxAABB{ 15,1 };
@@ -46,6 +48,7 @@ struct PlayerInfo
 
 	float runspeed{ 4.5f };
 	float slidespeedCounter{ 1.0f };
+	float slidetimer{ 2.0f };
 	const float slidespeed{ 1.0f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
@@ -137,6 +140,7 @@ bool IsUnderCeiling();
 bool WillCollideWithWall();
 bool IsInsideWall();
 void CheckPlayerIsLeftOfPLatform(Platform& platform);
+void CheckHeadboxIsLeftOfPlatform(Platform& platform);
 
 
 void Draw();
@@ -194,14 +198,14 @@ void UpdatePlayer()
 	float timer = gamestate.elapsedTime;
 
 
-	/*if (gamestate.playerstate == STATE_SLIDING)
+	if (gamestate.playerstate == STATE_SLIDING)
 	{
-		
+		playerinfo.wallcollisionAABB = playerinfo.slidingAABB;
 	}
 	else
 	{
-		
-	}*/
+		playerinfo.wallcollisionAABB = playerinfo.standingAABB;
+	}
 	
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
@@ -317,17 +321,22 @@ void UpdatePlayer()
 
 		}
 		
-		if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
+		float slidetimer;
+		slidetimer = playerinfo.slidetimer;
+		slidetimer -= gamestate.elapsedTime;
+		
+
+		if (slidetimer < 0)
 		{
 			if (IsUnderCeiling())
 			{
 				if (playerinfo.facingright == false)
 				{
-					obj_player.pos.x = obj_player.pos.x - playerinfo.slidespeed;
+					obj_player.pos.x -= 1;
 				}
 				else if (playerinfo.facingright == true)
 				{
-					obj_player.pos.x = obj_player.pos.x + playerinfo.slidespeed;
+					obj_player.pos.x += 1;
 				}
 			}
 			else
@@ -335,6 +344,7 @@ void UpdatePlayer()
 				gamestate.playerstate = STATE_IDLE;
 				playerinfo.slidespeedCounter = playerinfo.slidespeed;
 			}
+
 		}
 
 		
@@ -723,11 +733,11 @@ bool FloorCollisionStarted()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
 
-	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
-	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
+	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.verticalcollisionAABB;
+	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.verticalcollisionAABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -777,6 +787,7 @@ bool IsUnderCeiling()
 			headBoxPos.y + headboxAABB.y  > platformTopLeft.y &&
 			headBoxPos.y - headboxAABB.y < platformBottomRight.y)
 		{
+			CheckHeadboxIsLeftOfPlatform(platform);
 			return true; // Player is colliding with platform side
 		}
 			
@@ -790,11 +801,11 @@ bool CeilingCollisionStarted()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	PlatformInfo platforminfo;
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
 
-	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
-	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
+	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.verticalcollisionAABB;
+	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.verticalcollisionAABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -814,6 +825,7 @@ bool CeilingCollisionStarted()
 			// Checks if previous frame was below the platform
 			if (playerOldTopLeft.y > platformBottomRight.y)
 			{
+				
 				return true; // Player is hitting head
 			}
 		}
@@ -828,8 +840,8 @@ bool IsGrounded()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -934,6 +946,11 @@ void CheckPlayerIsLeftOfPLatform(Platform& platform)
 	}
 }
 
+void CheckHeadboxIsLeftOfPlatform(Platform& platform)
+{
+
+}
+
 void Draw()
 {
 	Play::DrawBackground();
@@ -1014,9 +1031,9 @@ void DrawPlayerNextPositionAABB()
 	
 	Vector2D playernextPosition = obj_player.pos + obj_player.velocity;
 
-	Point2D playernextposTopLeft = playernextPosition - playerinfo.collisionAABB;
+	Point2D playernextposTopLeft = playernextPosition - playerinfo.verticalcollisionAABB;
 
-	Point2D playernextposBottomRight = playernextPosition + playerinfo.collisionAABB;
+	Point2D playernextposBottomRight = playernextPosition + playerinfo.verticalcollisionAABB;
 	
 
 	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
