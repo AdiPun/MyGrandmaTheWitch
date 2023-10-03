@@ -214,7 +214,7 @@ void UpdatePlayer()
 
 
 	// Wall interactions
-	if (WillCollideWithWall())
+	if (WillCollideWithWall()) 
 	{
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
