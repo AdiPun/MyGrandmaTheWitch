@@ -148,6 +148,7 @@ void DrawPlatformsAABB();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
+void DrawPlayerAABB();
 void DrawPlayerNextPositionAABB();
 void DrawDebug();
 
@@ -858,45 +859,8 @@ bool IsGrounded()
 	return false; // Player is not grounded
 }
 
-
 // Check's player's edgebox and if it's going to collide with the sides of a platform
 bool IsCollidingWithWall()
-{
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety;
-	Point2D edgeBoxPosright = obj_player.pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety;
-	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
-	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
-
-	// Iterate through all platforms to check for collisions
-	for (Platform& platform : gamestate.vPlatforms)
-	{
-		// Calculate the platform's AABB
-		Point2D platformTopLeft = platform.pos - platform.AABB;
-		Point2D platformBottomRight = platform.pos + platform.AABB;
-
-		// Check for collision between player's edge box and the platform side
-		if (edgeBoxPosleft.x + edgeBoxAABB.x > platformTopLeft.x &&
-			edgeBoxPosleft.x - edgeBoxAABB.x  < platformBottomRight.x &&
-			edgeBoxPosleft.y + edgeBoxAABB.y  > platformTopLeft.y &&
-			edgeBoxPosleft.y - edgeBoxAABB.y < platformBottomRight.y)
-		{
-			return true; // Player is colliding with platform side
-		}
-		if (edgeBoxPosright.x + edgeBoxAABB.x > platformTopLeft.x &&
-			edgeBoxPosright.x - edgeBoxAABB.x  < platformBottomRight.x &&
-			edgeBoxPosright.y + edgeBoxAABB.y  > platformTopLeft.y &&
-			edgeBoxPosright.y - edgeBoxAABB.y < platformBottomRight.y)
-		{
-			return true; // Player is colliding with platform side
-		}
-	}
-
-	return false; // Player is not colliding with platform side
-}
-
-// Check's player's edgebox and if it's going to collide with the sides of a platform
-bool IsCollidingWithWallPlayerAABB()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
@@ -934,21 +898,11 @@ void Draw()
 	Play::DrawBackground();
 	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
-	DrawPlatformsAABB();
+
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
-
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
-
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
-
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);
-
-	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
+	DrawDebug();
 	
-	
-
 	Play::PresentDrawingBuffer();
 }
 
@@ -1000,7 +954,20 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB)
 	Play::DrawRect(topLeft, bottomRight, Play::cGreen);
 }
 
-void DrawPlayerNextPositionAABB();
+void DrawPlayerAABB()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
+
+	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+
+
+	Play::DrawRect(playerTopLeft, playerBottomRight, Play::cGreen);
+
+}
+
+void DrawPlayerNextPositionAABB()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
@@ -1014,7 +981,19 @@ void DrawPlayerNextPositionAABB();
 	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
 }
 
-void DrawDebug();
+void DrawDebug()
 {
+	DrawPlayerNextPositionAABB();
 
+	DrawPlatformsAABB();
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos, playerinfo.collisionAABB);
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety, playerinfo.edgeboxAABB);
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);
+
+	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 }
