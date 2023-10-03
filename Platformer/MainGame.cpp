@@ -31,9 +31,9 @@ struct PlayerInfo
 
 	Vector2D edgeboxoffsetx{ 15,0 };
 	Vector2D edgeboxoffsety{ 0,5 };
-	Vector2D slidingedgeboxoffsety{ 0,-5 };
+	Vector2D slidingedgeboxoffsety{ 0,-10 };
 	
-	Vector2D edgeboxAABB{ 1,5 };
+	Vector2D edgeboxAABB{ 1,8 };
 	
 
 	Vector2D PlatformToPlayerDistance;
@@ -157,11 +157,9 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
-	CreatePlatformRow(20,0,DISPLAY_HEIGHT-50);
-	CreatePlatformColumn(3, DISPLAY_WIDTH * 0.6f, DISPLAY_HEIGHT * 0.8f);
-	CreatePlatform(DISPLAY_WIDTH / 6*5, DISPLAY_HEIGHT / 6*5);
-	CreatePlatform(DISPLAY_WIDTH * 0.20f, DISPLAY_HEIGHT * 0.60f);
-	CreatePlatformRow(5, DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4 * 3);
+	CreatePlatformColumn(3, DISPLAY_WIDTH / 40 * 10, DISPLAY_HEIGHT / 23 * 20); // Wall
+	CreatePlatformRow(18, DISPLAY_WIDTH / 40, DISPLAY_HEIGHT / 23 * 22); // Floor
+	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -304,27 +302,7 @@ void UpdatePlayer()
 
 		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 
-		if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
-		{
-			if (IsUnderCeiling())
-			{
-				if (playerinfo.facingright == false)
-				{
-					obj_player.velocity.x -= playerinfo.slidespeed;				
-				}
-				else if (playerinfo.facingright == true)
-				{
-					obj_player.velocity.x += playerinfo.slidespeed;
-				}
-			}
-			else
-			{
-				gamestate.playerstate = STATE_IDLE;
-				playerinfo.slidespeedCounter = playerinfo.slidespeed;
-			}
-		}
-
-
+		
 		if (playerinfo.facingright == false)
 		{
 
@@ -340,8 +318,27 @@ void UpdatePlayer()
 
 		}
 		
-		
+		if (obj_player.velocity.x < 0.8f && obj_player.velocity.x > -0.8f)
+		{
+			if (IsUnderCeiling())
+			{
+				if (playerinfo.facingright == false)
+				{
+					obj_player.pos.x = obj_player.pos.x - playerinfo.slidespeed;
+				}
+				else if (playerinfo.facingright == true)
+				{
+					obj_player.pos.x = obj_player.pos.x + playerinfo.slidespeed;
+				}
+			}
+			else
+			{
+				gamestate.playerstate = STATE_IDLE;
+				playerinfo.slidespeedCounter = playerinfo.slidespeed;
+			}
+		}
 
+		
 		if (IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
@@ -562,7 +559,7 @@ void HandleSlidingControls()
 	}
 
 	// Jump
-	if (Play::KeyPressed('W'))
+	if (Play::KeyPressed('W') && IsUnderCeiling() == false)
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
