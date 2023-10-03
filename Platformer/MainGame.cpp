@@ -832,9 +832,6 @@ bool IsGrounded()
 	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
 	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
 
-	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.collisionAABB;
-	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.collisionAABB;
-
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
 	{
@@ -895,6 +892,39 @@ bool IsCollidingWithWall()
 	return false; // Player is not colliding with platform side
 }
 
+// Check's player's edgebox and if it's going to collide with the sides of a platform
+bool IsCollidingWithWallPlayerAABB()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
+
+	Vector2D playernextPosition = obj_player.pos + obj_player.velocity;
+
+	Point2D playernextposTopLeft = playernextPosition - playerinfo.collisionAABB;
+	Point2D playernextposBottomRight = playernextPosition + playerinfo.collisionAABB;
+
+	// Iterate through all platforms to check for collisions
+	for (Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between player's edge box and the platform side
+		if (playernextposBottomRight.x > platformTopLeft.x &&
+			playernextposTopLeft.x  < platformBottomRight.x &&
+			playernextposBottomRight.y  > platformTopLeft.y &&
+			playernextposTopLeft.y < platformBottomRight.y)
+		{
+			return true; // Player is colliding with platform side
+		}
+		
+	}
+
+	return false; // Player is not colliding with platform side
+}
 
 void Draw()
 {
