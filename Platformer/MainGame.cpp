@@ -863,14 +863,10 @@ bool IsGrounded()
 bool IsCollidingWithWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	Point2D playerTopLeft = obj_player.pos - playerinfo.collisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.collisionAABB;
-
-	Vector2D playernextPosition = obj_player.pos + obj_player.velocity;
-
-	Point2D playernextposTopLeft = playernextPosition - playerinfo.collisionAABB;
-	Point2D playernextposBottomRight = playernextPosition + playerinfo.collisionAABB;
+	Point2D edgeBoxPosleft = obj_player.pos - playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety;
+	Point2D edgeBoxPosright = obj_player.pos + playerinfo.edgeboxoffsetx - playerinfo.edgeboxoffsety;
+	Vector2D edgeBoxAABB = playerinfo.edgeboxAABB;
+	Vector2D nextPosition = obj_player.pos + obj_player.velocity;
 
 	// Iterate through all platforms to check for collisions
 	for (Platform& platform : gamestate.vPlatforms)
@@ -880,14 +876,20 @@ bool IsCollidingWithWall()
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
 		// Check for collision between player's edge box and the platform side
-		if (playernextposBottomRight.x > platformTopLeft.x &&
-			playernextposTopLeft.x  < platformBottomRight.x &&
-			playernextposBottomRight.y  > platformTopLeft.y &&
-			playernextposTopLeft.y < platformBottomRight.y)
+		if (edgeBoxPosleft.x + edgeBoxAABB.x > platformTopLeft.x &&
+			edgeBoxPosleft.x - edgeBoxAABB.x  < platformBottomRight.x &&
+			edgeBoxPosleft.y + edgeBoxAABB.y  > platformTopLeft.y &&
+			edgeBoxPosleft.y - edgeBoxAABB.y < platformBottomRight.y)
 		{
 			return true; // Player is colliding with platform side
 		}
-		
+		if (edgeBoxPosright.x + edgeBoxAABB.x > platformTopLeft.x &&
+			edgeBoxPosright.x - edgeBoxAABB.x  < platformBottomRight.x &&
+			edgeBoxPosright.y + edgeBoxAABB.y  > platformTopLeft.y &&
+			edgeBoxPosright.y - edgeBoxAABB.y < platformBottomRight.y)
+		{
+			return true; // Player is colliding with platform side
+		}
 	}
 
 	return false; // Player is not colliding with platform side
