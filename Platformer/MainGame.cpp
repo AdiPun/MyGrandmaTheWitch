@@ -31,7 +31,7 @@ struct PlayerInfo
 
 	Vector2D PlatformToPlayerDistance;
 	
-	bool facingright = true;
+	bool facingright;
 	float animationspeedidle{ 0.2f };
 	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.2f };
@@ -53,6 +53,8 @@ struct PlayerInfo
 
 	float scale{ 2.0f };
 	float gravity{ 0.3f};
+
+	bool playerleftofplatform;
 };
 
 
@@ -134,7 +136,7 @@ bool CeilingCollisionStarted();
 bool IsUnderCeiling();
 bool WillCollideWithWall();
 bool IsInsideWall();
-bool PlayerIsOnTheLeft(Platform& platform);
+void CheckPlayerIsLeftOfPLatform(Platform& platform);
 
 
 void Draw();
@@ -217,9 +219,13 @@ void UpdatePlayer()
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
 
-		if (IsInsideWall())
+		if (IsInsideWall() && playerinfo.playerleftofplatform)
 		{
-			
+			obj_player.pos.x -= 1;
+		}
+		else if (IsInsideWall() && playerinfo.playerleftofplatform == false)
+		{
+			obj_player.pos.x += 1;
 		}
 	}
 
@@ -904,7 +910,7 @@ bool IsInsideWall()
 			playerBottomRight.y  > platformTopLeft.y &&
 			playerTopLeft.y < platformBottomRight.y)
 		{
-			PlayerIsOnTheLeft();
+			CheckPlayerIsLeftOfPLatform(platform);
 			return true; // Player is inside platform
 		}
 
@@ -913,17 +919,18 @@ bool IsInsideWall()
 	return false; // Player is not inside platform
 }
 
-bool PlayerIsOnTheLeft(Platform& platform)
+void CheckPlayerIsLeftOfPLatform(Platform& platform)
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
 	if (obj_player.pos.x < platform.pos.x)
 	{
-		return true;
+		playerinfo.playerleftofplatform = true;
 	}
 	else if (obj_player.pos.x > platform.pos.x)
 	{
-		return false;
+		playerinfo.playerleftofplatform = false;
+
 	}
 }
 
