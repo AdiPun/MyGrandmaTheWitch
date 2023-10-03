@@ -552,7 +552,7 @@ void HandleSlidingControls()
 	
 
 	// Slide Attack
-	if (Play::KeyPressed('L'))
+	if (Play::KeyPressed('L') && IsUnderCeiling() == false)
 	{
 		gamestate.playerstate = STATE_ATTACK;
 		playerinfo.slidespeedCounter = playerinfo.slidespeed;
