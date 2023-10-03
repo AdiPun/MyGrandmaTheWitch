@@ -23,7 +23,7 @@ struct PlayerInfo
 {
 	Vector2D verticalcollisionAABB{ 15,30 };
 	Vector2D wallcollisionAABB{ 15,20 };
-	Vector2D slidingAABB{ 15,1 };
+	Vector2D slidingAABB{ 15,0 };
 	Vector2D standingAABB{ 15,20 };
 	Vector2D damageAABB{ 5,10 };
 
@@ -42,14 +42,14 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction;
-	float slidingfriction{0.85f};
+	float slidingfriction{0.8f};
 	float runningandjumpingfriction{0.8f};
 
 
 	float runspeed{ 4.5f };
-	float slidespeedCounter{ 1.0f };
+	float slidespeedCounter{ 1.2f };
 	float slidetimer{ 2.0f };
-	const float slidespeed{ 1.0f };
+	const float slidespeed{ 1.2f };
 	float jumpspeed{ -10.0f };
 	float fallspeed{ 3.5f };
 	const float terminalvelocity{ 6.0f };
@@ -207,7 +207,7 @@ void UpdatePlayer()
 	{
 		playerinfo.wallcollisionAABB = playerinfo.standingAABB;
 	}
-	
+
 	if (Play::KeyDown('W')) // When you hold down jump, the counter goes down
 	{
 		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
@@ -219,7 +219,7 @@ void UpdatePlayer()
 
 
 	// Wall interactions
-	if (WillCollideWithWall()) 
+	if (WillCollideWithWall())
 	{
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
@@ -247,7 +247,7 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
-		
+
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -260,7 +260,7 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
-		
+
 		if (IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
@@ -272,7 +272,7 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
-		
+
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -286,7 +286,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
-		if (Play::KeyPressed('S') && WillCollideWithWall() == false)
+		if (Play::KeyPressed('S'))
 		{
 			gamestate.playerstate = STATE_SLIDING;
 		}
@@ -299,64 +299,62 @@ void UpdatePlayer()
 		break;
 
 	case STATE_SLIDING:
-		
+
 		HandleSlidingControls();
 
 		//playerinfo.friction = playerinfo.slidingfriction;
 
 		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 
-		
-		if (playerinfo.facingright == false)
+
+		if (playerinfo.facingright == false && obj_player.velocity.x < 0)
 		{
 
 			obj_player.velocity.x -= playerinfo.slidespeedCounter;
-			obj_player.velocity.x = std::clamp(obj_player.velocity.x, 0.0f, -20.0f);
 			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
 
 		}
-		else if (playerinfo.facingright == true)
+		else if (playerinfo.facingright == true && obj_player.velocity.x > 0)
 		{
 
 			obj_player.velocity.x += playerinfo.slidespeedCounter;
-			obj_player.velocity.x = std::clamp(obj_player.velocity.x, 0.0f, 20.0f);
 			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
 
 		}
-		
-			
 
-		if (obj_player.velocity.x == 0 && IsUnderCeiling())
+		if (playerinfo.slidespeedCounter < 0 && IsUnderCeiling())
 		{
-			if (playerinfo.headboxleftofplatform)
+			if (playerinfo.facingright == false)
 			{
-				obj_player.pos.x -= 1;
+				obj_player.pos.x -= playerinfo.slidespeed;
 			}
-			else if (playerinfo.headboxleftofplatform == false)
+			else if (playerinfo.facingright)
 			{
-				obj_player.pos.x += 1;
+				obj_player.pos.x += playerinfo.slidespeed;
 			}
-			
-		else
+		}
+		else if (playerinfo.slidespeedCounter < 0 && IsUnderCeiling() == false)
 		{
 			gamestate.playerstate = STATE_IDLE;
-				//playerinfo.slidespeedCounter = playerinfo.slidespeed;
+			playerinfo.slidespeedCounter = playerinfo.slidespeed;
 		}
 
-		
+
 		if (IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 			playerinfo.slidespeedCounter = playerinfo.slidespeed;
 		}
 
+
+		
 		break;
 
 	case STATE_JUMPING:
 
 		HandleAirBorneControls();
 
-		
+
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -382,14 +380,14 @@ void UpdatePlayer()
 			obj_player.pos.y = obj_player.oldPos.y;
 			gamestate.playerstate = STATE_LANDING;
 		}
-		
+
 		break;
 
 	case STATE_JUMPINGDOWN:
-		
+
 		HandleAirBorneControls();
 
-		
+
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -418,13 +416,13 @@ void UpdatePlayer()
 
 		HandleFallingControls();
 
-		
+
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
-		
-		
+
+
 
 		if (!playerinfo.facingright)
 		{
@@ -441,7 +439,7 @@ void UpdatePlayer()
 			obj_player.pos.y = obj_player.oldPos.y;
 			gamestate.playerstate = STATE_LANDING;
 		}
-		
+
 		break;
 
 	case STATE_LANDING:
@@ -462,7 +460,7 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "land_right", playerinfo.animationspeedland);
 		}
-		
+
 		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_IDLE;
@@ -475,13 +473,13 @@ void UpdatePlayer()
 			Play::PlayAudio("jump");
 
 		}
-		break;	
+		break;
 
 	case STATE_ATTACK:
 
 		HandleGroundedAttackControls();
 
-		
+
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -499,7 +497,7 @@ void UpdatePlayer()
 		}
 
 		break;
-	
+
 	}
 
 	Play::UpdateGameObject(obj_player);
