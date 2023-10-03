@@ -376,8 +376,9 @@ void UpdatePlayer()
 
 		if (FloorCollisionStarted())
 		{
-			gamestate.playerstate = STATE_LANDING;
+			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
+			gamestate.playerstate = STATE_LANDING;
 		}
 		
 		break;
@@ -403,8 +404,9 @@ void UpdatePlayer()
 
 		if (FloorCollisionStarted())
 		{
-			gamestate.playerstate = STATE_LANDING;
+			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
+			gamestate.playerstate = STATE_LANDING;
 		}
 
 		break;
@@ -433,9 +435,9 @@ void UpdatePlayer()
 
 		if (FloorCollisionStarted())
 		{
-			gamestate.playerstate = STATE_LANDING;
+			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
-			Play::PlayAudio("Landing")
+			gamestate.playerstate = STATE_LANDING;
 		}
 		
 		break;
@@ -445,8 +447,6 @@ void UpdatePlayer()
 
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
-
-		
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -470,6 +470,8 @@ void UpdatePlayer()
 		{
 			obj_player.velocity.y = playerinfo.jumpspeed;
 			gamestate.playerstate = STATE_JUMPING;
+			Play::PlayAudio("jump");
+
 		}
 		break;	
 
@@ -527,7 +529,6 @@ void HandleGroundedControls()
 		gamestate.playerstate = STATE_RUNNING;
 
 		obj_player.velocity.x = playerinfo.runspeed;
-
 	}
 
 
@@ -540,7 +541,10 @@ void HandleGroundedControls()
 	if (Play::KeyPressed('W'))
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
+
 		gamestate.playerstate = STATE_JUMPING;
+
+		Play::PlayAudio("jump");
 	}
 }
 
@@ -563,6 +567,7 @@ void HandleSlidingControls()
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
 		playerinfo.slidespeedCounter = playerinfo.slidespeed;
+		Play::PlayAudio("jump");
 	}
 }
 
@@ -602,13 +607,14 @@ void HandleLandingControls()
 	}
 
 
-	// If there's still jumpbuffertime left, you jump
-	if (jumpbuffer.jumpbufferTimeCounter > 0.0f)
-	{
-		obj_player.velocity.y = playerinfo.jumpspeed;
-		
-		gamestate.playerstate = STATE_JUMPING;
-	}
+	//// If there's still jumpbuffertime left, you jump
+	//if (jumpbuffer.jumpbufferTimeCounter > 0.0f)
+	//{
+	//	obj_player.velocity.y = playerinfo.jumpspeed;
+	//	
+	//	gamestate.playerstate = STATE_JUMPING;
+	//	Play::PlayAudio("jump");
+	//}
 }
 
 
@@ -652,6 +658,7 @@ void HandleFallingControls()
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		jumpbuffer.jumpbufferTimeCounter = 0;
 		gamestate.playerstate = STATE_JUMPING;
+		Play::PlayAudio("jump");
 	}
 
 }
