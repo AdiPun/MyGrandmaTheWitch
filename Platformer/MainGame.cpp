@@ -786,29 +786,24 @@ void Draw()
 
 
 
-void DrawGrassPlatforms()
+void DrawPlatforms()
 {
 	Platform platform;
 
-	for (Platform& p : gamestate.vPlatforms)
+	for (Platform& platform : gamestate.vPlatforms)
 	{
 
-		Play::DrawSprite(Play::GetSpriteId("tile"), p.pos, 0);
-
+		if (platform.id == 1)
+		{
+			Play::DrawSprite(Play::GetSpriteId("tile"), platform.pos, 0);
+		}
+		else if (platform.id == 2)
+		{
+			Play::DrawSprite(Play::GetSpriteId("rock"), platform.pos, 0);
+		}
 	}
 }
 
-void DrawRockPlatforms()
-{
-	Platform platform;
-
-	for (Platform& p : gamestate.vPlatforms)
-	{
-
-		Play::DrawSprite(Play::GetSpriteId("rock"), p.pos, 0);
-
-	}
-}
 
 void DrawPlatformsAABB()
 {

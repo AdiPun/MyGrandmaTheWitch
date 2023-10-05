@@ -91,8 +91,8 @@ struct JumpBuffer
 struct Platform
 {
 	int type = TYPE_PLATFORM;
-	Point2D pos;
 	int id;
+	Point2D pos;
 	Vector2D AABB{ 32,32 };
 
 };
