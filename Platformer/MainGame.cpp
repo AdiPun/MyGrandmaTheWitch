@@ -6,7 +6,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateManager(DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_SCALE);
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
-	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
+	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 0, "idle_right");
 	
 	CreateLevelFromArray();
 }
@@ -491,47 +491,12 @@ void HandleGroundedAttackControls()
 
 
 // Creates a single platform tile
-void CreatePlatform(int x, int y)
+void CreatePlatform(int x, int y, int id)
 {
 	Platform platform;
 	gamestate.vPlatforms.push_back(platform);
 	gamestate.vPlatforms.back().pos = Point2D{x,y};
-}
-
-// Creates a row of platform tiles
-void CreatePlatformRow(int tiles, int x, int y)
-{
-	Platform platform;
-	for (int i = 0; i < tiles; i++)
-	{
-		int tilespacing = 64 * i;
-		gamestate.vPlatforms.push_back(platform);
-		gamestate.vPlatforms.back().pos = Point2D{ x + tilespacing , y };
-	}
-}
-
-void CreatePlatformColumn(int tiles, int x, int y)
-{
-	Platform platform;
-	for (int i = 0; i < tiles; i++)
-	{
-		int tilespacing = 64 * i;
-		gamestate.vPlatforms.push_back(platform);
-		gamestate.vPlatforms.back().pos = Point2D{ x , y - tilespacing };
-	}
-}
-
-// Creates a floor of platform tiles
-void CreatePlatformFloor()
-{
-	Platform platform;
-
-	for (int display_x = 0; display_x < DISPLAY_WIDTH / 16; display_x++)
-	{
-		int display_fraction = display_x * DISPLAY_WIDTH / 16;
-		gamestate.vPlatforms.push_back(platform);
-		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
-	}
+	gamestate.vPlatforms.back().id = id;
 }
 
 void CreateLevelFromArray()
@@ -547,7 +512,17 @@ void CreateLevelFromArray()
 				if (levellayout.levellayout[tileIndex] == 1) // If that number has a 1 in it create a platform
 				{
 					// Create an object at this position (x, y)
-					CreatePlatform((x * platform.AABB.x*2) + platform.AABB.x / 2, (y * platform.AABB.y*2) + platform.AABB.y / 2);
+					CreatePlatform((x * platform.AABB.x*2) + platform.AABB.x / 2, (y * platform.AABB.y*2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+				}
+
+				if (levellayout.levellayout[tileIndex] == 2)
+				{
+					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+				}
+
+				if (levellayout.levellayout[tileIndex] == 3)
+				{
+					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
 				}
 			}
 		}
@@ -791,7 +766,6 @@ void CheckHeadboxIsLeftOfPlatform(Platform& platform)
 void CameraFollow()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
 	
 	Play::SetCameraPosition({ obj_player.pos.x-DISPLAY_WIDTH/2, obj_player.pos.y-DISPLAY_HEIGHT/2 });
 	
@@ -810,14 +784,29 @@ void Draw()
 	Play::PresentDrawingBuffer();
 }
 
-// Draws all platforms in vPlatforms
-void DrawPlatforms()
+
+
+void DrawGrassPlatforms()
 {
 	Platform platform;
 
 	for (Platform& p : gamestate.vPlatforms)
 	{
-		Play::DrawSprite(Play::GetSpriteId("tile"),p.pos,0);
+
+		Play::DrawSprite(Play::GetSpriteId("tile"), p.pos, 0);
+
+	}
+}
+
+void DrawRockPlatforms()
+{
+	Platform platform;
+
+	for (Platform& p : gamestate.vPlatforms)
+	{
+
+		Play::DrawSprite(Play::GetSpriteId("rock"), p.pos, 0);
+
 	}
 }
 
@@ -894,6 +883,4 @@ void DrawDebug()
 	DrawPlayerAABB();
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);
-
-	Play::DrawFontText("font64px", "y velocity: " + std::to_string(Play::GetGameObjectByType(TYPE_PLAYER).velocity.y), { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 6 }, Play::CENTRE);
 }
