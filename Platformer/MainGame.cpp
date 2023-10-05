@@ -97,12 +97,6 @@ struct PlatformInfo
 	int levelwidth;
 };
 
-struct Background
-{
-	int type = TYPE_BACKGROUND;
-	Point2D pos;
-};
-
 
 struct GameState
 {
@@ -114,7 +108,6 @@ struct GameState
 VariableJump variablejump;
 CoyoteJump coyotejump;
 JumpBuffer jumpbuffer;
-Background background;
 PlayerInfo playerinfo;
 Platform platform;
 PlatformInfo platforminfo;
@@ -130,7 +123,6 @@ void HandleAirBorneControls();
 
 void HandleFallingControls();
 void HandleGroundedAttackControls();
-void HandleAirAttackControls();
 
 
 void CreatePlatform(int x, int y);
@@ -170,10 +162,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	
-	int platforminfo.levelwidth = Play::GetSpriteWidth("platformer");
-	int platforminfo.levelheight = Play::GetSpriteHeight("platformer");
 
-	CreatePlatformRow(18, levelwidth/platform.AABB, DISPLAY_HEIGHT / 53 * 30); // Floor
+	CreatePlatformRow(18, DISPLAY_WIDTH/2, DISPLAY_HEIGHT / 53 * 30); // Floor
 	CreatePlatformColumn(3, DISPLAY_WIDTH / 40 * 10, DISPLAY_HEIGHT / 23 * 20); // Wall
 	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel	
 }
@@ -601,33 +591,6 @@ void HandleAirBorneControls()
 	}
 }
 
-void HandleLandingControls()
-{
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	float timer = 0;
-	timer += gamestate.elapsedTime;
-
-	if (Play::KeyDown('W')) // Holding W down countsdown your jumpbuffer time
-	{
-		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
-	}
-	else
-	{
-		jumpbuffer.jumpbufferTimeCounter -= timer;
-	}
-
-
-	//// If there's still jumpbuffertime left, you jump
-	//if (jumpbuffer.jumpbufferTimeCounter > 0.0f)
-	//{
-	//	obj_player.velocity.y = playerinfo.jumpspeed;
-	//	
-	//	gamestate.playerstate = STATE_JUMPING;
-	//	Play::PlayAudio("jump");
-	//}
-}
-
 
 // Controls when player is in a state where their grounding box is on the top of a platform
 void HandleFallingControls()
@@ -682,11 +645,6 @@ void HandleGroundedAttackControls()
 	// Play attack 3
 }
 
-void HandleAirAttackControls()
-{
-	// If attack is pressed, play smash down
-	// Make player drop down quick y value increase
-}
 
 // Creates a single platform tile
 void CreatePlatform(int x, int y)
