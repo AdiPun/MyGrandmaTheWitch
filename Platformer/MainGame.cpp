@@ -9,9 +9,6 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	
 	CreateLevelFromArray();
-	CreatePlatformRow(18, DISPLAY_WIDTH/2, DISPLAY_HEIGHT / 53 * 30); // Floor
-	CreatePlatformColumn(3, DISPLAY_WIDTH / 40 * 10, DISPLAY_HEIGHT / 23 * 20); // Wall
-	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel	
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -545,9 +542,9 @@ void CreateLevelFromArray()
 		{
 			for (int x = 0; x < levellayout.width; x++)
 			{
-				int tileIndex = y * levellayout.width + x;
+				int tileIndex = y * levellayout.width + x; // This is giving us a number, a position 0 to 880
 
-				if (levellayout.levellayout[tileIndex] == 1)
+				if (levellayout.levellayout[tileIndex] == 1) // If that number has a 1 in it create a platform
 				{
 					// Create an object at this position (x, y)
 					CreatePlatform((x * platform.AABB.x*2) + platform.AABB.x / 2, (y * platform.AABB.y*2) + platform.AABB.y / 2);
@@ -803,7 +800,7 @@ void CameraFollow()
 void Draw()
 {
 	Play::DrawBackground();
-	Play::DrawSprite("platformer", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
+
 	DrawPlatforms();
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
