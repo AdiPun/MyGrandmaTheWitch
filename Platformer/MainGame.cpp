@@ -38,7 +38,7 @@ struct PlayerInfo
 	float animationspeedrun{ 0.2f };
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.2f };
-	float animationspeedland { 0.15f };
+	float animationspeedland { 0.2f };
 	float animationspeedatk{ 0.2f };
 
 	float friction;
@@ -289,6 +289,7 @@ void UpdatePlayer()
 		if (Play::KeyPressed('S'))
 		{
 			gamestate.playerstate = STATE_SLIDING;
+			Play::PlayAudio("slide");
 		}
 
 		if (IsGrounded() == false)
@@ -958,7 +959,7 @@ void CheckHeadboxIsLeftOfPlatform(Platform& platform)
 void Draw()
 {
 	Play::DrawBackground();
-	Play::DrawSprite("middle", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
+	Play::DrawSprite("platformer", { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0);
 	DrawPlatforms();
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
