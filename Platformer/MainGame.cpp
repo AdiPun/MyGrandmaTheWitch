@@ -93,7 +93,6 @@ struct Platform
 struct PlatformInfo
 {
 	Point2D CeilingCollidedPos;
-	
 };
 
 struct Background
@@ -115,7 +114,10 @@ CoyoteJump coyotejump;
 JumpBuffer jumpbuffer;
 Background background;
 PlayerInfo playerinfo;
+Platform platform;
+PlatformInfo platforminfo;
 GameState gamestate;
+
 
 void UpdatePlayer();
 void HandleGroundedControls();
@@ -165,8 +167,12 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
+	
+	int platforminfo.levelwidth = Play::GetSpriteWidth("platformer");
+	int platforminfo.levelheight = Play::GetSpriteHeight("platformer");
+
+	CreatePlatformRow(18, levelwidth/platform.AABB, DISPLAY_HEIGHT / 53 * 30); // Floor
 	CreatePlatformColumn(3, DISPLAY_WIDTH / 40 * 10, DISPLAY_HEIGHT / 23 * 20); // Wall
-	CreatePlatformRow(18, DISPLAY_WIDTH / 40, DISPLAY_HEIGHT / 23 * 22); // Floor
 	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel	
 }
 
