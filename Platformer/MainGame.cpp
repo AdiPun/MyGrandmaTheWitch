@@ -963,20 +963,9 @@ void CameraFollow()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	//Initial camera position set up
-	static Point2D initialCameraPosition = { 0, 0 };
-	if (initialCameraPosition.y == 0)
-	{
-		initialCameraPosition.y = obj_player.pos.y; //initial camera pos can be adjusted here
-	}
-
-	Play::SetCameraPosition(initialCameraPosition);
-
-	//Camera adjusting as player moves up
-	if (obj_player.pos.y <= 500)
-	{
-		Play::SetCameraPosition({ 0, obj_player.pos.y });
-	}
+	
+	Play::SetCameraPosition({ obj_player.pos.x-DISPLAY_WIDTH/2, obj_player.pos.y-DISPLAY_HEIGHT/2 });
+	
 }
 
 void Draw()
