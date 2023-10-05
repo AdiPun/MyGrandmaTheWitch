@@ -93,6 +93,8 @@ struct Platform
 struct PlatformInfo
 {
 	Point2D CeilingCollidedPos;
+	int levelheight;
+	int levelwidth;
 };
 
 struct Background
