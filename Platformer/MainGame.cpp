@@ -144,6 +144,8 @@ void CheckPlayerIsLeftOfPLatform(Platform& platform);
 void CheckHeadboxIsLeftOfPlatform(Platform& platform);
 
 
+void CameraFollow();
+
 void Draw();
 void DrawPlatforms();
 void DrawPlatformsAABB();
@@ -165,7 +167,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	CreatePlatformColumn(3, DISPLAY_WIDTH / 40 * 10, DISPLAY_HEIGHT / 23 * 20); // Wall
 	CreatePlatformRow(18, DISPLAY_WIDTH / 40, DISPLAY_HEIGHT / 23 * 22); // Floor
-	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel
+	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel	
 }
 
 // Called by PlayBuffer every frame (60 times a second!)
@@ -173,6 +175,7 @@ bool MainGameUpdate(float elapsedTime)
 {
 	gamestate.elapsedTime = elapsedTime;
 	UpdatePlayer();
+	CameraFollow();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
 }
@@ -246,7 +249,6 @@ void UpdatePlayer()
 	case STATE_IDLE:
 
 		HandleGroundedControls();
-
 
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
@@ -953,6 +955,27 @@ void CheckHeadboxIsLeftOfPlatform(Platform& platform)
 	{
 		playerinfo.headboxleftofplatform = false;
 
+	}
+}
+
+
+void CameraFollow()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	//Initial camera position set up
+	static Point2D initialCameraPosition = { 0, 0 };
+	if (initialCameraPosition.y == 0)
+	{
+		initialCameraPosition.y = obj_player.pos.y; //initial camera pos can be adjusted here
+	}
+
+	Play::SetCameraPosition(initialCameraPosition);
+
+	//Camera adjusting as player moves up
+	if (obj_player.pos.y <= 500)
+	{
+		Play::SetCameraPosition({ 0, obj_player.pos.y });
 	}
 }
 
