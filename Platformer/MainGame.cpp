@@ -779,7 +779,7 @@ void Draw()
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
-	DrawDebug();
+	//DrawDebug();
 	
 	Play::PresentDrawingBuffer();
 }
@@ -798,6 +798,10 @@ void DrawPlatforms()
 			Play::DrawSprite(Play::GetSpriteId("tile"), platform.pos, 0);
 		}
 		else if (platform.id == 2)
+		{
+			Play::DrawSprite(Play::GetSpriteId("rock"), platform.pos, 0);
+		}
+		else if (platform.id == 3)
 		{
 			Play::DrawSprite(Play::GetSpriteId("rock"), platform.pos, 0);
 		}
