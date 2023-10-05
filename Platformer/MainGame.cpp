@@ -1,9 +1,5 @@
 #include "MainGame.h"
 
-
-
-
-
 // The entry point for a PlayBuffer program
 void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 {
@@ -12,7 +8,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH / 2,DISPLAY_HEIGHT / 2 }, 0, "idle_right");
 	
-
+	CreateLevelFromArray();
 	CreatePlatformRow(18, DISPLAY_WIDTH/2, DISPLAY_HEIGHT / 53 * 30); // Floor
 	CreatePlatformColumn(3, DISPLAY_WIDTH / 40 * 10, DISPLAY_HEIGHT / 23 * 20); // Wall
 	CreatePlatformRow(5, DISPLAY_WIDTH / 40 * 20, DISPLAY_HEIGHT / 23 * 19); // Tunnel	
@@ -34,6 +30,7 @@ int MainGameExit(void)
 	Play::DestroyManager();
 	return PLAY_OK;
 }
+
 
 void UpdatePlayer()
 {
@@ -538,6 +535,25 @@ void CreatePlatformFloor()
 		gamestate.vPlatforms.push_back(platform);
 		gamestate.vPlatforms.back().pos = Point2D{ display_fraction,DISPLAY_HEIGHT - 32 };
 	}
+}
+
+void CreateLevelFromArray()
+{
+	LevelLayoutInfo levellayout;
+
+		for (int y = 0; y < levellayout.height; y++)
+		{
+			for (int x = 0; x < levellayout.width; x++)
+			{
+				int tileIndex = y * levellayout.width + x;
+
+				if (levellayout.levellayout[tileIndex] == 1)
+				{
+					// Create an object at this position (x, y)
+					CreatePlatform((x * platform.AABB.x*2) + platform.AABB.x / 2, (y * platform.AABB.y*2) + platform.AABB.y / 2);
+				}
+			}
+		}
 }
 
 
