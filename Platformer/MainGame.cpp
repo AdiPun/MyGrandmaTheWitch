@@ -625,6 +625,8 @@ void UpdateItemAxe()
 	GameObject& obj_axe = Play::GetGameObjectByType(TYPE_AXE);
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
+	obj_axe.pos.y += sin(gamestate.elapsedTime)*0.1; // Make the axe bob up and down
+
 	Play::UpdateGameObject(obj_axe);
 
 	if (Play::IsColliding(obj_axe,obj_player))
