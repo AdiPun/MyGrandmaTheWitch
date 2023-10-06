@@ -387,13 +387,13 @@ void HandleGroundedControls()
 		if (playerinfo.facingright == true)
 		{
 			gamestate.playerstate = STATE_SLIDING;
-			obj_player.velocity.x = playerinfo.sslidespeed;
+			obj_player.velocity.x = playerinfo.slidespeed;
 			Play::PlayAudio("slide");
 		}
 		else if (playerinfo.facingright == false)
 		{
 			gamestate.playerstate = STATE_SLIDING;
-			obj_player.velocity.x = -playerinfo.sslidespeed;
+			obj_player.velocity.x = -playerinfo.slidespeed;
 			Play::PlayAudio("slide");
 		}
 		
@@ -420,7 +420,6 @@ void HandleSlidingControls()
 	if (Play::KeyPressed('L') && IsUnderCeiling() == false)
 	{
 		gamestate.playerstate = STATE_ATTACK;
-		playerinfo.slidespeedCounter = playerinfo.slidespeed;
 	}
 
 	// Jump
@@ -428,7 +427,6 @@ void HandleSlidingControls()
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
-		playerinfo.slidespeedCounter = playerinfo.slidespeed;
 		Play::PlayAudio("jump");
 	}
 }

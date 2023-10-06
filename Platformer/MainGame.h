@@ -49,16 +49,16 @@ struct PlayerInfo
 	float animationspeedatk{ 0.2f };
 
 	float friction;
-	float slidingfriction{ 0.8f };
+	float slidingfriction{ 1.0f };
 	float runningandjumpingfriction{ 0.8f };
 
 
 	float runspeed{ 4.5f };
-	float slidespeedCounter{ 1.2f };
-	float slidetimer{ 2.0f };
-	const float slidespeed{ 1.2f };
+	float slidespeedCounter{ 1.0f };
+	float slidetimer{ 1.0f };
+	
 	float jumpspeed{ -10.0f };
-	float sslidespeed{ 3.0f };
+	float slidespeed{ 3.0f };
 	float fallspeed{ 3.5f };
 	const float terminalvelocity{ 6.0f };
 
