@@ -355,11 +355,11 @@ void UpdatePlayer()
 
 		if (!playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "atk_left", playerinfo.animationspeedatk);
+			Play::SetSprite(obj_player, "axe_left", playerinfo.animationspeedatk);
 		}
 		else if (playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "atk_right", playerinfo.animationspeedatk);
+			Play::SetSprite(obj_player, "axe_right", playerinfo.animationspeedatk);
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
@@ -402,7 +402,7 @@ void HandleGroundedControls()
 	}
 
 
-	if (Play::KeyPressed('L'))
+	if (Play::KeyPressed('L') && playerinfo.hasaxe = true)
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
@@ -438,14 +438,6 @@ void HandleGroundedControls()
 void HandleSlidingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	
-
-	// Slide Attack
-	if (Play::KeyPressed('L') && IsUnderCeiling() == false)
-	{
-		gamestate.playerstate = STATE_ATTACK;
-	}
 
 	// Jump
 	if (Play::KeyPressed('W') && IsUnderCeiling() == false)
@@ -625,6 +617,20 @@ void UpdateSlimes()
 		Play::UpdateGameObject(obj_slime);
 
 	} 
+}
+
+void UpdateItemAxe()
+{
+	GameObject& obj_axe = Play::GetGameObjectByType(TYPE_AXE);
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	UpdateGameObject(obj_axe);
+
+	if (IsColliding(obj_axe,obj_player))
+	{
+		Play::DestroyGameObjectsByType(TYPE_AXE);
+		playerinfo.hasaxe = true;
+	}
 }
 
 // Creates a single platform tile
