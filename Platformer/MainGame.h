@@ -91,6 +91,12 @@ struct JumpBuffer
 	float jumpbufferTimeCounter;
 };
 
+struct SlideBuffer
+{
+	const float slidebufferTime = 0.2f;
+	float slidebufferTimeCounter;
+};
+
 struct Platform
 {
 	int type = TYPE_PLATFORM;
