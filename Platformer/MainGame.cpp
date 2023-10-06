@@ -73,7 +73,7 @@ void UpdatePlayer()
 	}
 
 	// Wall interactions
-	if (WillCollideWithWall())
+	if (WillCollideWithWall(TYPE_PLAYER, playerinfo.wallcollisionAABB))
 	{
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
@@ -564,35 +564,40 @@ void UpdateSlimes()
 	
 	std::vector<int> vSlimes = Play::CollectGameObjectIDsByType(TYPE_SLIME);
 	
-	// Wall interactions
-	if (WillCollideWithWall())
-	{
-		obj_player.pos.x = obj_player.oldPos.x;
-		obj_player.velocity.x = 0;
-
-		if (IsInsideWall() && playerinfo.playerleftofplatform)
-		{
-			obj_player.pos.x -= 1;
-		}
-		else if (IsInsideWall() && playerinfo.playerleftofplatform == false)
-		{
-			obj_player.pos.x += 1;
-		}
-	}
-
 	for (int slime_id : vSlimes)
 	{
 		GameObject& obj_slime = Play::GetGameObject(slime_id);
 
 		Play::SetSprite(obj_slime, "slime_idle", slime.animationspeed);
+		
+		Point2D slimeTopLeft = obj_slime.pos - slime.AABB;
+		Point2D slimeBottomRight = obj_slime.pos + slime.AABB;
 
+		// Iterate through all platforms to check for collisions
+		for (const Platform& platform : gamestate.vPlatforms)
+		{
+			// Calculate the platform's AABB
+			Point2D platformTopLeft = platform.pos - platform.AABB;
+			Point2D platformBottomRight = platform.pos + platform.AABB;
+
+			// Check for collision between player's grounding box and the platform
+			if (slimeBottomRight.x > platformTopLeft.x &&
+				slimeTopLeft.x  < platformBottomRight.x &&
+				slimeBottomRight.y > platformTopLeft.y &&
+				slimeTopLeft.y < platformBottomRight.y)
+			{
+
+			}
+		
+
+		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
-			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange,400) // If the player is to the left or right of the slime, it runs away
+			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange, 250)) 
 		{
 			obj_slime.velocity.x = slime.runspeed;
 		}
 		else if(obj_player.pos.x > obj_slime.pos.x &&
-			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 400))
+			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 250))
 		{
 			obj_slime.velocity.x = -slime.runspeed;
 		}
@@ -806,17 +811,18 @@ bool IsGrounded()
 }
 
 // Check's player's edgebox and if it's going to collide with the sides of a platform
-bool WillCollideWithWall()
+bool WillCollideWithWall(int obj_type, Vector2D obj_AABB)
+
 {
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	GameObject& obj = Play::GetGameObjectByType(obj_type);
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.wallcollisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.wallcollisionAABB;
+	Point2D playerTopLeft = obj.pos - obj_AABB;
+	Point2D playerBottomRight = obj.pos + obj_AABB;
 
-	Vector2D playernextPosition = obj_player.pos + obj_player.velocity;
+	Vector2D playernextPosition = obj.pos + obj.velocity;
 
-	Point2D playernextposTopLeft = playernextPosition - playerinfo.wallcollisionAABB;
-	Point2D playernextposBottomRight = playernextPosition + playerinfo.wallcollisionAABB;
+	Point2D playernextposTopLeft = playernextPosition - obj_AABB;
+	Point2D playernextposBottomRight = playernextPosition + obj_AABB;
 
 	// Iterate through all platforms to check for collisions
 	for (Platform& platform : gamestate.vPlatforms)

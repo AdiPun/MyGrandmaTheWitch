@@ -209,7 +209,7 @@ bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
 bool IsUnderCeiling();
-bool WillCollideWithWall();
+bool WillCollideWithWall(int obj_type, Vector2D obj_AABB);
 bool IsInsideWall();
 void CheckPlayerIsLeftOfPLatform(Platform& platform);
 void CheckHeadboxIsLeftOfPlatform(Platform& platform);
