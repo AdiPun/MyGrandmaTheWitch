@@ -201,8 +201,8 @@ void HandleAirBorneControls();
 void HandleFallingControls();
 void HandleLandingControls();
 
-void CreateSlimes();
 void UpdateSlimes();
+void UpdateItemAxe();
 
 
 void CreatePlatform(int x, int y);
