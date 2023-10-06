@@ -20,5 +20,8 @@
     <ClInclude Include="MainGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerStates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

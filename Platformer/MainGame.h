@@ -11,6 +11,7 @@ enum GameObjectType
 	TYPE_PLAYER,
 	TYPE_PLATFORM,
 	TYPE_BACKGROUND,
+	TYPE_SLIME,
 };
 
 enum PlayerState
@@ -24,6 +25,15 @@ enum PlayerState
 	STATE_LANDING,
 	STATE_ATTACK,
 };
+
+enum SlimeState
+{
+	STATE_SLIME_IDLE = 0,
+	STATE_SLIME_HURT,
+	STATE_SLIME_DEAD,
+};
+
+
 
 struct PlayerInfo
 {
@@ -106,13 +116,19 @@ struct Platform
 
 };
 
+struct Slime
+{
+	int type = TYPE_SLIME;
+	Vector2D AABB{ 20,11 };
+	Point2D pos;
+};
+
 struct SlideableTile
 {
 	int type = TYPE_PLATFORM;
 	int id;
 	Point2D pos;
 	Vector2D AABB{ 32,32 };
-
 };
 
 struct PlatformInfo
@@ -129,7 +145,7 @@ struct LevelLayoutInfo
 	int levellayout[880] = {
 		
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
+		2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
 		2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
 		2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 2,
 		2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2,
@@ -150,8 +166,6 @@ struct LevelLayoutInfo
 		2, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
 		2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
 		2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-		
-		
 	};
 };
 
@@ -164,6 +178,7 @@ struct GameState
 	PlayerState playerstate = STATE_JUMPINGDOWN;
 	std::vector<Platform> vPlatforms;
 	std::vector<SlideableTile> vSlideabletiles;
+	std::vector<Slime> vSlimes;
 };
 
 VariableJump variablejump;
