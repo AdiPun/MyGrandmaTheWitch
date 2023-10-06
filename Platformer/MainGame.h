@@ -82,6 +82,7 @@ struct PlayerInfo
 
 	bool playerleftofplatform;
 	bool headboxleftofplatform;
+	bool hasaxe = false;
 };
 
 
