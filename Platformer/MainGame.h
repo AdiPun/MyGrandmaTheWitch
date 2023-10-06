@@ -57,6 +57,7 @@ struct PlayerInfo
 	float slidetimer{ 2.0f };
 	const float slidespeed{ 1.2f };
 	float jumpspeed{ -10.0f };
+	float sslidespeed{ 3.0f };
 	float fallspeed{ 3.5f };
 	const float terminalvelocity{ 6.0f };
 
@@ -164,6 +165,7 @@ void HandleSlidingControls();
 void HandleAirBorneControls();
 
 void HandleFallingControls();
+void HandleLandingControls();
 void HandleGroundedAttackControls();
 
 

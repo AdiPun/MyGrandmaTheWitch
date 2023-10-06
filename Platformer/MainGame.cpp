@@ -130,11 +130,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
-		if (Play::KeyPressed('S'))
-		{
-			gamestate.playerstate = STATE_SLIDING;
-			Play::PlayAudio("slide");
-		}
+		
 
 		if (IsGrounded() == false)
 		{
@@ -289,6 +285,7 @@ void UpdatePlayer()
 
 	case STATE_LANDING:
 
+		HandleLandingControls();
 
 		obj_player.velocity.y = 0;
 		obj_player.acceleration.y = 0;
@@ -380,6 +377,23 @@ void HandleGroundedControls()
 	if (Play::KeyPressed('L'))
 	{
 		gamestate.playerstate = STATE_ATTACK;
+	}
+
+	if (Play::KeyPressed('S') && gamestate.playerstate == STATE_RUNNING)
+	{
+		if (playerinfo.facingright == true)
+		{
+			gamestate.playerstate = STATE_SLIDING;
+			obj_player.velocity.x = playerinfo.sslidespeed;
+			Play::PlayAudio("slide");
+		}
+		else if (playerinfo.facingright == false)
+		{
+			gamestate.playerstate = STATE_SLIDING;
+			obj_player.velocity.x = -playerinfo.sslidespeed;
+			Play::PlayAudio("slide");
+		}
+		
 	}
 
 	// Jump
@@ -481,6 +495,29 @@ void HandleFallingControls()
 
 }
 
+void HandleLandingControls()
+{
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	
+	if (Play::KeyDown('A'))
+	{
+		playerinfo.facingright = false;
+
+		obj_player.velocity.x = -playerinfo.runspeed;
+	}
+	else if (Play::KeyDown('D'))
+	{
+		playerinfo.facingright = true;
+
+		obj_player.velocity.x = playerinfo.runspeed;
+	}
+
+	if (Play::KeyPressed('S'))
+	{
+		gamestate.playerstate = STATE_SLIDING;
+		Play::PlayAudio("slide");
+	}
+}
 
 void HandleGroundedAttackControls()
 {
