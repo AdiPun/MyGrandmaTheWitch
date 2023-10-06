@@ -56,7 +56,7 @@ struct PlayerInfo
 
 	float runspeed{ 4.5f };
 	float slidetimerCounter{ 0.5f };
-	float slidetimer{ 0.5f };
+	float slidetimer{ 0.3f };
 	
 	float jumpspeed{ -10.0f };
 	float slidespeed{ 8.0f };
