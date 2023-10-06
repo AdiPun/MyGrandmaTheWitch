@@ -411,6 +411,7 @@ void HandleGroundedControls()
 
 	if (Play::KeyPressed('L') && playerinfo.hasaxe == true)
 	{
+		Play::PlayAudio("axe_swing")
 		gamestate.playerstate = STATE_ATTACK;
 	}
 
