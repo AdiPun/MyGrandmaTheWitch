@@ -599,6 +599,16 @@ void CreateLevelFromArray()
 				{
 					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
 				}
+
+				if (levellayout.levellayout[tileIndex] == 4)
+				{
+					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+				}
+
+				if (levellayout.levellayout[tileIndex] == 5)
+				{
+					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+				}
 			}
 		}
 }
@@ -878,11 +888,26 @@ void DrawPlatforms()
 		}
 		else if (platform.id == 3)
 		{
-			Play::DrawSprite(Play::GetSpriteId("rock"), platform.pos, 0);
+			Play::DrawSprite(Play::GetSpriteId("wood"), platform.pos, 0);
+		}
+		else if (platform.id == 4)
+		{
+			Play::DrawSprite(Play::GetSpriteId("tree"), platform.pos, 0);
 		}
 	}
 }
 
+void DrawSlideableTiles()
+{
+	Platform platform;
+
+	for (SlideableTile& tile : gamestate.vSlideabletiles)
+	{
+
+		Play::DrawSprite(Play::GetSpriteId("slide_tile"), platform.pos, 0);
+		
+	}
+}
 
 void DrawPlatformsAABB()
 {
