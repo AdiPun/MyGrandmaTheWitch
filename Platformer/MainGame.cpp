@@ -166,11 +166,15 @@ void UpdatePlayer()
 		{
 			if (playerinfo.facingright == false)
 			{
+
 				obj_player.pos.x -= playerinfo.slidespeed;
+
 			}
 			else if (playerinfo.facingright)
 			{
+
 				obj_player.pos.x += playerinfo.slidespeed;
+
 			}
 		}
 		else if (playerinfo.slidespeedCounter < 0 && IsUnderCeiling() == false)
