@@ -61,7 +61,15 @@ void UpdatePlayer()
 	{
 		jumpbuffer.jumpbufferTimeCounter -= timer;
 	}
-
+	
+	if (Play::KeyDown('S')) // When you hold down slide, the counter goes down
+	{
+		slidebuffer.slidebufferTimeCounter = slidebuffer.slidebufferTime;
+	}
+	else
+	{
+		slidebuffer.slidebufferTimeCounter -= timer;
+	}
 
 	// Wall interactions
 	if (WillCollideWithWall())
@@ -143,7 +151,7 @@ void UpdatePlayer()
 
 		HandleSlidingControls();
 
-		playerinfo.friction = playerinfo.slidingfriction;
+		playerinfo.friction = playerinfo.slidingfriction;   
 
 		playerinfo.slidetimerCounter -= gamestate.elapsedTime;
 
@@ -281,6 +289,7 @@ void UpdatePlayer()
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
+			playerinfo.slidetimerCounter = playerinfo.slidetimer;
 			gamestate.playerstate = STATE_LANDING;
 		}
 
@@ -311,11 +320,28 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_IDLE;
 		}
 
-		if (jumpbuffer.jumpbufferTimeCounter > 0.0f) // If the W button is being held, the jumpbuffertimecounter is set to 0.2f so you jump when you hold your jump.
+		if (jumpbuffer.jumpbufferTimeCounter > 0.0f) // If the W button is being held, the jumpbuffertimecounter is set to 0.2f so you jump when you hold your jump button.
 		{
 			obj_player.velocity.y = playerinfo.jumpspeed;
 			gamestate.playerstate = STATE_JUMPING;
 			Play::PlayAudio("jump");
+
+		}
+
+		if (slidebuffer.slidebufferTimeCounter > 0.0f) // If the S button is being held, the slidebuffertimecounter is set to 0.2f so you slide when you hold your slide button.
+		{
+			if (playerinfo.facingright == true)
+			{
+				gamestate.playerstate = STATE_SLIDING;
+				obj_player.velocity.x = playerinfo.slidespeed;
+				Play::PlayAudio("slide");
+			}
+			else if (playerinfo.facingright == false)
+			{
+				gamestate.playerstate = STATE_SLIDING;
+				obj_player.velocity.x = -playerinfo.slidespeed;
+				Play::PlayAudio("slide");
+			}
 
 		}
 		break;
@@ -472,14 +498,14 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
-	if (Play::KeyDown('W')) // Holding W down countsdown your jumpbuffer time
-	{
-		jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
-	}
-	else
-	{
-		jumpbuffer.jumpbufferTimeCounter -= timer;
-	}
+	//if (Play::KeyDown('W')) // Holding W down countsdown your jumpbuffer time
+	//{
+	//	jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
+	//}
+	//else
+	//{
+	//	jumpbuffer.jumpbufferTimeCounter -= timer;
+	//}
 
 	
 	coyotejump.coyoteTimeCounter -= timer;

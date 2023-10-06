@@ -61,7 +61,7 @@ struct PlayerInfo
 	float jumpspeed{ -10.0f };
 	float slidespeed{ 8.0f };
 	float fallspeed{ 3.5f };
-	const float terminalvelocity{ 6.0f };
+	const float terminalvelocity{ 8.0f };
 
 	float scale{ 2.0f };
 	float gravity{ 0.3f };
@@ -159,6 +159,7 @@ struct GameState
 VariableJump variablejump;
 CoyoteJump coyotejump;
 JumpBuffer jumpbuffer;
+SlideBuffer slidebuffer;
 PlayerInfo playerinfo;
 Platform platform;
 PlatformInfo platforminfo;
