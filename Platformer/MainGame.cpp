@@ -6,8 +6,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CreateManager(DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_SCALE);
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
-	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 0, "idle_right");
-	Play::PlayAudio("music");
+	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
+	Play::StartAudioLoop("music");
 	CreateLevelFromArray();
 }
 
@@ -594,16 +594,16 @@ void UpdateSlimes()
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
 			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange, 250) &&
-			obj_player.pos.y > obj_slime.pos.y - slime.sightrange &&
-			obj_player.pos.y < obj_slime.pos.y + slime.sightrange)
+			obj_player.pos.y > obj_slime.pos.y - slime.sightrangevertical &&
+			obj_player.pos.y < obj_slime.pos.y + slime.sightrangevertical)
 
 		{
 			obj_slime.velocity.x = slime.runspeed;
 		}
 		else if(obj_player.pos.x > obj_slime.pos.x &&
 			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 250) &&
-			obj_player.pos.y > obj_slime.pos.y - slime.sightrange &&
-			obj_player.pos.y < obj_slime.pos.y + slime.sightrange)
+			obj_player.pos.y > obj_slime.pos.y - slime.sightrangevertical &&
+			obj_player.pos.y < obj_slime.pos.y + slime.sightrangevertical)
 		{
 			obj_slime.velocity.x = -slime.runspeed;
 		}
@@ -623,11 +623,27 @@ void UpdateSlimes()
 
 	
 		Play::UpdateGameObject(obj_slime);
+
+
+		if (Play::IsColliding(obj_player,obj_slime))
+		{
+			CreateSplat(obj_slime.pos,SLIME_SPLAT);
+			Play::DestroyGameObject(slime_id);
+		}
 	} 
 	
 
 }
 
+void CreateSplat(Point2D pos,int SPLAT_TYPE)
+{
+	switch (SPLAT_TYPE)
+	{
+	case SLIME_SPLAT:
+		Play::PlayAudio("splat");
+	break;
+	}
+}
 
 // Creates a single platform tile
 void CreatePlatform(int x, int y, int id)
@@ -671,7 +687,7 @@ void CreateLevelFromArray()
 
 				if (levellayout.levellayout[tileIndex] == 5)
 				{
-					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 0, "slime_idle");
+					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "slime_idle");
 				}
 			}
 		}
