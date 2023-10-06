@@ -145,7 +145,7 @@ void UpdatePlayer()
 
 		playerinfo.friction = playerinfo.slidingfriction;
 
-		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
+		playerinfo.slidetimerCounter -= gamestate.elapsedTime;
 
 
 		if (playerinfo.facingright == false)
@@ -162,7 +162,7 @@ void UpdatePlayer()
 
 		}
 
-		if (playerinfo.slidespeedCounter < 0 && IsUnderCeiling())
+		if (playerinfo.slidetimerCounter < 0 && IsUnderCeiling())
 		{
 			if (playerinfo.facingright == false)
 			{
@@ -177,17 +177,17 @@ void UpdatePlayer()
 
 			}
 		}
-		else if (playerinfo.slidespeedCounter < 0 && IsUnderCeiling() == false)
+		else if (playerinfo.slidetimerCounter < 0 && IsUnderCeiling() == false)
 		{
 			gamestate.playerstate = STATE_IDLE;
-			playerinfo.slidespeedCounter = playerinfo.slidespeed;
+			playerinfo.slidetimerCounter = playerinfo.slidetimer;
 		}
 
 
-		if (IsGrounded() == false)
+		if (playerinfo.slidetimerCounter < 0 && IsGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
-			playerinfo.slidespeedCounter = playerinfo.slidespeed;
+			playerinfo.slidetimerCounter = playerinfo.slidetimer;
 		}
 
 
@@ -515,8 +515,19 @@ void HandleLandingControls()
 
 	if (Play::KeyPressed('S'))
 	{
-		gamestate.playerstate = STATE_SLIDING;
-		Play::PlayAudio("slide");
+		if (playerinfo.facingright == true)
+		{
+			gamestate.playerstate = STATE_SLIDING;
+			obj_player.velocity.x = playerinfo.slidespeed;
+			Play::PlayAudio("slide");
+		}
+		else if (playerinfo.facingright == false)
+		{
+			gamestate.playerstate = STATE_SLIDING;
+			obj_player.velocity.x = -playerinfo.slidespeed;
+			Play::PlayAudio("slide");
+		}
+
 	}
 }
 
