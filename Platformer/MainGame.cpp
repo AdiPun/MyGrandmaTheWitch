@@ -9,6 +9,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("axe_right", 0, playerinfo.axeattackoffset.y);
 	Play::MoveSpriteOrigin("run_left", 0, playerinfo.runoffset.y);
 	Play::MoveSpriteOrigin("run_right", 0, playerinfo.runoffset.y);
+	Play::MoveSpriteOrigin("slide_left", 0, playerinfo.slideoffset.y);
+	Play::MoveSpriteOrigin("slide_right", 0, playerinfo.slideoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
 	//Play::StartAudioLoop("music");

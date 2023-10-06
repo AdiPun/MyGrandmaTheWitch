@@ -86,6 +86,7 @@ struct PlayerInfo
 
 	Vector2D axeattackoffset{ 0,7};
 	Vector2D runoffset{ 0,4 };
+	Vector2D slideoffset{ 0,4 };
 };
 
 
