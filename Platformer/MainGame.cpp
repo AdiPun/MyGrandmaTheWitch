@@ -570,34 +570,40 @@ void UpdateSlimes()
 
 		Play::SetSprite(obj_slime, "slime_idle", slime.animationspeed);
 		
+		obj_slime.acceleration.y = playerinfo.gravity;
+
+		// IsGrounded for Slimes
 		Point2D slimeTopLeft = obj_slime.pos - slime.AABB;
 		Point2D slimeBottomRight = obj_slime.pos + slime.AABB;
 
-		// Iterate through all platforms to check for collisions
 		for (const Platform& platform : gamestate.vPlatforms)
 		{
-			// Calculate the platform's AABB
 			Point2D platformTopLeft = platform.pos - platform.AABB;
 			Point2D platformBottomRight = platform.pos + platform.AABB;
 
-			// Check for collision between player's grounding box and the platform
 			if (slimeBottomRight.x > platformTopLeft.x &&
 				slimeTopLeft.x  < platformBottomRight.x &&
 				slimeBottomRight.y > platformTopLeft.y &&
 				slimeTopLeft.y < platformBottomRight.y)
 			{
-
+				obj_slime.velocity.y = 0;
+				obj_slime.acceleration.y = 0;
 			}
-		
+		}
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
-			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange, 250)) 
+			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange, 250) &&
+			obj_player.pos.y > obj_slime.pos.y - slime.sightrange &&
+			obj_player.pos.y < obj_slime.pos.y + slime.sightrange)
+
 		{
 			obj_slime.velocity.x = slime.runspeed;
 		}
 		else if(obj_player.pos.x > obj_slime.pos.x &&
-			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 250))
+			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 250) &&
+			obj_player.pos.y > obj_slime.pos.y - slime.sightrange &&
+			obj_player.pos.y < obj_slime.pos.y + slime.sightrange)
 		{
 			obj_slime.velocity.x = -slime.runspeed;
 		}
