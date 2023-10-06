@@ -143,23 +143,22 @@ void UpdatePlayer()
 
 		HandleSlidingControls();
 
-		//playerinfo.friction = playerinfo.slidingfriction;
+		playerinfo.friction = playerinfo.slidingfriction;
 
 		playerinfo.slidespeedCounter -= gamestate.elapsedTime;
 
 
-		if (playerinfo.facingright == false && obj_player.velocity.x < 0)
+		if (playerinfo.facingright == false)
 		{
+		
+			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedslide);
 
-			obj_player.velocity.x -= playerinfo.slidespeedCounter;
-			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedrun);
 
 		}
-		else if (playerinfo.facingright == true && obj_player.velocity.x > 0)
+		else if (playerinfo.facingright == true)
 		{
 
-			obj_player.velocity.x += playerinfo.slidespeedCounter;
-			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedrun);
+			Play::SetSprite(obj_player, "slide_right", playerinfo.animationspeedslide);
 
 		}
 

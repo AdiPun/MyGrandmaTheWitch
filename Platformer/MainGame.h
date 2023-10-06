@@ -42,6 +42,7 @@ struct PlayerInfo
 	bool facingright;
 	float animationspeedidle{ 0.2f };
 	float animationspeedrun{ 0.2f };
+	float animationspeedslide{ 0.2f };
 	float animationspeedjump{ 0.2f };
 	float animationspeedfall{ 0.2f };
 	float animationspeedland{ 0.2f };
