@@ -119,8 +119,8 @@ struct Platform
 struct Slime
 {
 	int type = TYPE_SLIME;
-	Vector2D AABB{ 20,11 };
-	Point2D pos;
+Vector2D AABB{ 20,11 };
+Point2D pos;
 };
 
 struct SlideableTile
@@ -129,6 +129,7 @@ struct SlideableTile
 	int id;
 	Point2D pos;
 	Vector2D AABB{ 32,32 };
+
 };
 
 struct PlatformInfo

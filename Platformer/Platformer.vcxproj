@@ -197,8 +197,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Play.h" />
-    <ClInclude Include="PlatformFunctions.h" />
-    <ClInclude Include="PlayerStates.h" />
     <ClInclude Include="MainGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
