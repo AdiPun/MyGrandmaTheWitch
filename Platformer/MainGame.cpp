@@ -16,6 +16,7 @@ bool MainGameUpdate(float elapsedTime)
 {
 	gamestate.elapsedTime = elapsedTime;
 	UpdatePlayer();
+	UpdateItemAxe();
 	UpdateSlimes();
 	CameraFollow();
 	Draw();
@@ -402,7 +403,7 @@ void HandleGroundedControls()
 	}
 
 
-	if (Play::KeyPressed('L') && playerinfo.hasaxe = true)
+	if (Play::KeyPressed('L') && playerinfo.hasaxe == true)
 	{
 		gamestate.playerstate = STATE_ATTACK;
 	}
@@ -624,11 +625,12 @@ void UpdateItemAxe()
 	GameObject& obj_axe = Play::GetGameObjectByType(TYPE_AXE);
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	UpdateGameObject(obj_axe);
+	Play::UpdateGameObject(obj_axe);
 
-	if (IsColliding(obj_axe,obj_player))
+	if (Play::IsColliding(obj_axe,obj_player))
 	{
 		Play::DestroyGameObjectsByType(TYPE_AXE);
+		Play::PlayAudio("axe_get");
 		playerinfo.hasaxe = true;
 	}
 }
@@ -939,6 +941,8 @@ void Draw()
 	DrawPlatforms(); 
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
+
+	DrawAllGameObjectsByType(TYPE_AXE);
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
