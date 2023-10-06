@@ -16,6 +16,7 @@ bool MainGameUpdate(float elapsedTime)
 {
 	gamestate.elapsedTime = elapsedTime;
 	UpdatePlayer();
+	UpdateSlimes();
 	CameraFollow();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -348,10 +349,7 @@ void UpdatePlayer()
 
 	case STATE_ATTACK:
 
-		HandleGroundedAttackControls();
-
-
-
+		
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		if (!playerinfo.facingright)
@@ -557,11 +555,66 @@ void HandleLandingControls()
 	}
 }
 
-void HandleGroundedAttackControls()
+
+void UpdateSlimes()
 {
-	// If attack is pressed, play attack 2
-	// Set a timer so if attack is pressed within 5? 6? frames? research best timings
-	// Play attack 3
+	Slime slime;
+
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	
+	std::vector<int> vSlimes = Play::CollectGameObjectIDsByType(TYPE_SLIME);
+	
+	// Wall interactions
+	if (WillCollideWithWall())
+	{
+		obj_player.pos.x = obj_player.oldPos.x;
+		obj_player.velocity.x = 0;
+
+		if (IsInsideWall() && playerinfo.playerleftofplatform)
+		{
+			obj_player.pos.x -= 1;
+		}
+		else if (IsInsideWall() && playerinfo.playerleftofplatform == false)
+		{
+			obj_player.pos.x += 1;
+		}
+	}
+
+	for (int slime_id : vSlimes)
+	{
+		GameObject& obj_slime = Play::GetGameObject(slime_id);
+
+		Play::SetSprite(obj_slime, "slime_idle", slime.animationspeed);
+
+		if (obj_player.pos.x < obj_slime.pos.x &&
+			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange,400) // If the player is to the left or right of the slime, it runs away
+		{
+			obj_slime.velocity.x = slime.runspeed;
+		}
+		else if(obj_player.pos.x > obj_slime.pos.x &&
+			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 400))
+		{
+			obj_slime.velocity.x = -slime.runspeed;
+		}
+		else
+		{
+			obj_slime.velocity.x = 0;
+		}
+
+		if (obj_slime.velocity.x > 0)
+		{
+			Play::SetSprite(obj_slime, "slime_idle_right", slime.animationspeed);
+		}
+		if (obj_slime.velocity.x < 0)
+		{
+			Play::SetSprite(obj_slime, "slime_idle_left", slime.animationspeed);
+		}
+
+	
+		Play::UpdateGameObject(obj_slime);
+	} 
+	
+
 }
 
 
@@ -607,7 +660,7 @@ void CreateLevelFromArray()
 
 				if (levellayout.levellayout[tileIndex] == 5)
 				{
-					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 0, "slime_idle");
 				}
 			}
 		}
@@ -864,6 +917,8 @@ void Draw()
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
+	DrawAllGameObjectsByType(TYPE_SLIME);
+
 	//DrawDebug();
 	
 	Play::PresentDrawingBuffer();
@@ -897,17 +952,6 @@ void DrawPlatforms()
 	}
 }
 
-void DrawSlideableTiles()
-{
-	Platform platform;
-
-	for (SlideableTile& tile : gamestate.vSlideabletiles)
-	{
-
-		Play::DrawSprite(Play::GetSpriteId("slide_tile"), platform.pos, 0);
-		
-	}
-}
 
 void DrawPlatformsAABB()
 {
