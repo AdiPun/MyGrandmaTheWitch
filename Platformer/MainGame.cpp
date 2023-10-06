@@ -7,7 +7,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::CentreAllSpriteOrigins();
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
-	Play::StartAudioLoop("music");
+	//Play::StartAudioLoop("music");
 	CreateLevelFromArray();
 }
 
@@ -621,11 +621,6 @@ void UpdateSlimes()
 		{
 			Play::SetSprite(obj_slime, "slime_idle_left", slime.animationspeed);
 		}
-
-		if (Play::IsColliding(obj_player, obj_slime))
-		{
-			Play::PlayAudio("splat");
-		}
 	
 		Play::UpdateGameObject(obj_slime);
 
@@ -673,6 +668,11 @@ void CreateLevelFromArray()
 				}
 
 				if (levellayout.levellayout[tileIndex] == 5)
+				{
+					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "slime_idle");
+				}
+
+				if (levellayout.levellayout[tileIndex] == 6)
 				{
 					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "slime_idle");
 				}
@@ -928,9 +928,9 @@ void Draw()
 {
 	Play::DrawBackground();
 	
-	Play::DrawSprite("BG", { DISPLAY_WIDTH,DISPLAY_HEIGHT - 256}, 1);
+	Play::DrawSprite("BG", { DISPLAY_WIDTH-16,DISPLAY_HEIGHT-32}, 1);
 
-	DrawPlatforms();
+	DrawPlatforms(); 
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
