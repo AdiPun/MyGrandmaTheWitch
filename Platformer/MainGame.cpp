@@ -674,7 +674,7 @@ void CreateLevelFromArray()
 
 				if (levellayout.levellayout[tileIndex] == 6)
 				{
-					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "slime_idle");
+					Play::CreateGameObject(TYPE_AXE, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "item_axe");
 				}
 			}
 		}
