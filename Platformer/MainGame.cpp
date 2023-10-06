@@ -307,6 +307,7 @@ void UpdatePlayer()
 
 		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime; // Reset coyotetimecounter when landing
 
+	
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
@@ -621,28 +622,14 @@ void UpdateSlimes()
 			Play::SetSprite(obj_slime, "slime_idle_left", slime.animationspeed);
 		}
 
+		if (Play::IsColliding(obj_player, obj_slime))
+		{
+			Play::PlayAudio("splat");
+		}
 	
 		Play::UpdateGameObject(obj_slime);
 
-
-		if (Play::IsColliding(obj_player,obj_slime))
-		{
-			CreateSplat(obj_slime.pos,SLIME_SPLAT);
-			Play::DestroyGameObject(slime_id);
-		}
 	} 
-	
-
-}
-
-void CreateSplat(Point2D pos,int SPLAT_TYPE)
-{
-	switch (SPLAT_TYPE)
-	{
-	case SLIME_SPLAT:
-		Play::PlayAudio("splat");
-	break;
-	}
 }
 
 // Creates a single platform tile
@@ -940,12 +927,15 @@ void CameraFollow()
 void Draw()
 {
 	Play::DrawBackground();
+	
+	Play::DrawSprite("BG", { DISPLAY_WIDTH,DISPLAY_HEIGHT - 256}, 1);
 
 	DrawPlatforms();
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
+
 
 	//DrawDebug();
 	
