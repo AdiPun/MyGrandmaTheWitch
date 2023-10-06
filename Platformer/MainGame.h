@@ -51,14 +51,15 @@ struct PlayerInfo
 	float friction;
 	float slidingfriction{ 1.0f };
 	float runningandjumpingfriction{ 0.8f };
+	float fallingfriction{ 0.97f };
 
 
 	float runspeed{ 4.5f };
-	float slidespeedCounter{ 1.0f };
+	float slidespeedCounter{ 0.5f };
 	float slidetimer{ 1.0f };
 	
 	float jumpspeed{ -10.0f };
-	float slidespeed{ 3.0f };
+	float slidespeed{ 8.0f };
 	float fallspeed{ 3.5f };
 	const float terminalvelocity{ 6.0f };
 

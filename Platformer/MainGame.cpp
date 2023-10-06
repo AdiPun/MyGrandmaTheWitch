@@ -262,7 +262,7 @@ void UpdatePlayer()
 
 
 
-		playerinfo.friction = playerinfo.runningandjumpingfriction;
+		playerinfo.friction = playerinfo.fallingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
