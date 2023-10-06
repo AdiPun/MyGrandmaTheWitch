@@ -83,6 +83,9 @@ struct PlayerInfo
 	bool playerleftofplatform;
 	bool headboxleftofplatform;
 	bool hasaxe = false;
+
+	Vector2D axeattackoffset{ 0,7};
+	Vector2D runoffset{ 0,4 };
 };
 
 
@@ -127,7 +130,7 @@ struct Slime
 	Vector2D AABB{ 20,11 };
 	Point2D pos;
 	float runspeed = 2.0f;
-	float animationspeed{ 0.3f };
+	float animationspeed{ 0.2f };
 	float sightrange = 200.0f;
 	float sightrangevertical = 100.0f;
 };
