@@ -90,7 +90,8 @@ struct WitchInfo
 	float animationspeedidle{ 0.2f };
 	Vector2D idleoffset{ 0,90 };
 	Vector2D talkingoffset{ 0,90};
-
+	bool intalkingrange = false;
+	string dialogue1 = "Tiny one, be a dear and collect 20 slime tears for me, you'll need to give them a good smack on the noggin with something. I think there might be an axe in the North West corner of the wood, go fetch that first.";
 };
 
 struct SlimeInfo
