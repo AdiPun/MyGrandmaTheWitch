@@ -627,7 +627,7 @@ void UpdateSlimes()
 			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
-			Createdroplet(obj_slime.pos);
+			CreateDroplet(obj_slime.pos);
 			Play::PlayAudio("hit");
 			Play::SetSprite(obj_slime, "slime_melt", slime.animationspeed);
 			isdead = true;
@@ -666,7 +666,7 @@ void CreateDroplet(Point2D pos)
 	{
 		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
-		std::vector<int> vdroplets = Play::CollectGameObjectIDsByType(TYPE_droplet);
+		std::vector<int> vdroplets = Play::CollectGameObjectIDsByType(TYPE_DROPLET);
 
 		for (int id_droplet : vdroplets)
 		{
@@ -682,7 +682,7 @@ void UpdateDroplets()
 {
 	DropletParticleInfo dropletinfo;
 
-	std::vector<int> vDroplets = Play::CollectGameObjectIDsByType(TYPE_droplet);
+	std::vector<int> vDroplets = Play::CollectGameObjectIDsByType(TYPE_DROPLET);
 
 	for (int id_droplet : vDroplets)
 	{
@@ -1038,7 +1038,7 @@ void Draw()
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
-	DrawAllGameObjectsByTypeRotated(TYPE_droplet);
+	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
 	DrawDebug();
 	
