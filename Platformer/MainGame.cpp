@@ -662,7 +662,7 @@ void CreateDroplet(Point2D pos)
 
 	for (int i = 0; i < dropletinfo.max_particles; i++)
 	{
-		pos.y -= 10;
+		pos.y -= 5;
 
 		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
@@ -761,13 +761,13 @@ void CreateLevelFromArray()
 
 
 // Checks player's AABBmaxY and if it's collided with a platform's minY
-bool FloorCollisionStarted(GameObject& obj)
+bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 {
-	Point2D playerTopLeft = obj.pos - playerinfo.verticalcollisionAABB;
-	Point2D playerBottomRight = obj.pos + playerinfo.verticalcollisionAABB;
+	Point2D playerTopLeft = obj.pos - playerinfo.obj_AABB;
+	Point2D playerBottomRight = obj.pos + playerinfo.obj_AABB;
 
-	Point2D playerOldTopLeft = obj.oldPos - playerinfo.verticalcollisionAABB;
-	Point2D playerOldBottomRight = obj.oldPos + playerinfo.verticalcollisionAABB;
+	Point2D playerOldTopLeft = obj.oldPos - playerinfo.obj_AABB;
+	Point2D playerOldBottomRight = obj.oldPos + playerinfo.obj_AABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
