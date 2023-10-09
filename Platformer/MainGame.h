@@ -27,19 +27,6 @@ enum PlayerState
 	STATE_ATTACK,
 };
 
-enum SlimeState
-{
-	STATE_SLIME_IDLE = 0,
-	STATE_SLIME_HURT,
-	STATE_SLIME_DEAD,
-};
-
-enum SPLAT_TYPE
-{
-	SLIME_SPLAT = 0,
-};
-
-
 struct PlayerInfo
 {
 	Vector2D verticalcollisionAABB{ 15,30 };
@@ -109,20 +96,18 @@ struct Slime
 	Point2D splatcentreoffset{ -1.0f,2.0f };
 };
 
-struct SplatParticle
+struct SplatParticleInfo
 {
 	int type = TYPE_SPLAT;
 	float gravity{ 0.6f };
 	
 	Vector2D initialvelocity{ -3.0f , 3.0f };
 	Vector2D AABB{ 10,14 };
+
+	int max_particles{ 10 };
+
 };
 
-struct SplatEmitter
-{
-	//std::vector<int> vSplats;
-	int max_particles{ 10 };
-};
 
 struct VariableJump
 {
@@ -251,10 +236,12 @@ bool CeilingCollisionStarted();
 bool IsUnderCeiling();
 bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB);
 bool IsInsideWall();
-void CheckPlayerIsLeftOfPLatform(Platform& platform);
-void CheckHeadboxIsLeftOfPlatform(Platform& platform);
 bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b_pos, Vector2D obj_b_dimensions);
 
+void CheckPlayerIsLeftOfPLatform(Platform& platform);
+void CheckHeadboxIsLeftOfPlatform(Platform& platform);
+
+void SetGameObjectRotationToDirection(GameObject& obj);
 
 void CameraFollow();
 

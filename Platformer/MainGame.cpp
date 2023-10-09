@@ -659,9 +659,10 @@ void UpdateItemAxe()
 
 void CreateSplat(Point2D pos)
 {
-	SplatEmitter emitter;
+	SplatParticleInfo splatinfo;
 
-	for (int i = 0; i < emitter.max_particles; i++)
+
+	for (int i = 0; i < splatinfo.max_particles; i++)
 	{
 		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
 
@@ -670,15 +671,16 @@ void CreateSplat(Point2D pos)
 		for (int id_splat : vSplats)
 		{
 			GameObject& obj_splat = Play::GetGameObject(id_splat);
-			obj_splat.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
+
+			obj_splat.rotation = Play::DegToRad(Play::RandomRollRange(90, 270));
 		}
+			
 	}
 }
 
 void UpdateSplats()
 {
-	SplatEmitter emitter;
-	SplatParticle splat;
+	SplatParticleInfo splatinfo;
 
 	std::vector<int> vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
 
@@ -686,14 +688,12 @@ void UpdateSplats()
 	{
 		GameObject& obj_splat = Play::GetGameObject(id_splat);
 		
-		obj_splat.acceleration.y = splat.gravity;
+		Play::SetGameObjectDirection(obj_splat, splatinfo.initialvelocity.x, obj_splat.rotation);
 
-		obj_splat.velocity.y = splat.initialvelocity.y;
-	
-		
-	
+		obj_splat.velocity.y = splatinfo.initialvelocity.y;
+		obj_splat.acceleration.y = splatinfo.gravity;
 
-		Play::SetGameObjectDirection(obj_splat, splat.initialvelocity.x, obj_splat.rotation);
+		SetGameObjectRotationToDirection(obj_splat);
 
 		Play::UpdateGameObject(obj_splat);
 
@@ -1007,6 +1007,12 @@ bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b
 	}
 
 	return false;
+}
+
+
+void SetGameObjectRotationToDirection(GameObject& obj)
+{
+	obj.rotation = atan2(obj.velocity.x, obj.velocity.y);
 }
 
 
