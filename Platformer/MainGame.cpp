@@ -123,7 +123,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
 
-		if (IsObjGrounded() == false)
+		if (IsObjGrounded(obj_player, playerinfo.verticalcollisionAABB) == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 		}
@@ -150,7 +150,7 @@ void UpdatePlayer()
 
 		
 
-		if (IsObjGrounded() == false)
+		if (IsObjGrounded(obj_player, playerinfo.verticalcollisionAABB) == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 		}
@@ -202,7 +202,7 @@ void UpdatePlayer()
 		}
 
 
-		if (playerinfo.slidetimerCounter < 0 && IsObjGrounded() == false)
+		if (playerinfo.slidetimerCounter < 0 && IsObjGrounded(obj_player, playerinfo.verticalcollisionAABB) == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 			playerinfo.slidetimerCounter = playerinfo.slidetimer;
@@ -571,23 +571,12 @@ void UpdateSlimes()
 		bool isdead = false;
 
 		// IsGrounded for Slimes
-		Point2D slimeTopLeft = obj_slime.pos - slime.AABB;
-		Point2D slimeBottomRight = obj_slime.pos + slime.AABB;
-
-		for (const Platform& platform : gamestate.vPlatforms)
+		if (IsObjGrounded(obj_slime, slime.AABB))
 		{
-			Point2D platformTopLeft = platform.pos - platform.AABB;
-			Point2D platformBottomRight = platform.pos + platform.AABB;
-
-			if (slimeBottomRight.x > platformTopLeft.x &&
-				slimeTopLeft.x  < platformBottomRight.x &&
-				slimeBottomRight.y > platformTopLeft.y &&
-				slimeTopLeft.y < platformBottomRight.y)
-			{
-				obj_slime.velocity.y = 0;
-				obj_slime.acceleration.y = 0;
-			}
+			obj_slime.velocity.y = 0;
+			obj_slime.acceleration.y = 0;
 		}
+
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
@@ -619,7 +608,6 @@ void UpdateSlimes()
 			Play::SetSprite(obj_slime, "slime_idle_left", slime.animationspeed);
 		}
 	
-		Play::UpdateGameObject(obj_slime);
 
 		if (gamestate.playerstate == STATE_ATTACK &&
 			obj_player.frame >= 8 &&
@@ -631,6 +619,8 @@ void UpdateSlimes()
 			isdead = true;
 		}
 
+		Play::UpdateGameObject(obj_slime);
+		
 		if (isdead)
 		{
 			Play::DestroyGameObject(slime_id);
@@ -923,6 +913,7 @@ bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
 			objnextposTopLeft.x  < platformBottomRight.x &&
 			objnextposBottomRight.y  > platformTopLeft.y &&
 			objnextposTopLeft.y < platformBottomRight.y)
+		
 		{
 		
 			return true; // obj is colliding with platform side
