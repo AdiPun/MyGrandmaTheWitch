@@ -575,8 +575,14 @@ void UpdateSlimes()
 		{
 			obj_slime.velocity.y = 0;
 			obj_slime.acceleration.y = 0;
+			obj_slime.pos = obj_slime.oldPos;
 		}
 
+		if (WillCollideWithWall(obj_slime, slime.AABB))
+		{
+			obj_slime.velocity.x = 0;
+			obj_slime.pos = obj_slime.oldPos;
+		}
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
@@ -647,7 +653,6 @@ void UpdateItemAxe()
 
 void CreateDroplet(Point2D pos)
 {
-	DropletParticleInfo dropletinfo;
 
 
 	for (int i = 0; i < dropletinfo.max_particles; i++)
@@ -674,7 +679,6 @@ void CreateDroplet(Point2D pos)
 
 void UpdateDroplets()
 {
-	DropletParticleInfo dropletinfo;
 
 	std::vector<int> vDroplets = Play::CollectGameObjectIDsByType(TYPE_DROPLET);
 
@@ -1194,6 +1198,7 @@ void DrawDebug()
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
 
 	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
+	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
 	Play::DrawFontText("64px", "CENTRE", gamestate.centrepos, Play::CENTRE);
 }
