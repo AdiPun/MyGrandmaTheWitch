@@ -33,12 +33,10 @@ struct PlayerInfo
 	Vector2D wallcollisionAABB{ 15,20 };
 	Vector2D slidingAABB{ 15,0 };
 	Vector2D standingAABB{ 15,20 };
-	Vector2D damageAABB{ 5,10 };
+	Vector2D collectingAABB{ 5,10 };
 
 	Vector2D headboxAABB{ 15,1 };
 	Vector2D headboxoffset{ 0,25 };
-
-	int currentframe;
 
 	bool facingright;
 	float animationspeedidle{ 0.2f };
@@ -79,6 +77,12 @@ struct PlayerInfo
 	const Point2D constaxehitboxoffset{40,0};
 	Vector2D axehitboxAABB{80,30};
 	bool axeanimationcomplete = false;
+};
+
+struct PlayerInventory
+{
+	int slimeteardrops{ 0 };
+	int gems{ 0 };
 };
 
 struct Slime
@@ -188,12 +192,12 @@ struct GameState
 	Point2D centrepos = { DISPLAY_WIDTH,DISPLAY_HEIGHT};
 	PlayerState playerstate = STATE_JUMPINGDOWN;
 	std::vector<Platform> vPlatforms;
-
 };
 
 
 Slime slime;
 PlayerInfo playerinfo;
+PlayerInventory inventory;
 DropletParticleInfo dropletinfo;
 
 VariableJump variablejump;

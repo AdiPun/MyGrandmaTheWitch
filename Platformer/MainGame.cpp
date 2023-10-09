@@ -221,14 +221,10 @@ void UpdatePlayer()
 
 		if (!playerinfo.facingright)
 		{
-			obj_player.frame = obj_player.frame; // Makes it so the sprite animation doesn't restart when you change direction mid jump
-
 			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
 		}
 		else if (playerinfo.facingright)
 		{
-			obj_player.frame = obj_player.frame;
-
 			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
 		}
 
@@ -657,8 +653,6 @@ void UpdateItemAxe()
 
 void CreateDroplet(Point2D pos)
 {
-
-
 	for (int i = 0; i < dropletinfo.max_particles; i++)
 	{
 		pos.y -= 10;
@@ -690,6 +684,8 @@ void UpdateDroplets()
 	for (int id_droplet : vDroplets)
 	{
 		GameObject& obj_droplet = Play::GetGameObject(id_droplet);
+
+		bool IsCollected = false;
 		
 		if (FloorCollisionStarted(obj_droplet,dropletinfo.AABB) == false)
 		{
@@ -739,8 +735,20 @@ void UpdateDroplets()
 			
 		}
 
+		if (IsCollidingAABB(obj_player.pos, playerinfo.collectingAABB,
+							obj_droplet.pos, dropletinfo.AABB))
+		{
+			IsCollected = true;
+			Play::PlayAudio("");
+			inventory.slimeteardrops += 1;
+		}
+		
 		Play::UpdateGameObject(obj_droplet);
-			
+		
+		if (IsCollected == true)
+		{
+			Play::DestroyGameObject(id_droplet);
+		}
 	}
 }
 // Creates a single platform tile
