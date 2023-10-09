@@ -735,7 +735,7 @@ void UpdateDroplets()
 			
 		}
 
-		if (IsCollidingAABB(obj_player.pos, playerinfo.collectingAABB,
+		if (IsCollidingAABB(obj_player.pos, playerinfo.verticalcollisionAABB,
 							obj_droplet.pos, dropletinfo.AABB))
 		{
 			IsCollected = true;

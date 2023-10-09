@@ -33,7 +33,6 @@ struct PlayerInfo
 	Vector2D wallcollisionAABB{ 15,20 };
 	Vector2D slidingAABB{ 15,0 };
 	Vector2D standingAABB{ 15,20 };
-	Vector2D collectingAABB{ 5,10 };
 
 	Vector2D headboxAABB{ 15,1 };
 	Vector2D headboxoffset{ 0,25 };
