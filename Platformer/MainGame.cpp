@@ -25,6 +25,7 @@ bool MainGameUpdate(float elapsedTime)
 	UpdateItemAxe();
 	UpdateSlimes();
 	UpdateDroplets();
+	UpdateWitch();
 	CameraFollow();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -821,6 +822,11 @@ void CreateLevelFromArray()
 				{
 					Play::CreateGameObject(TYPE_AXE, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "item_axe");
 				}
+
+				if (levellayout.levellayout[tileIndex] == 6)
+				{
+					Play::CreateGameObject(TYPE_WITCH, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "witch");
+				}
 			}
 		}
 }
@@ -1119,7 +1125,7 @@ void Draw()
 {
 	Play::DrawBackground();
 	
-	Play::DrawSprite("BG", { DISPLAY_WIDTH-16,DISPLAY_HEIGHT-32}, 1);
+	Play::DrawSprite("BG", { DISPLAY_WIDTH-16,DISPLAY_HEIGHT-32}, 1); // Mushroom Background
 
 	DrawPlatforms(); 
 
@@ -1132,11 +1138,21 @@ void Draw()
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
 	DrawDebug();
+
+	DrawUI();
 	
 	Play::PresentDrawingBuffer();
 }
 
 
+// Draws how many slime tears you have
+void DrawUI()
+{
+	Play::SetDrawingSpace(Play::SCREEN);
+	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), frame);
+	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.15f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+	Play::SetDrawingSpace(Play::WORLD);
+}
 
 void DrawPlatforms()
 {
@@ -1240,6 +1256,7 @@ void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
 
 void DrawDebug()
 {
+	
 	/*DrawPlayerNextPositionAABB();
 
 	DrawPlatformsAABB();
@@ -1253,8 +1270,6 @@ void DrawDebug()
 	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
 	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
-	Play::SetDrawingSpace(Play::SCREEN);
-	Play::DrawFontText("64px", "CENTRE", gamestate.centrepos, Play::CENTRE);
-	Play::SetDrawingSpace(Play::WORLD);
+	
 }
 
