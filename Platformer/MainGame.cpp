@@ -11,8 +11,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("run_right", 0, playerinfo.runoffset.y);
 	Play::MoveSpriteOrigin("slide_left", 0, playerinfo.slideoffset.y);
 	Play::MoveSpriteOrigin("slide_right", 0, playerinfo.slideoffset.y);
-	Play::MoveSpriteOrigin("witch_idle", 0, witchinfo.idleoffset.y);
-	Play::MoveSpriteOrigin("witch_talking", 0, witchinfo.talkingoffset.y);
+	Play::MoveSpriteOrigin("witch_idle", 0, witchinfo.idlespriteoffset.y);
+	Play::MoveSpriteOrigin("witch_talking", 0, witchinfo.talkingspriteoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
 	//Play::StartAudioLoop("music");
@@ -1151,10 +1151,13 @@ void Draw()
 
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
-	DrawDebug();
-
+	
+	DrawDialogue();
+	
 	DrawUI();
 	
+	DrawDebug();
+
 	Play::PresentDrawingBuffer();
 }
 
@@ -1166,6 +1169,14 @@ void DrawUI()
 	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), 1);
 	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.15f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
 	Play::SetDrawingSpace(Play::WORLD);
+}
+
+void DrawDialogue()
+{
+	if (witchinfo.intalkingrange == true)
+	{
+		Play::DrawSprite("")
+	}
 }
 
 void DrawPlatforms()

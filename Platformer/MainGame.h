@@ -88,8 +88,10 @@ struct PlayerInventory
 struct WitchInfo
 {
 	float animationspeedidle{ 0.2f };
-	Vector2D idleoffset{ 0,90 };
-	Vector2D talkingoffset{ 0,90};
+	Vector2D idlespriteoffset{ 0,90 };
+	Vector2D talkingspriteoffset{ 0,90};
+	Vector2D talkingrange{,};
+	Vector2D speechbubbleoffset{,};
 	bool intalkingrange = false;
 	string dialogue1 = "Tiny one, be a dear and collect 20 slime tears for me, you'll need to give them a good smack on the noggin with something. I think there might be an axe in the North West corner of the wood, go fetch that first.";
 };
@@ -260,13 +262,16 @@ void CameraFollow();
 
 void Draw();
 void DrawUI();
+void DrawDialogue();
 
 void DrawPlatforms();
 void DrawPlatformsAABB();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
 void DrawAllGameObjectsByType(GameObjectType type);
+
+
+void DrawDebug();
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
 void DrawPlayerAABB();
 void DrawPlayerNextPositionAABB();
 void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions);
-void DrawDebug();
