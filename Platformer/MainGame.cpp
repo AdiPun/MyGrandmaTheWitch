@@ -553,6 +553,14 @@ void HandleLandingControls()
 }
 
 
+void UpdateWitch()
+{
+	GameObject& obj_witch = Play::GetGameObjectByType(TYPE_WITCH);
+
+	Play::UpdateGameObject(obj_witch);
+}
+
+
 void UpdateSlimes()
 {
 	Slime slime;
@@ -823,9 +831,9 @@ void CreateLevelFromArray()
 					Play::CreateGameObject(TYPE_AXE, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "item_axe");
 				}
 
-				if (levellayout.levellayout[tileIndex] == 6)
+				if (levellayout.levellayout[tileIndex] == 7)
 				{
-					Play::CreateGameObject(TYPE_WITCH, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "witch");
+					Play::CreateGameObject(TYPE_WITCH, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "witch_idle");
 				}
 			}
 		}
@@ -1135,6 +1143,8 @@ void Draw()
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
+	DrawAllGameObjectsByType(TYPE_WITCH);
+
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
 	DrawDebug();
@@ -1149,7 +1159,7 @@ void Draw()
 void DrawUI()
 {
 	Play::SetDrawingSpace(Play::SCREEN);
-	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), frame);
+	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), 1);
 	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.15f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
 	Play::SetDrawingSpace(Play::WORLD);
 }

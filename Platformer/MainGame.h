@@ -219,6 +219,7 @@ void HandleAirBorneControls();
 void HandleFallingControls();
 void HandleLandingControls();
 
+void UpdateWitch();
 void UpdateSlimes();
 void UpdateItemAxe();
 
