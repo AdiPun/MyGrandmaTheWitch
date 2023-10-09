@@ -234,7 +234,7 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_JUMPINGDOWN;
 		}
 
-		if (FloorCollisionStarted(obj_player))
+		if (FloorCollisionStarted(obj_player,playerinfo.verticalcollisionAABB))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -262,7 +262,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
 
-		if (FloorCollisionStarted(obj_player))
+		if (FloorCollisionStarted(obj_player, playerinfo.verticalcollisionAABB))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -293,7 +293,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
 
-		if (FloorCollisionStarted(obj_player))
+		if (FloorCollisionStarted(obj_player, playerinfo.verticalcollisionAABB))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -696,9 +696,14 @@ void UpdateDroplets()
 
 		SetGameObjectRotationToDirection(obj_droplet);
 
-		if (FloorCollisionStarted(obj_droplet))
+		if (FloorCollisionStarted(obj_droplet,dropletinfo.AABB))
 		{
 			obj_droplet.velocity.y *= -1;
+		}
+
+		if (WillCollideWithWall(obj_droplet,dropletinfo.AABB))
+		{
+			obj_droplet.velocity.x *= -1;
 		}
 
 		Play::UpdateGameObject(obj_droplet);
@@ -763,11 +768,11 @@ void CreateLevelFromArray()
 // Checks player's AABBmaxY and if it's collided with a platform's minY
 bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 {
-	Point2D playerTopLeft = obj.pos - playerinfo.obj_AABB;
-	Point2D playerBottomRight = obj.pos + playerinfo.obj_AABB;
+	Point2D playerTopLeft = obj.pos - obj_AABB;
+	Point2D playerBottomRight = obj.pos + obj_AABB;
 
-	Point2D playerOldTopLeft = obj.oldPos - playerinfo.obj_AABB;
-	Point2D playerOldBottomRight = obj.oldPos + playerinfo.obj_AABB;
+	Point2D playerOldTopLeft = obj.oldPos - obj_AABB;
+	Point2D playerOldBottomRight = obj.oldPos + obj_AABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -826,16 +831,15 @@ bool IsUnderCeiling()
 	return false; // Player is not colliding with platform side
 }
 
-bool CeilingCollisionStarted()
+bool CeilingCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 {
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	PlatformInfo platforminfo;
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
+	Point2D objTopLeft = obj.pos - obj_AABB;
+	Point2D objBottomRight = obj.pos + obj_AABB;
 
-	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.verticalcollisionAABB;
-	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.verticalcollisionAABB;
+	Point2D objOldTopLeft = obj.oldPos - obj_AABB;
+	Point2D objOldBottomRight = obj.oldPos + obj_AABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -844,25 +848,25 @@ bool CeilingCollisionStarted()
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's collision box and the platform
-		if (playerBottomRight.x > platformTopLeft.x &&
-			playerTopLeft.x  < platformBottomRight.x &&
-			playerBottomRight.y > platformTopLeft.y &&
-			playerTopLeft.y < platformBottomRight.y)
+		// Check for collision between obj's collision box and the platform
+		if (objBottomRight.x > platformTopLeft.x &&
+			objTopLeft.x  < platformBottomRight.x &&
+			objBottomRight.y > platformTopLeft.y &&
+			objTopLeft.y < platformBottomRight.y)
 		{
 
 
 			// Checks if previous frame was below the platform
-			if (playerOldTopLeft.y > platformBottomRight.y)
+			if (objOldTopLeft.y > platformBottomRight.y)
 			{
 				
-				return true; // Player is hitting head
+				return true; // obj is hitting head
 			}
 		}
 
 	}
 
-	return false; // Player is not hitting head
+	return false; // obj is not hitting head
 }
 
 
