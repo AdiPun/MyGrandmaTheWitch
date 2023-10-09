@@ -657,25 +657,43 @@ void UpdateItemAxe()
 
 void CreateSplat(Point2D pos)
 {
-	SplatInfo splatinfo;
+	SplatEmitter emitter;
 
-	splatinfo.vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
-
-	for (int i ; i < splatinfo.max_particles ; i++)
+	for (int i ; i < emitter.max_particles ; i++)
 	{
 		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
 	}
-
 }
 
 void UpdateSplats()
 {
+	SplatEmitter emitter;
+	SplatParticle splat;
 
+	emitter.vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
+
+	for (id_splats : vSplats)
+	{
+		GameObject& obj_splat = GetGameObject(id_splats);
+		
+		obj_splat.acceleration.y = splat.gravity;
+
+		obj_splat.velocity.y = splat.initialvelocity.y;
+
+
+
+		Play::UpdateGameObject(obj_splat);
+
+		if (WillCollideWithWall(obj_splat,))
+		{
+		}
+	}
 }
 // Creates a single platform tile
 void CreatePlatform(int x, int y, int id)
 {
 	Platform platform;
+
 	gamestate.vPlatforms.push_back(platform);
 	gamestate.vPlatforms.back().pos = Point2D{x,y};
 	gamestate.vPlatforms.back().id = id;
