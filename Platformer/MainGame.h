@@ -104,20 +104,23 @@ struct Slime
 	float animationspeed{ 0.2f };
 	float sightrangehorizontal = 200.0f;
 	float sightrangevertical = 100.0f;
+
+
+	Point2D splatcentreoffset{ -1.0f,2.0f };
 };
 
 struct SplatParticle
 {
 	int type = TYPE_SPLAT;
-	float gravity{ 0.3f };
-	Point2D centreoffset{ 0.0f,0.0f };
-	Vector2D initialvelocity{ 1.0f , 1.0f };
+	float gravity{ 0.6f };
+	
+	Vector2D initialvelocity{ -3.0f , 3.0f };
 	Vector2D AABB{ 10,14 };
 };
 
 struct SplatEmitter
 {
-	std::vector<int> vSplats;
+	//std::vector<int> vSplats;
 	int max_particles{ 10 };
 };
 
@@ -246,7 +249,7 @@ bool IsGrounded();
 bool FloorCollisionStarted();
 bool CeilingCollisionStarted();
 bool IsUnderCeiling();
-bool WillCollideWithWall(int obj_type, Vector2D obj_AABB);
+bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB);
 bool IsInsideWall();
 void CheckPlayerIsLeftOfPLatform(Platform& platform);
 void CheckHeadboxIsLeftOfPlatform(Platform& platform);

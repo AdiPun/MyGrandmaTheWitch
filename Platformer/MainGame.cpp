@@ -11,6 +11,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("run_right", 0, playerinfo.runoffset.y);
 	Play::MoveSpriteOrigin("slide_left", 0, playerinfo.slideoffset.y);
 	Play::MoveSpriteOrigin("slide_right", 0, playerinfo.slideoffset.y);
+	Play::MoveSpriteOrigin("droplet", 0, slime.splatcentreoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
 	//Play::StartAudioLoop("music");
@@ -24,6 +25,7 @@ bool MainGameUpdate(float elapsedTime)
 	UpdatePlayer();
 	UpdateItemAxe();
 	UpdateSlimes();
+	UpdateSplats();
 	CameraFollow();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -80,7 +82,7 @@ void UpdatePlayer()
 	}
 
 	// Wall interactions
-	if (WillCollideWithWall(TYPE_PLAYER, playerinfo.wallcollisionAABB))
+	if (WillCollideWithWall(obj_player, playerinfo.wallcollisionAABB))
 	{
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
@@ -625,7 +627,7 @@ void UpdateSlimes()
 			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
-			// CreateSplat(obj_slime.pos);
+			CreateSplat(obj_slime.pos);
 			Play::PlayAudio("hit");
 			Play::SetSprite(obj_slime, "slime_melt", slime.animationspeed);
 			isdead = true;
@@ -659,7 +661,7 @@ void CreateSplat(Point2D pos)
 {
 	SplatEmitter emitter;
 
-	for (int i ; i < emitter.max_particles ; i++)
+	for (int i = 0; i < emitter.max_particles; i++)
 	{
 		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
 	}
@@ -670,24 +672,27 @@ void UpdateSplats()
 	SplatEmitter emitter;
 	SplatParticle splat;
 
-	emitter.vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
+	std::vector<int> vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
 
-	for (id_splat : vSplats)
+	for (int id_splat : vSplats)
 	{
-		GameObject& obj_splat = GetGameObject(id_splat);
+		GameObject& obj_splat = Play::GetGameObject(id_splat);
 		
 		obj_splat.acceleration.y = splat.gravity;
 
 		obj_splat.velocity.y = splat.initialvelocity.y;
+	
+		obj_splat.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
+	
 
-
+		Play::SetGameObjectDirection(obj_splat, splat.initialvelocity.x, obj_splat.rotation);
 
 		Play::UpdateGameObject(obj_splat);
 
-		if (WillCollideWithWall(obj_splat,))
+		/*if (WillCollideWithWall(obj_splat, splat.AABB))
 		{
 			Play::DestroyGameObject(id_splat);
-		}
+		}*/
 	}
 }
 // Creates a single platform tile
@@ -884,11 +889,9 @@ bool IsGrounded()
 }
 
 // Check's player's edgebox and if it's going to collide with the sides of a platform
-bool WillCollideWithWall(int obj_type, Vector2D obj_AABB)
+bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
 
 {
-	GameObject& obj = Play::GetGameObjectByType(obj_type);
-
 	Point2D playerTopLeft = obj.pos - obj_AABB;
 	Point2D playerBottomRight = obj.pos + obj_AABB;
 
@@ -1020,6 +1023,8 @@ void Draw()
 	DrawAllGameObjectsByType(TYPE_AXE);
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
+
+	DrawAllGameObjectsByTypeRotated(TYPE_SPLAT);
 
 	DrawDebug();
 	
