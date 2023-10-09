@@ -123,7 +123,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
 		}
 
-		if (IsGrounded() == false)
+		if (IsObjGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 		}
@@ -150,7 +150,7 @@ void UpdatePlayer()
 
 		
 
-		if (IsGrounded() == false)
+		if (IsObjGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 		}
@@ -202,7 +202,7 @@ void UpdatePlayer()
 		}
 
 
-		if (playerinfo.slidetimerCounter < 0 && IsGrounded() == false)
+		if (playerinfo.slidetimerCounter < 0 && IsObjGrounded() == false)
 		{
 			gamestate.playerstate = STATE_FALLING;
 			playerinfo.slidetimerCounter = playerinfo.slidetimer;
@@ -870,12 +870,11 @@ bool CeilingCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 }
 
 
-bool IsGrounded()
+bool IsObjGrounded(GameObject& obj, Vector2D obj_AABB)
 {
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-
-	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
+	
+	Point2D objTopLeft = obj.pos - obj_AABB;
+	Point2D objBottomRight = obj.pos + obj_AABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
@@ -884,20 +883,20 @@ bool IsGrounded()
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's grounding box and the platform
-		if (playerBottomRight.x > platformTopLeft.x &&
-			playerTopLeft.x  < platformBottomRight.x &&
-			playerBottomRight.y > platformTopLeft.y &&
-			playerTopLeft.y < platformBottomRight.y)
+		// Check for collision between obj's grounding box and the platform
+		if (objBottomRight.x > platformTopLeft.x &&
+			objTopLeft.x  < platformBottomRight.x &&
+			objBottomRight.y > platformTopLeft.y &&
+			objTopLeft.y < platformBottomRight.y)
 		{
 
-			return true; // Player is grounded
+			return true; // obj is grounded
 
 		}
 
 	}
 
-	return false; // Player is not grounded
+	return false; // obj is not grounded
 }
 
 // Check's obj's edgebox and if it's going to collide with the sides of a platform

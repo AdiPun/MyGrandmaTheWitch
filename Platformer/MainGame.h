@@ -230,7 +230,7 @@ void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformColumn(int tiles, int x, int y);
 
-bool IsGrounded();
+bool IsObjGrounded(GameObject& obj, Vector2D obj_AABB);
 bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB);
 bool CeilingCollisionStarted(GameObject& obj, Vector2D obj_AABB);
 bool IsPlayerUnderCeiling();
