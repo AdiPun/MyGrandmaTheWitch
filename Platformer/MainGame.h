@@ -130,7 +130,7 @@ struct Slime
 	int type = TYPE_SLIME;
 	Vector2D AABB{ 20,11 };
 	Point2D pos;
-	float runspeed = 2.0f;
+	float runspeed = 1.0f;
 	float animationspeed{ 0.2f };
 	float sightrange = 200.0f;
 	float sightrangevertical = 100.0f;
