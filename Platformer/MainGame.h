@@ -88,7 +88,8 @@ struct PlayerInfo
 	Vector2D runoffset{ 0,4 };
 	Vector2D slideoffset{ 0,4 };
 
-	Point2D axehitboxoffset{};
+	Point2D axehitboxoffset{10,0};
+	const Point2D constaxehitboxoffset{10,0};
 	Vector2D axehitboxAABB{7,7};
 };
 
@@ -188,6 +189,8 @@ struct GameState
 	std::vector<Platform> vPlatforms;
 };
 
+Slime slime;
+
 VariableJump variablejump;
 CoyoteJump coyotejump;
 JumpBuffer jumpbuffer;
@@ -241,5 +244,6 @@ void DrawAllGameObjectsByType(GameObjectType type);
 void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
 void DrawPlayerAABB();
 void DrawPlayerNextPositionAABB();
+void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions);
 void DrawDebug();
 

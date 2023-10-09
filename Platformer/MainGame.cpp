@@ -363,10 +363,12 @@ void UpdatePlayer()
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "axe_left", playerinfo.animationspeedatk);
+			playerinfo.axehitboxoffset.x = -playerinfo.constaxehitboxoffset.x;
 		}
 		else if (playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "axe_right", playerinfo.animationspeedatk);
+			playerinfo.axehitboxoffset.x = playerinfo.constaxehitboxoffset.x;
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
@@ -620,7 +622,7 @@ void UpdateSlimes()
 		{
 			float timer = gamestate.elapsedTime;
 
-			Play::PlayAudio();
+			Play::PlayAudio("hit");
 
 			if (timer > 2)
 			{
@@ -979,7 +981,7 @@ void Draw()
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
 
-	//DrawDebug();
+	DrawDebug();
 	
 	Play::PresentDrawingBuffer();
 }
@@ -1077,13 +1079,26 @@ void DrawPlayerNextPositionAABB()
 	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
 }
 
+void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
+{
+	for (int id : Play::CollectGameObjectIDsByType(type))
+	{
+		GameObject& obj = Play::GetGameObject(id);
+		DrawObjectAABB(obj.pos, obj_dimensions);
+	}
+}
+
 void DrawDebug()
 {
-	DrawPlayerNextPositionAABB();
+	/*DrawPlayerNextPositionAABB();
 
 	DrawPlatformsAABB();
 
 	DrawPlayerAABB();
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);*/
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
+
+	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
 }
