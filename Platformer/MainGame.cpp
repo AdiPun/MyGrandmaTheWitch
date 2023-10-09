@@ -672,9 +672,9 @@ void UpdateSplats()
 
 	emitter.vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
 
-	for (id_splats : vSplats)
+	for (id_splat : vSplats)
 	{
-		GameObject& obj_splat = GetGameObject(id_splats);
+		GameObject& obj_splat = GetGameObject(id_splat);
 		
 		obj_splat.acceleration.y = splat.gravity;
 
@@ -686,6 +686,7 @@ void UpdateSplats()
 
 		if (WillCollideWithWall(obj_splat,))
 		{
+			Play::DestroyGameObject(id_splat);
 		}
 	}
 }
