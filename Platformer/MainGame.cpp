@@ -689,12 +689,18 @@ void UpdateDroplets()
 		if (FloorCollisionStarted(obj_droplet,dropletinfo.AABB))
 		{
 			obj_droplet.velocity.y *= -1;
+			obj_droplet.velocity.y *= 0.5;
+
 		}
 
 		if (WillCollideWithWall(obj_droplet,dropletinfo.AABB))
 		{
 			obj_droplet.velocity.x *= -1;
+			obj_droplet.velocity.x *= 0.5;
+
 		}
+
+
 
 		Play::UpdateGameObject(obj_droplet);
 			
@@ -923,6 +929,32 @@ bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
 	}
 
 	return false; // obj is not colliding with platform side
+}
+
+bool IsObjInsideWall(GameObject& obj, Vector2D obj_AABB)
+{
+	Point2D objTopLeft = obj.pos - obj_AABB;
+	Point2D objBottomRight = obj.pos + obj_AABB;
+
+	// Iterate through all platforms to check for collisions
+	for (Platform& platform : gamestate.vPlatforms)
+	{
+		// Calculate the platform's AABB
+		Point2D platformTopLeft = platform.pos - platform.AABB;
+		Point2D platformBottomRight = platform.pos + platform.AABB;
+
+		// Check for collision between obj's edge box and the platform
+		if (objBottomRight.x > platformTopLeft.x &&
+			objTopLeft.x  < platformBottomRight.x &&
+			objBottomRight.y > platformTopLeft.y &&
+			objTopLeft.y < platformBottomRight.y)
+		{
+			return true; // obj is inside platform
+		}
+
+	}
+
+	return false; // obj is not inside platform
 }
 
 bool IsPlayerInsideWall()
