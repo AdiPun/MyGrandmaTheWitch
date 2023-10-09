@@ -235,7 +235,7 @@ bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB);
 bool CeilingCollisionStarted(GameObject& obj, Vector2D obj_AABB);
 bool IsUnderCeiling();
 bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB);
-bool IsInsideWall();
+bool IsPlayerInsideWall();
 bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b_pos, Vector2D obj_b_dimensions);
 
 void CheckPlayerIsLeftOfPLatform(Platform& platform);

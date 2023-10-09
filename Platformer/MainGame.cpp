@@ -87,18 +87,18 @@ void UpdatePlayer()
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
 
-		if (IsInsideWall() && playerinfo.playerleftofplatform)
+		if (IsPlayerInsideWall() && playerinfo.playerleftofplatform)
 		{
 			obj_player.pos.x -= 1;
 		}
-		else if (IsInsideWall() && playerinfo.playerleftofplatform == false)
+		else if (IsPlayerInsideWall() && playerinfo.playerleftofplatform == false)
 		{
 			obj_player.pos.x += 1;
 		}
 	}
 
 	// Ceiling interactions
-	if (CeilingCollisionStarted())
+	if (CeilingCollisionStarted(obj_player,playerinfo.verticalcollisionAABB))
 	{
 		obj_player.pos.y = obj_player.oldPos.y;
 		obj_player.velocity.y *= 0.9f;
@@ -900,17 +900,17 @@ bool IsGrounded()
 	return false; // Player is not grounded
 }
 
-// Check's player's edgebox and if it's going to collide with the sides of a platform
+// Check's obj's edgebox and if it's going to collide with the sides of a platform
 bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
 
 {
-	Point2D playerTopLeft = obj.pos - obj_AABB;
-	Point2D playerBottomRight = obj.pos + obj_AABB;
+	Point2D objTopLeft = obj.pos - obj_AABB;
+	Point2D objBottomRight = obj.pos + obj_AABB;
 
-	Vector2D playernextPosition = obj.pos + obj.velocity;
+	Vector2D objnextPosition = obj.pos + obj.velocity;
 
-	Point2D playernextposTopLeft = playernextPosition - obj_AABB;
-	Point2D playernextposBottomRight = playernextPosition + obj_AABB;
+	Point2D objnextposTopLeft = objnextPosition - obj_AABB;
+	Point2D objnextposBottomRight = objnextPosition + obj_AABB;
 
 	// Iterate through all platforms to check for collisions
 	for (Platform& platform : gamestate.vPlatforms)
@@ -919,23 +919,23 @@ bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
 		Point2D platformTopLeft = platform.pos - platform.AABB;
 		Point2D platformBottomRight = platform.pos + platform.AABB;
 
-		// Check for collision between player's edge box and the platform
-		if (playernextposBottomRight.x > platformTopLeft.x &&
-			playernextposTopLeft.x  < platformBottomRight.x &&
-			playernextposBottomRight.y  > platformTopLeft.y &&
-			playernextposTopLeft.y < platformBottomRight.y)
+		// Check for collision between obj's edge box and the platform
+		if (objnextposBottomRight.x > platformTopLeft.x &&
+			objnextposTopLeft.x  < platformBottomRight.x &&
+			objnextposBottomRight.y  > platformTopLeft.y &&
+			objnextposTopLeft.y < platformBottomRight.y)
 		{
 		
-			return true; // Player is colliding with platform side
+			return true; // obj is colliding with platform side
 			
 		}
 		
 	}
 
-	return false; // Player is not colliding with platform side
+	return false; // obj is not colliding with platform side
 }
 
-bool IsInsideWall()
+bool IsPlayerInsideWall()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
