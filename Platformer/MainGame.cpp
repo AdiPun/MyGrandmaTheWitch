@@ -678,6 +678,7 @@ void CreateDroplet(Point2D pos)
 
 void UpdateDroplets()
 {
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
 	std::vector<int> vDroplets = Play::CollectGameObjectIDsByType(TYPE_DROPLET);
 
@@ -711,6 +712,26 @@ void UpdateDroplets()
 			obj_droplet.velocity.y = 0;
 			obj_droplet.velocity.x = 0;
 			obj_droplet.acceleration.y = 0;
+		}
+
+		if (gamestate.playerstate == STATE_ATTACK &&
+			obj_player.frame >= 8 &&
+			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB, 
+				obj_droplet.pos, dropletinfo.AABB))
+		{
+			if (obj_player.pos.x < obj_droplet.pos.x) // Player to the left of droplet
+			{
+				obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(180, 90));
+				Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
+				obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
+			}
+			else if (obj_player.pos.x > obj_droplet.pos.x)
+			{
+				obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(270, 180));
+				Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
+				obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
+			}
+			
 		}
 
 		Play::UpdateGameObject(obj_droplet);
