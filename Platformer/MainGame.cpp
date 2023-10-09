@@ -717,7 +717,7 @@ void UpdateDroplets()
 
 		if (IsObjInsideWall(obj_droplet,dropletinfo.AABB) == true) // Stops droplet getting stuck in walls
 		{
-			obj_droplet.pos.y += 1.0f;
+			obj_droplet.pos.y -= 1.0f;
 		}
 
 		if (gamestate.playerstate == STATE_ATTACK &&
