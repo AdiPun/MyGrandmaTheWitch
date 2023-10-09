@@ -372,6 +372,7 @@ void UpdatePlayer()
 		}
 		if (Play::IsAnimationComplete(obj_player))
 		{
+			playerinfo.axeanimationcomplete = true;
 			gamestate.playerstate = STATE_IDLE;
 		}
 
@@ -414,6 +415,7 @@ void HandleGroundedControls()
 	if (Play::KeyPressed('L') && playerinfo.hasaxe == true)
 	{
 		Play::PlayAudio("axe_swing");
+		playerinfo.axeanimationcomplete = false;
 		gamestate.playerstate = STATE_ATTACK;
 	}
 
@@ -617,7 +619,7 @@ void UpdateSlimes()
 	
 		Play::UpdateGameObject(obj_slime);
 
-		if (gamestate.playerstate == STATE_ATTACK && 
+		if (playerinfo.axeanimationcomplete == true && 
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
 			Play::PlayAudio("hit");
@@ -1095,4 +1097,7 @@ void DrawDebug()
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
 
 	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
+
+	Play:(gamestate.centrepos,"axe left frame: " + std::to_string(Play::GetSpriteFrames("axe_left")), Play::cWhite, true);
 }
+

@@ -91,6 +91,7 @@ struct PlayerInfo
 	Point2D axehitboxoffset{40,0};
 	const Point2D constaxehitboxoffset{40,0};
 	Vector2D axehitboxAABB{7,20};
+	bool axeanimationcomplete = false;
 };
 
 
@@ -185,8 +186,10 @@ struct LevelLayoutInfo
 struct GameState
 {
 	float elapsedTime = 0;
+	Point2D centrepos = { DISPLAY_WIDTH,DISPLAY_HEIGHT };
 	PlayerState playerstate = STATE_JUMPINGDOWN;
 	std::vector<Platform> vPlatforms;
+
 };
 
 Slime slime;
