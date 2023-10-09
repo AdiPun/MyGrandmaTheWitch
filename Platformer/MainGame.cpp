@@ -655,6 +655,23 @@ void UpdateItemAxe()
 	}
 }
 
+void CreateSplat(Point2D pos)
+{
+	SplatInfo splatinfo;
+
+	splatinfo.vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
+
+	for (int i ; i < splatinfo.max_particles ; i++)
+	{
+		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
+	}
+
+	for (id_splat : vSplats)
+	{
+
+	}
+}
+
 // Creates a single platform tile
 void CreatePlatform(int x, int y, int id)
 {

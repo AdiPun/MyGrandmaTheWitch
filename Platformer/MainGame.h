@@ -12,6 +12,7 @@ enum GameObjectType
 	TYPE_PLATFORM,
 	TYPE_SLIME,
 	TYPE_AXE,
+	TYPE_SPLAT,
 };
 
 enum PlayerState
@@ -94,7 +95,24 @@ struct PlayerInfo
 	bool axeanimationcomplete = false;
 };
 
+struct Slime
+{
+	int type = TYPE_SLIME;
+	Vector2D AABB{ 7,7 };
+	Point2D pos;
+	float runspeed = 1.0f;
+	float animationspeed{ 0.2f };
+	float sightrangehorizontal = 200.0f;
+	float sightrangevertical = 100.0f;
+};
 
+struct SplatInfo
+{
+	std::vector<int> vSplats;
+	int max_particles{10};
+	float gravity{ 0.3f };
+	Point2D centreoffset{ 0.0f,0.0f };
+};
 
 struct VariableJump
 {
@@ -121,6 +139,8 @@ struct SlideBuffer
 	float slidebufferTimeCounter;
 };
 
+
+
 struct Platform
 {
 	int type = TYPE_PLATFORM;
@@ -129,18 +149,6 @@ struct Platform
 	Vector2D AABB{ 32,32 };
 
 };
-
-struct Slime
-{
-	int type = TYPE_SLIME;
-	Vector2D AABB{ 7,7 };
-	Point2D pos;
-	float runspeed = 1.0f;
-	float animationspeed{ 0.2f };
-	float sightrangehorizontal = 200.0f;
-	float sightrangevertical = 100.0f;
-};
-
 
 struct PlatformInfo
 {
@@ -192,13 +200,14 @@ struct GameState
 
 };
 
+
 Slime slime;
+PlayerInfo playerinfo;
 
 VariableJump variablejump;
 CoyoteJump coyotejump;
 JumpBuffer jumpbuffer;
 SlideBuffer slidebuffer;
-PlayerInfo playerinfo;
 Platform platform;
 PlatformInfo platforminfo;
 GameState gamestate;
@@ -217,6 +226,7 @@ void HandleLandingControls();
 void UpdateSlimes();
 void UpdateItemAxe();
 
+void CreateSplat(Point2D pos);
 
 void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
