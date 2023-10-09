@@ -568,6 +568,8 @@ void UpdateSlimes()
 		
 		obj_slime.acceleration.y = playerinfo.gravity;
 
+		bool isdead = false;
+
 		// IsGrounded for Slimes
 		Point2D slimeTopLeft = obj_slime.pos - slime.AABB;
 		Point2D slimeBottomRight = obj_slime.pos + slime.AABB;
@@ -623,10 +625,16 @@ void UpdateSlimes()
 			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
+			// CreateSplat(obj_slime.pos);
 			Play::PlayAudio("hit");
-			Play::DestroyGameObject(slime_id);
+			Play::SetSprite(obj_slime, "slime_melt", slime.animationspeed);
+			isdead = true;
 		}
 
+		if (isdead)
+		{
+			Play::DestroyGameObject(slime_id);
+		}
 	} 
 }
 
