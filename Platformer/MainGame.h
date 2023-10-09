@@ -88,9 +88,9 @@ struct PlayerInfo
 	Vector2D runoffset{ 0,4 };
 	Vector2D slideoffset{ 0,4 };
 
-	Point2D axehitboxoffset{10,0};
-	const Point2D constaxehitboxoffset{10,0};
-	Vector2D axehitboxAABB{7,7};
+	Point2D axehitboxoffset{20,0};
+	const Point2D constaxehitboxoffset{20,0};
+	Vector2D axehitboxAABB{7,15};
 };
 
 
@@ -132,7 +132,7 @@ struct Platform
 struct Slime
 {
 	int type = TYPE_SLIME;
-	Vector2D AABB{ 20,11 };
+	Vector2D AABB{ 7,7 };
 	Point2D pos;
 	float runspeed = 1.0f;
 	float animationspeed{ 0.2f };
