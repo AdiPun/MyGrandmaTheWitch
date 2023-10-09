@@ -11,7 +11,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("run_right", 0, playerinfo.runoffset.y);
 	Play::MoveSpriteOrigin("slide_left", 0, playerinfo.slideoffset.y);
 	Play::MoveSpriteOrigin("slide_right", 0, playerinfo.slideoffset.y);
-	Play::MoveSpriteOrigin("droplet", 0, slime.splatcentreoffset.y);
+	Play::MoveSpriteOrigin("droplet", 0, slime.dropletcentreoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
 	//Play::StartAudioLoop("music");
@@ -25,7 +25,7 @@ bool MainGameUpdate(float elapsedTime)
 	UpdatePlayer();
 	UpdateItemAxe();
 	UpdateSlimes();
-	UpdateSplats();
+	UpdateDroplets();
 	CameraFollow();
 	Draw();
 	return Play::KeyDown(VK_ESCAPE);
@@ -627,7 +627,7 @@ void UpdateSlimes()
 			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
-			CreateSplat(obj_slime.pos);
+			Createdroplet(obj_slime.pos);
 			Play::PlayAudio("hit");
 			Play::SetSprite(obj_slime, "slime_melt", slime.animationspeed);
 			isdead = true;
@@ -657,49 +657,49 @@ void UpdateItemAxe()
 	}
 }
 
-void CreateSplat(Point2D pos)
+void CreateDroplet(Point2D pos)
 {
-	SplatParticleInfo splatinfo;
+	DropletParticleInfo dropletinfo;
 
 
-	for (int i = 0; i < splatinfo.max_particles; i++)
+	for (int i = 0; i < dropletinfo.max_particles; i++)
 	{
-		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
+		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
-		std::vector<int> vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
+		std::vector<int> vdroplets = Play::CollectGameObjectIDsByType(TYPE_droplet);
 
-		for (int id_splat : vSplats)
+		for (int id_droplet : vdroplets)
 		{
-			GameObject& obj_splat = Play::GetGameObject(id_splat);
+			GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 
-			obj_splat.rotation = Play::DegToRad(Play::RandomRollRange(90, 270));
+			obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(90, 270));
 		}
 			
 	}
 }
 
-void UpdateSplats()
+void UpdateDroplets()
 {
-	SplatParticleInfo splatinfo;
+	DropletParticleInfo dropletinfo;
 
-	std::vector<int> vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
+	std::vector<int> vDroplets = Play::CollectGameObjectIDsByType(TYPE_droplet);
 
-	for (int id_splat : vSplats)
+	for (int id_droplet : vDroplets)
 	{
-		GameObject& obj_splat = Play::GetGameObject(id_splat);
+		GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 		
-		Play::SetGameObjectDirection(obj_splat, splatinfo.initialvelocity.x, obj_splat.rotation);
+		Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
 
-		obj_splat.velocity.y = splatinfo.initialvelocity.y;
-		obj_splat.acceleration.y = splatinfo.gravity;
+		obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
+		obj_droplet.acceleration.y = dropletinfo.gravity;
 
-		SetGameObjectRotationToDirection(obj_splat);
+		SetGameObjectRotationToDirection(obj_droplet);
 
-		Play::UpdateGameObject(obj_splat);
+		Play::UpdateGameObject(obj_droplet);
 
-		/*if (WillCollideWithWall(obj_splat, splat.AABB))
+		/*if (WillCollideWithWall(obj_droplet, droplet.AABB))
 		{
-			Play::DestroyGameObject(id_splat);
+			Play::DestroyGameObject(id_droplet);
 		}*/
 	}
 }
@@ -1038,7 +1038,7 @@ void Draw()
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
-	DrawAllGameObjectsByTypeRotated(TYPE_SPLAT);
+	DrawAllGameObjectsByTypeRotated(TYPE_droplet);
 
 	DrawDebug();
 	

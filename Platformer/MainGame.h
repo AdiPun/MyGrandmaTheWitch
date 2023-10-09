@@ -12,7 +12,7 @@ enum GameObjectType
 	TYPE_PLATFORM,
 	TYPE_SLIME,
 	TYPE_AXE,
-	TYPE_SPLAT,
+	TYPE_DROPLET,
 };
 
 enum PlayerState
@@ -93,12 +93,12 @@ struct Slime
 	float sightrangevertical = 100.0f;
 
 
-	Point2D splatcentreoffset{ -1.0f,2.0f };
+	Point2D dropletcentreoffset{ -1.0f,2.0f };
 };
 
-struct SplatParticleInfo
+struct DropletParticleInfo
 {
-	int type = TYPE_SPLAT;
+	int type = TYPE_DROPLET;
 	float gravity{ 0.6f };
 	
 	Vector2D initialvelocity{ -3.0f , 3.0f };
@@ -221,8 +221,8 @@ void HandleLandingControls();
 void UpdateSlimes();
 void UpdateItemAxe();
 
-void CreateSplat(Point2D pos);
-void UpdateSplats();
+void CreateDroplet(Point2D pos);
+void UpdateDroplets();
 
 void CreateLevelFromArray();
 
