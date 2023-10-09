@@ -92,8 +92,6 @@ struct Slime
 	float sightrangehorizontal = 200.0f;
 	float sightrangevertical = 100.0f;
 
-
-	Point2D dropletcentreoffset{ -1.0f,2.0f };
 };
 
 struct DropletParticleInfo
