@@ -216,8 +216,6 @@ void UpdatePlayer()
 
 		HandleAirBorneControls();
 
-
-
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
@@ -236,7 +234,7 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_JUMPINGDOWN;
 		}
 
-		if (FloorCollisionStarted())
+		if (FloorCollisionStarted(obj_player))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -264,7 +262,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
 
-		if (FloorCollisionStarted())
+		if (FloorCollisionStarted(obj_player))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -295,7 +293,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "fall_right", playerinfo.animationspeedfall);
 		}
 
-		if (FloorCollisionStarted())
+		if (FloorCollisionStarted(obj_player))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -664,6 +662,8 @@ void CreateDroplet(Point2D pos)
 
 	for (int i = 0; i < dropletinfo.max_particles; i++)
 	{
+		pos.y -= 10;
+
 		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
 		std::vector<int> vdroplets = Play::CollectGameObjectIDsByType(TYPE_DROPLET);
@@ -671,7 +671,7 @@ void CreateDroplet(Point2D pos)
 		for (int id_droplet : vdroplets)
 		{
 			GameObject& obj_droplet = Play::GetGameObject(id_droplet);
-
+			
 			obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
 
 			Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
@@ -696,12 +696,13 @@ void UpdateDroplets()
 
 		SetGameObjectRotationToDirection(obj_droplet);
 
-		Play::UpdateGameObject(obj_droplet);
-
-		/*if (WillCollideWithWall(obj_droplet, droplet.AABB))
+		if (FloorCollisionStarted(obj_droplet))
 		{
-			Play::DestroyGameObject(id_droplet);
-		}*/
+			obj_droplet.velocity.y *= -1;
+		}
+
+		Play::UpdateGameObject(obj_droplet);
+			
 	}
 }
 // Creates a single platform tile
@@ -760,15 +761,13 @@ void CreateLevelFromArray()
 
 
 // Checks player's AABBmaxY and if it's collided with a platform's minY
-bool FloorCollisionStarted()
+bool FloorCollisionStarted(GameObject& obj)
 {
-	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+	Point2D playerTopLeft = obj.pos - playerinfo.verticalcollisionAABB;
+	Point2D playerBottomRight = obj.pos + playerinfo.verticalcollisionAABB;
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
-	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
-
-	Point2D playerOldTopLeft = obj_player.oldPos - playerinfo.verticalcollisionAABB;
-	Point2D playerOldBottomRight = obj_player.oldPos + playerinfo.verticalcollisionAABB;
+	Point2D playerOldTopLeft = obj.oldPos - playerinfo.verticalcollisionAABB;
+	Point2D playerOldBottomRight = obj.oldPos + playerinfo.verticalcollisionAABB;
 
 	// Iterate through all platforms to check for collisions
 	for (const Platform& platform : gamestate.vPlatforms)
