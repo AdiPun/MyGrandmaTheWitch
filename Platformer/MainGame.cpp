@@ -497,15 +497,6 @@ void HandleFallingControls()
 		obj_player.velocity.x = playerinfo.fallspeed;	
 	}
 
-	//if (Play::KeyDown('W')) // Holding W down countsdown your jumpbuffer time
-	//{
-	//	jumpbuffer.jumpbufferTimeCounter = jumpbuffer.jumpbufferTime;
-	//}
-	//else
-	//{
-	//	jumpbuffer.jumpbufferTimeCounter -= timer;
-	//}
-
 	
 	coyotejump.coyoteTimeCounter -= timer;
 
@@ -930,6 +921,25 @@ void CheckHeadboxIsLeftOfPlatform(Platform& platform)
 		playerinfo.headboxleftofplatform = false;
 
 	}
+}
+
+bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b_pos, Vector2D obj_b_dimensions)
+{
+	Point2D obj_a_TopLeft = obj_a_pos - obj_a_dimensions;
+	Point2D obj_a_BottomRight = obj_a_pos + obj_a_dimensions;
+
+	Point2D obj_b_TopLeft = obj_b_pos - obj_b_dimensions;
+	Point2D obj_b_BottomRight = obj_b_pos + obj_b_dimensions;
+
+	if (obj_a_BottomRight.x > obj_b_TopLeft.x &&
+		obj_a_TopLeft.x  < obj_b_BottomRight.x &&
+		obj_a_BottomRight.y  > obj_b_TopLeft.y &&
+		obj_a_TopLeft.y < obj_b_BottomRight.y)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 

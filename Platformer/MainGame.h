@@ -223,6 +223,7 @@ bool WillCollideWithWall(int obj_type, Vector2D obj_AABB);
 bool IsInsideWall();
 void CheckPlayerIsLeftOfPLatform(Platform& platform);
 void CheckHeadboxIsLeftOfPlatform(Platform& platform);
+bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b_pos, Vector2D obj_b_dimensions);
 
 
 void CameraFollow();
