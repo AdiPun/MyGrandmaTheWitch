@@ -180,7 +180,7 @@ void UpdatePlayer()
 
 		}
 
-		if (playerinfo.slidetimerCounter < 0 && IsUnderCeiling())
+		if (playerinfo.slidetimerCounter < 0 && IsPlayerUnderCeiling())
 		{
 			if (playerinfo.facingright == false)
 			{
@@ -195,7 +195,7 @@ void UpdatePlayer()
 
 			}
 		}
-		else if (playerinfo.slidetimerCounter < 0 && IsUnderCeiling() == false)
+		else if (playerinfo.slidetimerCounter < 0 && IsPlayerUnderCeiling() == false)
 		{
 			gamestate.playerstate = STATE_IDLE;
 			playerinfo.slidetimerCounter = playerinfo.slidetimer;
@@ -452,7 +452,7 @@ void HandleSlidingControls()
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
 	// Jump
-	if (Play::KeyPressed('W') && IsUnderCeiling() == false)
+	if (Play::KeyPressed('W') && IsPlayerUnderCeiling() == false)
 	{
 		obj_player.velocity.y = playerinfo.jumpspeed;
 		gamestate.playerstate = STATE_JUMPING;
@@ -802,7 +802,7 @@ bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 }
 
 // Checks if player is under ceiling
-bool IsUnderCeiling()
+bool IsPlayerUnderCeiling()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D headBoxPos = obj_player.pos - playerinfo.headboxoffset;
