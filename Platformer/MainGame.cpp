@@ -664,6 +664,14 @@ void CreateSplat(Point2D pos)
 	for (int i = 0; i < emitter.max_particles; i++)
 	{
 		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
+
+		std::vector<int> vSplats = Play::CollectGameObjectIDsByType(TYPE_SPLAT);
+
+		for (int id_splat : vSplats)
+		{
+			GameObject& obj_splat = Play::GetGameObject(id_splat);
+			obj_splat.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
+		}
 	}
 }
 
@@ -682,7 +690,7 @@ void UpdateSplats()
 
 		obj_splat.velocity.y = splat.initialvelocity.y;
 	
-		obj_splat.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
+		
 	
 
 		Play::SetGameObjectDirection(obj_splat, splat.initialvelocity.x, obj_splat.rotation);
