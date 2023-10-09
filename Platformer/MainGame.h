@@ -246,8 +246,6 @@ void SetGameObjectRotationToDirection(GameObject& obj);
 void CameraFollow();
 
 void Draw();
-void DrawGrassPlatforms();
-void DrawRockPlatforms();
 void DrawPlatforms();
 void DrawPlatformsAABB();
 void DrawAllGameObjectsByTypeRotated(GameObjectType type);
