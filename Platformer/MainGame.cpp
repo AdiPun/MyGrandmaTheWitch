@@ -672,7 +672,11 @@ void CreateDroplet(Point2D pos)
 		{
 			GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 
-			obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(90, 270));
+			obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
+
+			Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
+
+			obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
 		}
 			
 	}
@@ -688,9 +692,6 @@ void UpdateDroplets()
 	{
 		GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 		
-		Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
-
-		obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
 		obj_droplet.acceleration.y = dropletinfo.gravity;
 
 		SetGameObjectRotationToDirection(obj_droplet);
@@ -1012,7 +1013,7 @@ bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b
 
 void SetGameObjectRotationToDirection(GameObject& obj)
 {
-	obj.rotation = atan2(obj.velocity.x, obj.velocity.y);
+	obj.rotation = atan2(-obj.velocity.x, obj.velocity.y);
 }
 
 

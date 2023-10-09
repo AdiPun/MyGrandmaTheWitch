@@ -78,7 +78,7 @@ struct PlayerInfo
 
 	Point2D axehitboxoffset{40,0};
 	const Point2D constaxehitboxoffset{40,0};
-	Vector2D axehitboxAABB{30,30};
+	Vector2D axehitboxAABB{80,30};
 	bool axeanimationcomplete = false;
 };
 
@@ -99,9 +99,9 @@ struct Slime
 struct DropletParticleInfo
 {
 	int type = TYPE_DROPLET;
-	float gravity{ 0.6f };
+	float gravity{ 0.1f };
 	
-	Vector2D initialvelocity{ -3.0f , 3.0f };
+	Vector2D initialvelocity{ 3.0f , -5.0f };
 	Vector2D AABB{ 10,14 };
 
 	int max_particles{ 10 };
