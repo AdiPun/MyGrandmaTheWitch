@@ -76,9 +76,9 @@ struct PlayerInfo
 	Vector2D runoffset{ 0,4 };
 	Vector2D slideoffset{ 0,4 };
 
-	Point2D axehitboxoffset{50,0};
-	const Point2D constaxehitboxoffset{50,0};
-	Vector2D axehitboxAABB{15,30};
+	Point2D axehitboxoffset{40,0};
+	const Point2D constaxehitboxoffset{40,0};
+	Vector2D axehitboxAABB{30,30};
 	bool axeanimationcomplete = false;
 };
 
