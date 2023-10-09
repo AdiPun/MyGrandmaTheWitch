@@ -617,17 +617,11 @@ void UpdateSlimes()
 	
 		Play::UpdateGameObject(obj_slime);
 
-		if (IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,
-							obj_slime.pos , slime.AABB))
+		if (gamestate.playerstate == STATE_ATTACK && 
+			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
-			float timer = gamestate.elapsedTime;
-
 			Play::PlayAudio("hit");
-
-			if (timer > 2)
-			{
-				Play::DestroyGameObject(slime_id);
-			}
+			Play::DestroyGameObject(slime_id);
 		}
 
 	} 
