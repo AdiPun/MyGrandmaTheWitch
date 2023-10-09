@@ -52,7 +52,6 @@ void UpdatePlayer()
 
 	float timer = gamestate.elapsedTime;
 
-
 	if (gamestate.playerstate == STATE_SLIDING)
 	{
 		playerinfo.wallcollisionAABB = playerinfo.slidingAABB;
@@ -108,7 +107,6 @@ void UpdatePlayer()
 	case STATE_IDLE:
 
 		HandleGroundedControls();
-
 
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
@@ -219,12 +217,18 @@ void UpdatePlayer()
 
 		obj_player.acceleration.y = playerinfo.gravity;
 
+
+
 		if (!playerinfo.facingright)
 		{
+			obj_player.frame = obj_player.frame; // Makes it so the sprite animation doesn't restart when you change direction mid jump
+
 			Play::SetSprite(obj_player, "jump_left", playerinfo.animationspeedjump);
 		}
 		else if (playerinfo.facingright)
 		{
+			obj_player.frame = obj_player.frame;
+
 			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
 		}
 
@@ -352,6 +356,7 @@ void UpdatePlayer()
 			}
 
 		}
+
 		break;
 
 	case STATE_ATTACK:

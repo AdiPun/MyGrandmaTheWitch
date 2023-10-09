@@ -38,8 +38,7 @@ struct PlayerInfo
 	Vector2D headboxAABB{ 15,1 };
 	Vector2D headboxoffset{ 0,25 };
 
-
-	Vector2D PlatformToPlayerDistance;
+	int currentframe;
 
 	bool facingright;
 	float animationspeedidle{ 0.2f };
