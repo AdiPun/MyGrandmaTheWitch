@@ -619,7 +619,8 @@ void UpdateSlimes()
 	
 		Play::UpdateGameObject(obj_slime);
 
-		if (playerinfo.axeanimationcomplete == true && 
+		if (gamestate.playerstate == STATE_ATTACK &&
+			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
 		{
 			Play::PlayAudio("hit");
@@ -976,7 +977,6 @@ void Draw()
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
-
 	DrawDebug();
 	
 	Play::PresentDrawingBuffer();
@@ -1098,6 +1098,6 @@ void DrawDebug()
 
 	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
 
-	Play:(gamestate.centrepos,"axe left frame: " + std::to_string(Play::GetSpriteFrames("axe_left")), Play::cWhite, true);
+	Play::DrawFontText("64px", "CENTRE", gamestate.centrepos, Play::CENTRE);
 }
 

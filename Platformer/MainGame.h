@@ -186,7 +186,7 @@ struct LevelLayoutInfo
 struct GameState
 {
 	float elapsedTime = 0;
-	Point2D centrepos = { DISPLAY_WIDTH,DISPLAY_HEIGHT };
+	Point2D centrepos = { DISPLAY_WIDTH,DISPLAY_HEIGHT};
 	PlayerState playerstate = STATE_JUMPINGDOWN;
 	std::vector<Platform> vPlatforms;
 
