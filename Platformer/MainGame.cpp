@@ -655,7 +655,7 @@ void CreateDroplet(Point2D pos)
 {
 	for (int i = 0; i < dropletinfo.max_particles; i++)
 	{
-		pos.y -= 10;
+		pos.y -= 2;
 
 		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
@@ -715,6 +715,11 @@ void UpdateDroplets()
 			obj_droplet.acceleration.y = 0;
 		}
 
+		if (IsObjInsideWall() == true) // Stops droplet getting stuck in walls
+		{
+			obj_droplet.pos += 1.0f;
+		}
+
 		if (gamestate.playerstate == STATE_ATTACK &&
 			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB, 
@@ -764,6 +769,8 @@ void UpdateDroplets()
 		}
 	}
 }
+
+
 // Creates a single platform tile
 void CreatePlatform(int x, int y, int id)
 {
@@ -1199,9 +1206,9 @@ void DrawPlayerAABB()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	Point2D playerTopLeft = obj_player.pos - playerinfo.wallcollisionAABB;
+	Point2D playerTopLeft = obj_player.pos - playerinfo.verticalcollisionAABB;
 
-	Point2D playerBottomRight = obj_player.pos + playerinfo.wallcollisionAABB;
+	Point2D playerBottomRight = obj_player.pos + playerinfo.verticalcollisionAABB;
 
 
 	Play::DrawRect(playerTopLeft, playerBottomRight, Play::cGreen);
@@ -1237,15 +1244,17 @@ void DrawDebug()
 
 	DrawPlatformsAABB();
 
-	DrawPlayerAABB();
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);*/
+	DrawPlayerAABB();
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
 
 	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
 	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
+	Play::SetDrawingSpace(Play::SCREEN);
 	Play::DrawFontText("64px", "CENTRE", gamestate.centrepos, Play::CENTRE);
+	Play::SetDrawingSpace(Play::WORLD);
 }
 
