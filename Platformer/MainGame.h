@@ -227,12 +227,13 @@ void UpdateSlimes();
 void UpdateItemAxe();
 
 void CreateSplat(Point2D pos);
+void UpdateSplats();
+
+void CreateLevelFromArray();
 
 void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformColumn(int tiles, int x, int y);
-void CreatePlatformFloor();
-void CreateLevelFromArray();
 
 bool IsGrounded();
 bool FloorCollisionStarted();

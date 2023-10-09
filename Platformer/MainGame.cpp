@@ -666,12 +666,12 @@ void CreateSplat(Point2D pos)
 		Play::CreateGameObject(TYPE_SPLAT, pos, 0, "droplet");
 	}
 
-	for (id_splat : vSplats)
-	{
-
-	}
 }
 
+void UpdateSplats()
+{
+
+}
 // Creates a single platform tile
 void CreatePlatform(int x, int y, int id)
 {
