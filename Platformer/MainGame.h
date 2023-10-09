@@ -98,14 +98,13 @@ struct Slime
 
 struct DropletParticleInfo
 {
-	int type = TYPE_DROPLET;
-	float gravity{ 0.1f };
-	
-	Vector2D initialvelocity{ 3.0f , -5.0f };
-	Vector2D AABB{ 10,14 };
-
 	int max_particles{ 10 };
+	Vector2D AABB{ 10,14 };
+	Vector2D initialvelocity{ 3.0f , -5.0f };
+	
+	float gravity{ 0.1f };
 
+	Vector2D minvelocity{ 0.1f,0.1f };
 };
 
 

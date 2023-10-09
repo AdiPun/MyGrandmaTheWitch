@@ -652,7 +652,7 @@ void CreateDroplet(Point2D pos)
 
 	for (int i = 0; i < dropletinfo.max_particles; i++)
 	{
-		pos.y -= 5;
+		pos.y -= 10;
 
 		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
@@ -682,7 +682,10 @@ void UpdateDroplets()
 	{
 		GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 		
-		obj_droplet.acceleration.y = dropletinfo.gravity;
+		if (FloorCollisionStarted(obj_droplet,dropletinfo.AABB) == false)
+		{
+			obj_droplet.acceleration.y = dropletinfo.gravity;
+		}
 
 		SetGameObjectRotationToDirection(obj_droplet);
 
@@ -690,17 +693,22 @@ void UpdateDroplets()
 		{
 			obj_droplet.velocity.y *= -1;
 			obj_droplet.velocity.y *= 0.5;
-
 		}
 
 		if (WillCollideWithWall(obj_droplet,dropletinfo.AABB))
 		{
 			obj_droplet.velocity.x *= -1;
 			obj_droplet.velocity.x *= 0.5;
-
 		}
 
-
+		if (IsObjGrounded(obj_droplet,dropletinfo.AABB) &&
+			obj_droplet.velocity.y < dropletinfo.minvelocity.y &&
+			obj_droplet.velocity.y > -dropletinfo.minvelocity.y)
+		{
+			obj_droplet.velocity.y = 0;
+			obj_droplet.velocity.x = 0;
+			obj_droplet.acceleration.y = 0;
+		}
 
 		Play::UpdateGameObject(obj_droplet);
 			
