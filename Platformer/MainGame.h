@@ -85,7 +85,15 @@ struct PlayerInventory
 	int gems{ 0 };
 };
 
-struct Slime
+struct WitchInfo
+{
+	float animationspeedidle{ 0.2f };
+	Vector2D idleoffset{ 0,90 };
+	Vector2D talkingoffset{ 0,90};
+
+};
+
+struct SlimeInfo
 {
 	int type = TYPE_SLIME;
 	Vector2D AABB{ 7,7 };
@@ -195,9 +203,10 @@ struct GameState
 };
 
 
-Slime slime;
 PlayerInfo playerinfo;
 PlayerInventory inventory;
+WitchInfo witchinfo;
+SlimeInfo slimeinfo;
 DropletParticleInfo dropletinfo;
 
 VariableJump variablejump;

@@ -11,6 +11,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("run_right", 0, playerinfo.runoffset.y);
 	Play::MoveSpriteOrigin("slide_left", 0, playerinfo.slideoffset.y);
 	Play::MoveSpriteOrigin("slide_right", 0, playerinfo.slideoffset.y);
+	Play::MoveSpriteOrigin("witch_idle", 0, witchinfo.idleoffset.y);
+	Play::MoveSpriteOrigin("witch_talking", 0, witchinfo.talkingoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
 	//Play::StartAudioLoop("music");
@@ -557,13 +559,15 @@ void UpdateWitch()
 {
 	GameObject& obj_witch = Play::GetGameObjectByType(TYPE_WITCH);
 
+	Play::SetSprite(obj_witch, "witch_idle", witchinfo.animationspeedidle);
+
 	Play::UpdateGameObject(obj_witch);
 }
 
 
 void UpdateSlimes()
 {
-	Slime slime;
+	SlimeInfo slimeinfo;
 
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	
@@ -573,21 +577,21 @@ void UpdateSlimes()
 	{
 		GameObject& obj_slime = Play::GetGameObject(slime_id);
 
-		Play::SetSprite(obj_slime, "slime_idle", slime.animationspeed);
+		Play::SetSprite(obj_slime, "slime_idle", slimeinfo.animationspeed);
 		
 		obj_slime.acceleration.y = playerinfo.gravity;
 
 		bool isdead = false;
 
 		// IsGrounded for Slimes
-		if (IsObjGrounded(obj_slime, slime.AABB))
+		if (IsObjGrounded(obj_slime, slimeinfo.AABB))
 		{
 			obj_slime.velocity.y = 0;
 			obj_slime.acceleration.y = 0;
 			obj_slime.pos = obj_slime.oldPos;
 		}
 
-		if (WillCollideWithWall(obj_slime, slime.AABB))
+		if (WillCollideWithWall(obj_slime, slimeinfo.AABB))
 		{
 			obj_slime.velocity.x = 0;
 			obj_slime.pos = obj_slime.oldPos;
@@ -595,19 +599,19 @@ void UpdateSlimes()
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
-			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrangehorizontal, 250) &&
-			obj_player.pos.y > obj_slime.pos.y - slime.sightrangevertical &&
-			obj_player.pos.y < obj_slime.pos.y + slime.sightrangevertical)
+			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slimeinfo.sightrangehorizontal, 250) &&
+			obj_player.pos.y > obj_slime.pos.y - slimeinfo.sightrangevertical &&
+			obj_player.pos.y < obj_slime.pos.y + slimeinfo.sightrangevertical)
 
 		{
-			obj_slime.velocity.x = slime.runspeed;
+			obj_slime.velocity.x = slimeinfo.runspeed;
 		}
 		else if(obj_player.pos.x > obj_slime.pos.x &&
-			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrangehorizontal, 250) &&
-			obj_player.pos.y > obj_slime.pos.y - slime.sightrangevertical &&
-			obj_player.pos.y < obj_slime.pos.y + slime.sightrangevertical)
+			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slimeinfo.sightrangehorizontal, 250) &&
+			obj_player.pos.y > obj_slime.pos.y - slimeinfo.sightrangevertical &&
+			obj_player.pos.y < obj_slime.pos.y + slimeinfo.sightrangevertical)
 		{
-			obj_slime.velocity.x = -slime.runspeed;
+			obj_slime.velocity.x = -slimeinfo.runspeed;
 		}
 		else
 		{
@@ -616,21 +620,21 @@ void UpdateSlimes()
 
 		if (obj_slime.velocity.x > 0)
 		{
-			Play::SetSprite(obj_slime, "slime_idle_right", slime.animationspeed);
+			Play::SetSprite(obj_slime, "slime_idle_right", slimeinfo.animationspeed);
 		}
 		if (obj_slime.velocity.x < 0)
 		{
-			Play::SetSprite(obj_slime, "slime_idle_left", slime.animationspeed);
+			Play::SetSprite(obj_slime, "slime_idle_left", slimeinfo.animationspeed);
 		}
 	
 
 		if (gamestate.playerstate == STATE_ATTACK &&
 			obj_player.frame >= 8 &&
-			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slime.AABB))
+			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slimeinfo.AABB))
 		{
 			CreateDroplet(obj_slime.pos);
 			Play::PlayAudio("hit");
-			Play::SetSprite(obj_slime, "slime_melt", slime.animationspeed);
+			Play::SetSprite(obj_slime, "slime_melt", slimeinfo.animationspeed);
 			isdead = true;
 		}
 
@@ -1143,7 +1147,7 @@ void Draw()
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
-	DrawAllGameObjectsByType(TYPE_WITCH);
+	Play::DrawObject(Play::GetGameObjectByType(TYPE_WITCH));
 
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
@@ -1277,7 +1281,7 @@ void DrawDebug()
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
 
-	DrawAllObjectAABB(TYPE_SLIME, slime.AABB);
+	DrawAllObjectAABB(TYPE_SLIME, slimeinfo.AABB);
 	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
 	
