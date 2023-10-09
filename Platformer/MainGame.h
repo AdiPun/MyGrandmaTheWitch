@@ -93,7 +93,14 @@ struct WitchInfo
 	Vector2D talkingrange{,};
 	Vector2D speechbubbleoffset{,};
 	bool intalkingrange = false;
-	string dialogue1 = "Tiny one, be a dear and collect 20 slime tears for me, you'll need to give them a good smack on the noggin with something. I think there might be an axe in the North West corner of the wood, go fetch that first.";
+	string dialogue1 = "Tiny one, be a dear and collect 20 slime tears for me.";
+	string dialogue2 = "They'll need a good smack on the head with HEAVY.";
+	string dialogue3 = "I think there might be an axe in the North West corner of the wood, go fetch that first.";
+};
+
+struct BannerInfo
+{
+
 };
 
 struct SlimeInfo
