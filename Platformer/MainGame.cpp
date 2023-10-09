@@ -739,8 +739,21 @@ void UpdateDroplets()
 							obj_droplet.pos, dropletinfo.AABB))
 		{
 			IsCollected = true;
-			Play::PlayAudio("");
 			inventory.slimeteardrops += 1;
+
+			switch (Play::RandomRollRange(1,3))
+			{
+			case 1:
+				Play::PlayAudio("tear_collect_1");
+				break;
+			case 2:
+				Play::PlayAudio("tear_collect_2");
+				break;
+			case 3:
+				Play::PlayAudio("tear_collect_3");
+				break;
+			}
+
 		}
 		
 		Play::UpdateGameObject(obj_droplet);
