@@ -587,7 +587,7 @@ void UpdateSlimes()
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
-			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrange, 250) &&
+			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slime.sightrangehorizontal, 250) &&
 			obj_player.pos.y > obj_slime.pos.y - slime.sightrangevertical &&
 			obj_player.pos.y < obj_slime.pos.y + slime.sightrangevertical)
 
@@ -595,7 +595,7 @@ void UpdateSlimes()
 			obj_slime.velocity.x = slime.runspeed;
 		}
 		else if(obj_player.pos.x > obj_slime.pos.x &&
-			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrange, 250) &&
+			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slime.sightrangehorizontal, 250) &&
 			obj_player.pos.y > obj_slime.pos.y - slime.sightrangevertical &&
 			obj_player.pos.y < obj_slime.pos.y + slime.sightrangevertical)
 		{
