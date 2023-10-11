@@ -41,3 +41,8 @@ This game was super fun to make. Using Sumodigital's header and tutorial taught 
 No slimes were harmed in the making of this video game.
 
 ![Someonesavehim](https://github.com/AdiPun/Platformer/assets/119054941/43935cd7-8c43-4c4d-a432-30c9660a4d76) ![Toolate](https://github.com/AdiPun/Platformer/assets/119054941/736a81ab-733e-479c-b902-583c01f68816)
+
+### Assets credits
+
+Massive thank you to these creators for sharing the assets I used to make this game:
+https://itch.io/c/3667699/my-grandma-the-witch
