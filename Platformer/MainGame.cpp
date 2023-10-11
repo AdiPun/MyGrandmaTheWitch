@@ -558,8 +558,19 @@ void HandleLandingControls()
 void UpdateWitch()
 {
 	GameObject& obj_witch = Play::GetGameObjectByType(TYPE_WITCH);
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
 	Play::SetSprite(obj_witch, "witch_idle", witchinfo.animationspeedidle);
+
+	if (IsCollidingAABB(obj_player.pos,playerinfo.verticalcollisionAABB,obj_witch.pos,witchinfo.talkingrangeAABB))
+	{
+		witchinfo.intalkingrange == true;
+	}
+	else
+	{
+		witchinfo.intalkingrange == false;
+
+	}
 
 	Play::UpdateGameObject(obj_witch);
 }
@@ -1173,9 +1184,23 @@ void DrawUI()
 
 void DrawDialogue()
 {
+	GameObject& obj_witch = Play::GetGameObjectByType(TYPE_WITCH);
+
 	if (witchinfo.intalkingrange == true)
 	{
-		Play::DrawSprite("")
+		Play::DrawSprite("medium_banner", obj_witch.pos + witchinfo.speechbubbleoffset ,1); // Draw speech bubble
+		
+		Play::DrawFontText("64px", witchinfo.dialogue1, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
+		
+		if (playerinfo.hasaxe == false)
+		{
+			Play::DrawFontText("64px", witchinfo.dialogue2, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
+		}
+
+		if (inventory.slimeteardrops <= 20)
+		{
+			Play::DrawFontText("64px", witchinfo.dialogue3, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
+		}
 	}
 }
 

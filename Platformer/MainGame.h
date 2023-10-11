@@ -90,17 +90,18 @@ struct WitchInfo
 	float animationspeedidle{ 0.2f };
 	Vector2D idlespriteoffset{ 0,90 };
 	Vector2D talkingspriteoffset{ 0,90};
-	Vector2D talkingrange{,};
-	Vector2D speechbubbleoffset{,};
+	Vector2D talkingrange{70,70};
+	Vector2D speechbubbleoffset{-50,-50};
 	bool intalkingrange = false;
-	string dialogue1 = "Tiny one, be a dear and collect 20 slime tears for me.";
-	string dialogue2 = "They'll need a good smack on the head with HEAVY.";
-	string dialogue3 = "I think there might be an axe in the North West corner of the wood, go fetch that first.";
+	int slimeteardropsneeded{ 20 };
+	std::string dialogue1 = "Tiny one, be a dear and collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
+	std::string dialogue2 = "I think there might be an axe in the North West corner of the wood, go fetch that first.";
+	std::string dialogue3 = "Excellent work. We'll get started with the spell once it's coded X)";
 };
 
 struct BannerInfo
 {
-
+	
 };
 
 struct SlimeInfo
