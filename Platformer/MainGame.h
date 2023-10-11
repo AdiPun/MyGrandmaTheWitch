@@ -90,7 +90,7 @@ struct WitchInfo
 	float animationspeedidle{ 0.2f };
 	Vector2D idlespriteoffset{ 0,90 };
 	Vector2D talkingspriteoffset{ 0,90};
-	Vector2D talkingrangeAABB{70,70};
+	Vector2D talkingrangeAABB{100,100};
 	Vector2D speechbubbleoffset{-50,-50};
 	bool intalkingrange = false;
 	int slimeteardropsneeded{ 20 };
