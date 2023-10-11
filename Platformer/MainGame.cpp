@@ -15,7 +15,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("witch_talking", 0, witchinfo.talkingspriteoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
 	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
-	//Play::StartAudioLoop("music");
+	Play::StartAudioLoop("music");
 	CreateLevelFromArray();
 }
 
@@ -231,7 +231,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "jump_right", playerinfo.animationspeedjump);
 		}
 
-		if (Play::IsAnimationComplete(obj_player)) // Change when velocity.y = 0
+		if (Play::IsAnimationComplete(obj_player))
 		{
 			gamestate.playerstate = STATE_JUMPINGDOWN;
 		}
@@ -1206,7 +1206,6 @@ void DrawDialogue()
 
 			Play::DrawFontText("64px", witchinfo.dialogue3, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset*2, Play::CENTRE);
 
-			Play::DrawFontText("64px", witchinfo.dialogue4, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset*3, Play::CENTRE);
 		}
 		
 

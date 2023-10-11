@@ -95,9 +95,8 @@ struct WitchInfo
 	bool intalkingrange = false;
 	int slimeteardropsneeded{ 20 };
 	std::string dialogue1 = "Collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
-	std::string dialogue2 = "I think I spotted an axe ";
-	std::string dialogue3 = "in the North West corner of the woods";
-	std::string dialogue4 = "Go fetch that first.";
+	std::string dialogue2 = "I spotted an axe North West of here";
+	std::string dialogue3 = "Go fetch that first.";
 	std::string dialoguehowtouseaxe = "Press L to smash these slimes up!";
 	std::string dialogueslimescollected = "Excellent work dear.";
 };
@@ -105,7 +104,7 @@ struct WitchInfo
 struct BannerInfo
 {
 	Vector2D AABB{ 360,110 };
-	Vector2D nextlineoffset{ 0,64 };
+	Vector2D nextlineoffset{ 0,48 };
 };
 
 struct SlimeInfo
