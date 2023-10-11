@@ -562,13 +562,14 @@ void UpdateWitch()
 
 	Play::SetSprite(obj_witch, "witch_idle", witchinfo.animationspeedidle);
 
-	if (IsCollidingAABB(obj_player.pos,playerinfo.verticalcollisionAABB,obj_witch.pos,witchinfo.talkingrangeAABB))
+	if (IsCollidingAABB(obj_player.pos , playerinfo.verticalcollisionAABB,
+						obj_witch.pos + witchinfo.talkingrangeoffset , witchinfo.talkingrangeAABB))
 	{
-		witchinfo.intalkingrange == true;
+		witchinfo.intalkingrange = true;
 	}
 	else
 	{
-		witchinfo.intalkingrange == false;
+		witchinfo.intalkingrange = false;
 	}
 
 	Play::UpdateGameObject(obj_witch);
@@ -1166,7 +1167,7 @@ void Draw()
 	
 	DrawUI();
 	
-	DrawDebug();
+	// DrawDebug();
 
 	Play::PresentDrawingBuffer();
 }
@@ -1187,19 +1188,28 @@ void DrawDialogue()
 
 	if (witchinfo.intalkingrange == true)
 	{
-		Play::DrawSprite("medium_banner", obj_witch.pos + witchinfo.speechbubbleoffset ,1); // Draw speech bubble
 		
-		Play::DrawFontText("64px", witchinfo.dialogue1, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
-		
-		if (playerinfo.hasaxe == false)
-		{
-			Play::DrawFontText("64px", witchinfo.dialogue2, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
-		}
 
-		if (inventory.slimeteardrops <= 20)
+		if (inventory.slimeteardrops >= witchinfo.slimeteardropsneeded)
 		{
-			Play::DrawFontText("64px", witchinfo.dialogue3, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
+			Play::DrawFontText("64px", witchinfo.dialogueslimescollected, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
 		}
+		else if (inventory.slimeteardrops < witchinfo.slimeteardropsneeded && playerinfo.hasaxe == true)
+		{
+			Play::DrawFontText("64px", witchinfo.dialoguehowtouseaxe, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
+		}
+		else if (inventory.slimeteardrops < witchinfo.slimeteardropsneeded)
+		{
+			Play::DrawFontText("64px", witchinfo.dialogue1, obj_witch.pos + witchinfo.speechbubbleoffset, Play::CENTRE);
+
+			Play::DrawFontText("64px", witchinfo.dialogue2, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset, Play::CENTRE);
+
+			Play::DrawFontText("64px", witchinfo.dialogue3, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset*2, Play::CENTRE);
+
+			Play::DrawFontText("64px", witchinfo.dialogue4, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset*3, Play::CENTRE);
+		}
+		
+
 	}
 }
 
@@ -1315,8 +1325,13 @@ void DrawDebug()
 	DrawPlayerAABB();
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
+	
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos+witchinfo.talkingrangeoffset, witchinfo.talkingrangeAABB); // Witch talking hitbox
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.speechbubbleoffset, bannerinfo.AABB); // Dialoguebox pos
 
 	DrawAllObjectAABB(TYPE_SLIME, slimeinfo.AABB);
+
 	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
 	

@@ -82,7 +82,6 @@ struct PlayerInfo
 struct PlayerInventory
 {
 	int slimeteardrops{ 0 };
-	int gems{ 0 };
 };
 
 struct WitchInfo
@@ -90,18 +89,23 @@ struct WitchInfo
 	float animationspeedidle{ 0.2f };
 	Vector2D idlespriteoffset{ 0,90 };
 	Vector2D talkingspriteoffset{ 0,90};
-	Vector2D talkingrangeAABB{100,100};
-	Vector2D speechbubbleoffset{-50,-50};
+	Vector2D talkingrangeAABB{200,100};
+	Vector2D talkingrangeoffset{-150,0};
+	Vector2D speechbubbleoffset{-200,-275};
 	bool intalkingrange = false;
 	int slimeteardropsneeded{ 20 };
-	std::string dialogue1 = "Tiny one, be a dear and collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
-	std::string dialogue2 = "I think there might be an axe in the North West corner of the wood, go fetch that first.";
-	std::string dialogue3 = "Excellent work. We'll get started with the spell once it's coded X)";
+	std::string dialogue1 = "Collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
+	std::string dialogue2 = "I think I spotted an axe ";
+	std::string dialogue3 = "in the North West corner of the woods";
+	std::string dialogue4 = "Go fetch that first.";
+	std::string dialoguehowtouseaxe = "Press L to smash these slimes up!";
+	std::string dialogueslimescollected = "Excellent work dear.";
 };
 
 struct BannerInfo
 {
-	
+	Vector2D AABB{ 360,110 };
+	Vector2D nextlineoffset{ 0,64 };
 };
 
 struct SlimeInfo
@@ -219,6 +223,7 @@ PlayerInventory inventory;
 WitchInfo witchinfo;
 SlimeInfo slimeinfo;
 DropletParticleInfo dropletinfo;
+BannerInfo bannerinfo;
 
 VariableJump variablejump;
 CoyoteJump coyotejump;
