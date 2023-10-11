@@ -30,7 +30,6 @@ bool MainGameUpdate(float elapsedTime)
 	UpdateWitch();
 	CameraFollow();
 	Draw();
-	DrawDialogue();
 	return Play::KeyDown(VK_ESCAPE);
 }
 
