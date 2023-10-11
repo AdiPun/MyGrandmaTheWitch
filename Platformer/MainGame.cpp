@@ -569,7 +569,6 @@ void UpdateWitch()
 	else
 	{
 		witchinfo.intalkingrange == false;
-
 	}
 
 	Play::UpdateGameObject(obj_witch);
