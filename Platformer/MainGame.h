@@ -93,7 +93,7 @@ struct WitchInfo
 	Vector2D talkingrangeoffset{-150,0};
 	Vector2D speechbubbleoffset{-200,-275};
 	bool intalkingrange = false;
-	int slimeteardropsneeded{ 20 };
+	int slimeteardropsneeded{ 30 };
 	std::string dialogue1 = "Collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
 	std::string dialogue2 = "I spotted an axe North West of here";
 	std::string dialogue3 = "Go fetch that first.";
