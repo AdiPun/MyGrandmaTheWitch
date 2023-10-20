@@ -30,13 +30,13 @@ enum PlayerState
 
 struct PlayerInfo
 {
-	Vector2D verticalcollisionAABB{ 15,30 };
-	Vector2D wallcollisionAABB{ 15,20 };
-	Vector2D slidingAABB{ 15,0 };
-	Vector2D standingAABB{ 15,20 };
+	Vector2D verticalcollisionAABB{ 15 , 30 };
+	Vector2D wallcollisionAABB{ 15 , 20 };
+	Vector2D slidingAABB{ 15 , 0 };
+	Vector2D standingAABB{ 15 , 20 };
 
-	Vector2D headboxAABB{ 15,1 };
-	Vector2D headboxoffset{ 0,25 };
+	Vector2D headboxAABB{ 15 , 1 };
+	Vector2D headboxoffset{ 0 , 25 };
 
 	bool facingright;
 	float animationspeedidle{ 0.2f };
@@ -69,13 +69,13 @@ struct PlayerInfo
 	bool headboxleftofplatform;
 	bool hasaxe = false;
 
-	Vector2D axeattackoffset{ 0,7};
-	Vector2D runoffset{ 0,4 };
-	Vector2D slideoffset{ 0,4 };
+	Vector2D axeattackoffset{ 0 , 7 };
+	Vector2D runoffset{ 0 , 4 };
+	Vector2D slideoffset{ 0 , 4 };
 
-	Point2D axehitboxoffset{40,0};
-	const Point2D constaxehitboxoffset{40,0};
-	Vector2D axehitboxAABB{30,30};
+	Point2D axehitboxoffset{ 40 , 0 };
+	const Point2D constaxehitboxoffset{ 40 , 0 };
+	Vector2D axehitboxAABB{ 30 , 30 };
 	bool axeanimationcomplete = false;
 };
 
@@ -87,13 +87,14 @@ struct PlayerInventory
 struct WitchInfo
 {
 	float animationspeedidle{ 0.2f };
-	Vector2D idlespriteoffset{ 0,90 };
-	Vector2D talkingspriteoffset{ 0,90};
-	Vector2D talkingrangeAABB{200,100};
-	Vector2D talkingrangeoffset{-150,0};
-	Vector2D speechbubbleoffset{-200,-275};
+	float animationspeedtalking{ 0.02f };
+	Vector2D idlespriteoffset{ 0 , 90 };
+	Vector2D talkingspriteoffset{ 0 , 90 };
+	Vector2D talkingrangeAABB{ 200 , 100 };
+	Vector2D talkingrangeoffset {-150 , 0 };
+	Vector2D speechbubbleoffset{ -200 , -275 };
 	bool intalkingrange = false;
-	int slimeteardropsneeded{ 30 };
+	int slimeteardropsneeded{ 40 };
 	std::string dialogue1 = "Collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
 	std::string dialogue2 = "I spotted an axe North West of here";
 	std::string dialogue3 = "Go fetch that first.";
@@ -103,8 +104,8 @@ struct WitchInfo
 
 struct BannerInfo
 {
-	Vector2D AABB{ 360,110 };
-	Vector2D nextlineoffset{ 0,48 };
+	Vector2D AABB{ 360 , 110 };
+	Vector2D nextlineoffset{ 0 , 48 };
 };
 
 struct SlimeInfo
@@ -121,7 +122,7 @@ struct SlimeInfo
 
 struct DropletParticleInfo
 {
-	int max_particles{ 5 };
+	int max_particles{ 10 };
 	Vector2D AABB{ 5,7 };
 	Vector2D initialvelocity{ 3.0f , -5.0f };
 	

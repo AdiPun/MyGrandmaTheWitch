@@ -681,21 +681,15 @@ void CreateDroplet(Point2D pos)
 	{
 		pos.y -= 2;
 
-		Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
+		int id_droplet = Play::CreateGameObject(TYPE_DROPLET, pos, 0, "droplet");
 
-		std::vector<int> vdroplets = Play::CollectGameObjectIDsByType(TYPE_DROPLET);
+		GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 
-		for (int id_droplet : vdroplets)
-		{
-			GameObject& obj_droplet = Play::GetGameObject(id_droplet);
-			
-			obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
+		obj_droplet.rotation = Play::DegToRad(Play::RandomRollRange(270, 90));
 
-			Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
+		Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
 
-			obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
-		}
-			
+		obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
 	}
 }
 
