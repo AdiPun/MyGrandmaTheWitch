@@ -97,7 +97,7 @@ struct WitchInfo
 	std::string dialogue1 = "Collect " + std::to_string(slimeteardropsneeded) + " slime tears for me.";
 	std::string dialogue2 = "I spotted an axe North West of here";
 	std::string dialogue3 = "Go fetch that first.";
-	std::string dialoguehowtouseaxe = "Press L to smash these slimes up!";
+	std::string dialoguehowtouseaxe = "Now Press L to smash these slimes up!";
 	std::string dialogueslimescollected = "Excellent work dear.";
 };
 
