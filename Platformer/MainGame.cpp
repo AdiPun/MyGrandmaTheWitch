@@ -675,6 +675,8 @@ void UpdateItemAxe()
 	}
 }
 
+
+// Creates dropletinfo.max_particles number of droplets and sets their rotation and velocity
 void CreateDroplet(Point2D pos)
 {
 	for (int i = 0; i < dropletinfo.max_particles; i++)
