@@ -90,7 +90,7 @@ struct WitchInfo
 	float animationspeedtalking{ 0.02f };
 	Vector2D idlespriteoffset{ 0 , 90 };
 	Vector2D talkingspriteoffset{ 0 , 90 };
-	Vector2D talkingrangeAABB{ 200 , 100 };
+	Vector2D talkingrangeAABB{ 200 , 200 };
 	Vector2D talkingrangeoffset {-150 , 0 };
 	Vector2D speechbubbleoffset{ -200 , -275 };
 	bool intalkingrange = false;
