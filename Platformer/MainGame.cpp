@@ -14,7 +14,7 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("witch_idle", 0, witchinfo.idlespriteoffset.y);
 	Play::MoveSpriteOrigin("witch_talking", 0, witchinfo.talkingspriteoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
-	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT}, 16, "idle_right");
+	Play::CreateGameObject(TYPE_PLAYER, { DISPLAY_WIDTH,DISPLAY_HEIGHT }, 16, "idle_right");
 	Play::StartAudioLoop("music");
 	CreateLevelFromArray();
 }
@@ -72,7 +72,7 @@ void UpdatePlayer()
 	{
 		jumpbuffer.jumpbufferTimeCounter -= timer;
 	}
-	
+
 	if (Play::KeyDown('S')) // When you hold down slide, the counter goes down
 	{
 		slidebuffer.slidebufferTimeCounter = slidebuffer.slidebufferTime;
@@ -99,7 +99,7 @@ void UpdatePlayer()
 	}
 
 	// Ceiling interactions
-	if (CeilingCollisionStarted(obj_player,playerinfo.verticalcollisionAABB))
+	if (CeilingCollisionStarted(obj_player, playerinfo.verticalcollisionAABB))
 	{
 		obj_player.pos.y = obj_player.oldPos.y;
 		obj_player.velocity.y *= 0.9f;
@@ -148,7 +148,7 @@ void UpdatePlayer()
 			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
 		}
 
-		
+
 
 		if (IsObjGrounded(obj_player, playerinfo.verticalcollisionAABB) == false)
 		{
@@ -161,14 +161,14 @@ void UpdatePlayer()
 
 		HandleSlidingControls();
 
-		playerinfo.friction = playerinfo.slidingfriction;   
+		playerinfo.friction = playerinfo.slidingfriction;
 
 		playerinfo.slidetimerCounter -= gamestate.elapsedTime;
 
 
 		if (playerinfo.facingright == false)
 		{
-		
+
 			Play::SetSprite(obj_player, "slide_left", playerinfo.animationspeedslide);
 
 
@@ -209,7 +209,7 @@ void UpdatePlayer()
 		}
 
 
-		
+
 		break;
 
 	case STATE_JUMPING:
@@ -236,7 +236,7 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_JUMPINGDOWN;
 		}
 
-		if (FloorCollisionStarted(obj_player,playerinfo.verticalcollisionAABB))
+		if (FloorCollisionStarted(obj_player, playerinfo.verticalcollisionAABB))
 		{
 			Play::PlayAudio("Landing");
 			obj_player.pos.y = obj_player.oldPos.y;
@@ -316,7 +316,7 @@ void UpdatePlayer()
 
 		coyotejump.coyoteTimeCounter = coyotejump.coyoteTime; // Reset coyotetimecounter when landing
 
-	
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "land_left", playerinfo.animationspeedland);
@@ -360,7 +360,7 @@ void UpdatePlayer()
 
 	case STATE_ATTACK:
 
-		
+
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		if (!playerinfo.facingright)
@@ -390,7 +390,7 @@ void UpdatePlayer()
 void HandleGroundedControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	
+
 	if (Play::KeyDown('A') == false && Play::KeyDown('D') == false)
 	{
 		gamestate.playerstate = STATE_IDLE;
@@ -436,7 +436,7 @@ void HandleGroundedControls()
 			obj_player.velocity.x = -playerinfo.slidespeed;
 			Play::PlayAudio("slide");
 		}
-		
+
 	}
 
 	// Jump
@@ -494,17 +494,17 @@ void HandleFallingControls()
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
-		
+
 		obj_player.velocity.x = -playerinfo.fallspeed;
 	}
 	else if (Play::KeyDown('D'))
 	{
 		playerinfo.facingright = true;
 
-		obj_player.velocity.x = playerinfo.fallspeed;	
+		obj_player.velocity.x = playerinfo.fallspeed;
 	}
 
-	
+
 	coyotejump.coyoteTimeCounter -= timer;
 
 	// If there's still coyotetimecounter left AND
@@ -522,7 +522,7 @@ void HandleFallingControls()
 void HandleLandingControls()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	
+
 	if (Play::KeyDown('A'))
 	{
 		playerinfo.facingright = false;
@@ -562,8 +562,8 @@ void UpdateWitch()
 
 	Play::SetSprite(obj_witch, "witch_idle", witchinfo.animationspeedidle);
 
-	if (IsCollidingAABB(obj_player.pos , playerinfo.verticalcollisionAABB,
-						obj_witch.pos + witchinfo.talkingrangeoffset , witchinfo.talkingrangeAABB))
+	if (IsCollidingAABB(obj_player.pos, playerinfo.verticalcollisionAABB,
+		obj_witch.pos + witchinfo.talkingrangeoffset, witchinfo.talkingrangeAABB))
 	{
 		witchinfo.intalkingrange = true;
 	}
@@ -581,15 +581,15 @@ void UpdateSlimes()
 	SlimeInfo slimeinfo;
 
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	
+
 	std::vector<int> vSlimes = Play::CollectGameObjectIDsByType(TYPE_SLIME);
-	
+
 	for (int slime_id : vSlimes)
 	{
 		GameObject& obj_slime = Play::GetGameObject(slime_id);
 
-		Play::SetSprite(obj_slime, "slime_idle", slimeinfo.animationspeed);
-		
+
+
 		obj_slime.acceleration.y = playerinfo.gravity;
 
 		bool isdead = false;
@@ -610,15 +610,15 @@ void UpdateSlimes()
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
-			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slimeinfo.sightrangehorizontal, 250) &&
+			obj_player.pos.x > obj_slime.pos.x - slimeinfo.sightrangehorizontal &&
 			obj_player.pos.y > obj_slime.pos.y - slimeinfo.sightrangevertical &&
 			obj_player.pos.y < obj_slime.pos.y + slimeinfo.sightrangevertical)
 
 		{
 			obj_slime.velocity.x = slimeinfo.runspeed;
 		}
-		else if(obj_player.pos.x > obj_slime.pos.x &&
-			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slimeinfo.sightrangehorizontal, 250) &&
+		else if (obj_player.pos.x > obj_slime.pos.x &&
+			obj_player.pos.x < obj_slime.pos.x + slimeinfo.sightrangehorizontal &&
 			obj_player.pos.y > obj_slime.pos.y - slimeinfo.sightrangevertical &&
 			obj_player.pos.y < obj_slime.pos.y + slimeinfo.sightrangevertical)
 		{
@@ -627,35 +627,37 @@ void UpdateSlimes()
 		else
 		{
 			obj_slime.velocity.x = 0;
+			Play::SetSprite(obj_slime, "slime_idle", slimeinfo.animationspeed);
 		}
 
+		// Faces the slime in the direction of travel
 		if (obj_slime.velocity.x > 0)
 		{
-			Play::SetSprite(obj_slime, "slime_idle_right", slimeinfo.animationspeed);
+			Play::SetSprite(obj_slime, "slime_hop_right", slimeinfo.animationspeed);
 		}
 		if (obj_slime.velocity.x < 0)
 		{
-			Play::SetSprite(obj_slime, "slime_idle_left", slimeinfo.animationspeed);
+			Play::SetSprite(obj_slime, "slime_hop_left", slimeinfo.animationspeed);
 		}
-	
 
+		// Creates droplets if the player attacks a slime
 		if (gamestate.playerstate == STATE_ATTACK &&
 			obj_player.frame >= 8 &&
-			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slimeinfo.AABB))
+			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB, obj_slime.pos, slimeinfo.AABB))
 		{
 			CreateDroplet(obj_slime.pos);
 			Play::PlayAudio("hit");
-			Play::SetSprite(obj_slime, "slime_melt", slimeinfo.animationspeed);
+			Play::SetSprite(obj_slime, "slime_melt", slimeinfo.animationspeed); // not working
 			isdead = true;
 		}
 
 		Play::UpdateGameObject(obj_slime);
-		
+
 		if (isdead)
 		{
 			Play::DestroyGameObject(slime_id);
 		}
-	} 
+	}
 }
 
 void UpdateItemAxe()
@@ -663,11 +665,11 @@ void UpdateItemAxe()
 	GameObject& obj_axe = Play::GetGameObjectByType(TYPE_AXE);
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 
-	obj_axe.pos.y += sin(gamestate.elapsedTime)*0.1; // Make the axe bob up and down
+	obj_axe.pos.y += sin(gamestate.elapsedTime) * 0.1; // Make the axe bob up and down
 
 	Play::UpdateGameObject(obj_axe);
 
-	if (Play::IsColliding(obj_axe,obj_player))
+	if (Play::IsColliding(obj_axe, obj_player))
 	{
 		Play::DestroyGameObjectsByType(TYPE_AXE);
 		Play::PlayAudio("axe_get");
@@ -706,27 +708,27 @@ void UpdateDroplets()
 		GameObject& obj_droplet = Play::GetGameObject(id_droplet);
 
 		bool IsCollected = false;
-		
-		if (FloorCollisionStarted(obj_droplet,dropletinfo.AABB) == false)
+
+		if (FloorCollisionStarted(obj_droplet, dropletinfo.AABB) == false)
 		{
 			obj_droplet.acceleration.y = dropletinfo.gravity;
 		}
 
 		SetGameObjectRotationToDirection(obj_droplet);
 
-		if (FloorCollisionStarted(obj_droplet,dropletinfo.AABB))
+		if (FloorCollisionStarted(obj_droplet, dropletinfo.AABB))
 		{
 			obj_droplet.velocity.y *= -1;
 			obj_droplet.velocity.y *= 0.5;
 		}
 
-		if (WillCollideWithWall(obj_droplet,dropletinfo.AABB))
+		if (WillCollideWithWall(obj_droplet, dropletinfo.AABB))
 		{
 			obj_droplet.velocity.x *= -1;
 			obj_droplet.velocity.x *= 0.5;
 		}
 
-		if (IsObjGrounded(obj_droplet,dropletinfo.AABB) &&
+		if (IsObjGrounded(obj_droplet, dropletinfo.AABB) &&
 			obj_droplet.velocity.y < dropletinfo.minvelocity.y &&
 			obj_droplet.velocity.y > -dropletinfo.minvelocity.y)
 		{
@@ -735,14 +737,14 @@ void UpdateDroplets()
 			obj_droplet.acceleration.y = 0;
 		}
 
-		if (IsObjInsideWall(obj_droplet,dropletinfo.AABB) == true) // Stops droplet getting stuck in walls
+		if (IsObjInsideWall(obj_droplet, dropletinfo.AABB) == true) // Stops droplet getting stuck in walls
 		{
 			obj_droplet.pos.y -= 1.0f;
 		}
 
 		if (gamestate.playerstate == STATE_ATTACK &&
 			obj_player.frame >= 8 &&
-			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB, 
+			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,
 				obj_droplet.pos, dropletinfo.AABB))
 		{
 			if (obj_player.pos.x < obj_droplet.pos.x) // Player to the left of droplet
@@ -757,16 +759,16 @@ void UpdateDroplets()
 				Play::SetGameObjectDirection(obj_droplet, dropletinfo.initialvelocity.x, obj_droplet.rotation);
 				obj_droplet.velocity.y = dropletinfo.initialvelocity.y;
 			}
-			
+
 		}
 
 		if (IsCollidingAABB(obj_player.pos, playerinfo.verticalcollisionAABB,
-							obj_droplet.pos, dropletinfo.AABB))
+			obj_droplet.pos, dropletinfo.AABB))
 		{
 			IsCollected = true;
 			inventory.slimeteardrops += 1;
 
-			switch (Play::RandomRollRange(1,3))
+			switch (Play::RandomRollRange(1, 3))
 			{
 			case 1:
 				Play::PlayAudio("tear_collect_1");
@@ -780,9 +782,9 @@ void UpdateDroplets()
 			}
 
 		}
-		
+
 		Play::UpdateGameObject(obj_droplet);
-		
+
 		if (IsCollected == true)
 		{
 			Play::DestroyGameObject(id_droplet);
@@ -797,7 +799,7 @@ void CreatePlatform(int x, int y, int id)
 	Platform platform;
 
 	gamestate.vPlatforms.push_back(platform);
-	gamestate.vPlatforms.back().pos = Point2D{x,y};
+	gamestate.vPlatforms.back().pos = Point2D{ x,y };
 	gamestate.vPlatforms.back().id = id;
 }
 
@@ -805,49 +807,49 @@ void CreateLevelFromArray()
 {
 	LevelLayoutInfo levellayout;
 
-		for (int y = 0; y < levellayout.height; y++)
+	for (int y = 0; y < levellayout.height; y++)
+	{
+		for (int x = 0; x < levellayout.width; x++)
 		{
-			for (int x = 0; x < levellayout.width; x++)
+			int tileIndex = y * levellayout.width + x; // This is giving us a number, a position 0 to 880
+
+			if (levellayout.levellayout[tileIndex] == 1) // If that number has a 1 in it create a platform
 			{
-				int tileIndex = y * levellayout.width + x; // This is giving us a number, a position 0 to 880
+				// Create an object at this position (x, y)
+				CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+			}
 
-				if (levellayout.levellayout[tileIndex] == 1) // If that number has a 1 in it create a platform
-				{
-					// Create an object at this position (x, y)
-					CreatePlatform((x * platform.AABB.x*2) + platform.AABB.x / 2, (y * platform.AABB.y*2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
-				}
+			if (levellayout.levellayout[tileIndex] == 2)
+			{
+				CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+			}
 
-				if (levellayout.levellayout[tileIndex] == 2)
-				{
-					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
-				}
+			if (levellayout.levellayout[tileIndex] == 3)
+			{
+				CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+			}
 
-				if (levellayout.levellayout[tileIndex] == 3)
-				{
-					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
-				}
+			if (levellayout.levellayout[tileIndex] == 4)
+			{
+				CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
+			}
 
-				if (levellayout.levellayout[tileIndex] == 4)
-				{
-					CreatePlatform((x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2, levellayout.levellayout[tileIndex]);
-				}
+			if (levellayout.levellayout[tileIndex] == 5)
+			{
+				Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "slime_idle");
+			}
 
-				if (levellayout.levellayout[tileIndex] == 5)
-				{
-					Play::CreateGameObject(TYPE_SLIME, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "slime_idle");
-				}
+			if (levellayout.levellayout[tileIndex] == 6)
+			{
+				Play::CreateGameObject(TYPE_AXE, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "item_axe");
+			}
 
-				if (levellayout.levellayout[tileIndex] == 6)
-				{
-					Play::CreateGameObject(TYPE_AXE, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "item_axe");
-				}
-
-				if (levellayout.levellayout[tileIndex] == 7)
-				{
-					Play::CreateGameObject(TYPE_WITCH, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "witch_idle");
-				}
+			if (levellayout.levellayout[tileIndex] == 7)
+			{
+				Play::CreateGameObject(TYPE_WITCH, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "witch_idle");
 			}
 		}
+	}
 }
 
 
@@ -881,7 +883,7 @@ bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 				return true; // Player is grounded
 			}
 		}
-		
+
 	}
 
 	return false; // Player is not grounded
@@ -892,7 +894,7 @@ bool IsPlayerUnderCeiling()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
 	Point2D headBoxPos = obj_player.pos - playerinfo.headboxoffset;
-		
+
 	Vector2D headboxAABB = playerinfo.headboxAABB;
 
 	// Iterate through all platforms to check for collisions
@@ -911,7 +913,7 @@ bool IsPlayerUnderCeiling()
 			CheckHeadboxIsLeftOfPlatform(platform);
 			return true; // Player is colliding with platform side
 		}
-			
+
 	}
 
 	return false; // Player is not colliding with platform side
@@ -945,7 +947,7 @@ bool CeilingCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 			// Checks if previous frame was below the platform
 			if (objOldTopLeft.y > platformBottomRight.y)
 			{
-				
+
 				return true; // obj is hitting head
 			}
 		}
@@ -958,7 +960,7 @@ bool CeilingCollisionStarted(GameObject& obj, Vector2D obj_AABB)
 
 bool IsObjGrounded(GameObject& obj, Vector2D obj_AABB)
 {
-	
+
 	Point2D objTopLeft = obj.pos - obj_AABB;
 	Point2D objBottomRight = obj.pos + obj_AABB;
 
@@ -1009,13 +1011,13 @@ bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
 			objnextposTopLeft.x  < platformBottomRight.x &&
 			objnextposBottomRight.y  > platformTopLeft.y &&
 			objnextposTopLeft.y < platformBottomRight.y)
-		
+
 		{
-		
+
 			return true; // obj is colliding with platform side
-			
+
 		}
-		
+
 	}
 
 	return false; // obj is not colliding with platform side
@@ -1135,18 +1137,18 @@ void SetGameObjectRotationToDirection(GameObject& obj)
 void CameraFollow()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	
-	Play::SetCameraPosition({ obj_player.pos.x-DISPLAY_WIDTH/2, obj_player.pos.y-DISPLAY_HEIGHT/2 });
-	
+
+	Play::SetCameraPosition({ obj_player.pos.x - DISPLAY_WIDTH / 2, obj_player.pos.y - DISPLAY_HEIGHT / 2 });
+
 }
 
 void Draw()
 {
 	Play::DrawBackground();
-	
-	Play::DrawSprite("BG", { DISPLAY_WIDTH-16,DISPLAY_HEIGHT-32}, 1); // Mushroom Background
 
-	DrawPlatforms(); 
+	Play::DrawSprite("BG", { DISPLAY_WIDTH - 16,DISPLAY_HEIGHT - 32 }, 1); // Mushroom Background
+
+	DrawPlatforms();
 
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
@@ -1158,11 +1160,11 @@ void Draw()
 
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
-	
+
 	DrawDialogue();
-	
+
 	DrawUI();
-	
+
 	// DrawDebug();
 
 	Play::PresentDrawingBuffer();
@@ -1184,7 +1186,7 @@ void DrawDialogue()
 
 	if (witchinfo.intalkingrange == true)
 	{
-		
+
 
 		if (inventory.slimeteardrops >= witchinfo.slimeteardropsneeded)
 		{
@@ -1200,10 +1202,10 @@ void DrawDialogue()
 
 			Play::DrawFontText("64px", witchinfo.dialogue2, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset, Play::CENTRE);
 
-			Play::DrawFontText("64px", witchinfo.dialogue3, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset*2, Play::CENTRE);
+			Play::DrawFontText("64px", witchinfo.dialogue3, obj_witch.pos + witchinfo.speechbubbleoffset + bannerinfo.nextlineoffset * 2, Play::CENTRE);
 
 		}
-		
+
 
 	}
 }
@@ -1288,13 +1290,13 @@ void DrawPlayerAABB()
 void DrawPlayerNextPositionAABB()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
-	
+
 	Vector2D playernextPosition = obj_player.pos + obj_player.velocity;
 
 	Point2D playernextposTopLeft = playernextPosition - playerinfo.verticalcollisionAABB;
 
 	Point2D playernextposBottomRight = playernextPosition + playerinfo.verticalcollisionAABB;
-	
+
 
 	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
 }
@@ -1310,7 +1312,7 @@ void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
 
 void DrawDebug()
 {
-	
+
 	/*DrawPlayerNextPositionAABB();
 
 	DrawPlatformsAABB();
@@ -1320,8 +1322,8 @@ void DrawDebug()
 	DrawPlayerAABB();
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
-	
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos+witchinfo.talkingrangeoffset, witchinfo.talkingrangeAABB); // Witch talking hitbox
+
+	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.talkingrangeoffset, witchinfo.talkingrangeAABB); // Witch talking hitbox
 
 	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.speechbubbleoffset, bannerinfo.AABB); // Dialoguebox pos
 
@@ -1329,6 +1331,6 @@ void DrawDebug()
 
 	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
-	
+
 }
 
