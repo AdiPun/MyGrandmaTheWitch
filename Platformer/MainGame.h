@@ -14,6 +14,7 @@ enum GameObjectType
 	TYPE_AXE,
 	TYPE_DROPLET,
 	TYPE_WITCH,
+	TYPE_CREEP,
 };
 
 enum PlayerState
@@ -108,6 +109,17 @@ struct BannerInfo
 	Vector2D nextlineoffset{ 0 , 48 };
 };
 
+struct CreepInfo
+{
+	int type = TYPE_CREEP;
+	Vector2D AABB{ 7,7 };
+	Point2D pos;
+	float runspeed = 3.0f;
+	float animationspeed{ 0.3f };
+	float sightrangehorizontal = 400.0f;
+	float sightrangevertical = 200.0f;
+};
+
 struct SlimeInfo
 {
 	int type = TYPE_SLIME;
@@ -200,7 +212,7 @@ struct LevelLayoutInfo
 		2, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 2, 0, 0, 0, 2,
 		2, 0, 0, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 2,
 		2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2, 0, 5, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 2, 2, 1, 0, 1, 2,
-		2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
+		2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 2,
 		2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 2,
 		2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 0, 2, 1, 1, 1, 2, 0, 0, 2, 1, 1, 1, 2, 0, 2, 1, 2, 0, 2, 1, 1, 1, 1, 1, 1, 1, 2,
 	};
@@ -221,6 +233,7 @@ struct GameState
 PlayerInfo playerinfo;
 PlayerInventory inventory;
 WitchInfo witchinfo;
+CreepInfo creepinfo;
 SlimeInfo slimeinfo;
 DropletParticleInfo dropletinfo;
 BannerInfo bannerinfo;
@@ -245,6 +258,7 @@ void HandleFallingControls();
 void HandleLandingControls();
 
 void UpdateWitch();
+void UpdateCreep();
 void UpdateSlimes();
 void UpdateItemAxe();
 

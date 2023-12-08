@@ -26,6 +26,7 @@ bool MainGameUpdate(float elapsedTime)
 	UpdatePlayer();
 	UpdateItemAxe();
 	UpdateSlimes();
+	UpdateCreep();
 	UpdateDroplets();
 	UpdateWitch();
 	CameraFollow();
@@ -116,11 +117,11 @@ void UpdatePlayer()
 		// Idle animation
 		if (playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "idle_right", playerinfo.animationspeedidle); //Idle
+			Play::SetSprite(obj_player, "player_idle_right", playerinfo.animationspeedidle); //Idle
 		}
 		else if (!playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "idle_left", playerinfo.animationspeedidle); //Idle
+			Play::SetSprite(obj_player, "player_idle_left", playerinfo.animationspeedidle); //Idle
 		}
 
 		if (IsObjGrounded(obj_player, playerinfo.verticalcollisionAABB) == false)
@@ -140,12 +141,12 @@ void UpdatePlayer()
 
 		if (!playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "run_left", playerinfo.animationspeedrun);
+			Play::SetSprite(obj_player, "player_run_left", playerinfo.animationspeedrun);
 
 		}
 		else if (playerinfo.facingright)
 		{
-			Play::SetSprite(obj_player, "run_right", playerinfo.animationspeedrun);
+			Play::SetSprite(obj_player, "player_run_right", playerinfo.animationspeedrun);
 		}
 
 
@@ -575,6 +576,86 @@ void UpdateWitch()
 	Play::UpdateGameObject(obj_witch);
 }
 
+void UpdateCreep()
+{
+	CreepInfo creepinfo;
+
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+	std::vector<int> vCreeps = Play::CollectGameObjectIDsByType(TYPE_CREEP);
+
+	for (int creep_id : vCreeps)
+	{
+		GameObject& obj_creep = Play::GetGameObject(creep_id);
+		obj_creep.acceleration.y = playerinfo.gravity;
+
+		bool isdead = false;
+
+		// IsGrounded for creeps
+		if (IsObjGrounded(obj_creep, creepinfo.AABB))
+		{
+			obj_creep.velocity.y = 0;
+			obj_creep.acceleration.y = 0;
+			obj_creep.pos = obj_creep.oldPos;
+		}
+
+		if (WillCollideWithWall(obj_creep, creepinfo.AABB))
+		{
+			obj_creep.velocity.x = 0;
+			obj_creep.pos = obj_creep.oldPos;
+		}
+
+		// If the player is to the left or right of the creep, it runs away
+		if (obj_player.pos.x < obj_creep.pos.x &&
+			obj_player.pos.x > obj_creep.pos.x - creepinfo.sightrangehorizontal &&
+			obj_player.pos.y > obj_creep.pos.y - creepinfo.sightrangevertical &&
+			obj_player.pos.y < obj_creep.pos.y + creepinfo.sightrangevertical)
+
+		{
+			obj_creep.velocity.x = -creepinfo.runspeed;
+		}
+		else if (obj_player.pos.x > obj_creep.pos.x &&
+			obj_player.pos.x < obj_creep.pos.x + creepinfo.sightrangehorizontal &&
+			obj_player.pos.y > obj_creep.pos.y - creepinfo.sightrangevertical &&
+			obj_player.pos.y < obj_creep.pos.y + creepinfo.sightrangevertical)
+		{
+			obj_creep.velocity.x = creepinfo.runspeed;
+		}
+		else
+		{
+			obj_creep.velocity.x = 0;
+			Play::SetSprite(obj_creep, "creep_idle", creepinfo.animationspeed);
+		}
+
+		// Faces the creep in the direction of travel
+		if (obj_creep.velocity.x > 0)
+		{
+			Play::SetSprite(obj_creep, "creep_run_right", creepinfo.animationspeed);
+		}
+		if (obj_creep.velocity.x < 0)
+		{
+			Play::SetSprite(obj_creep, "creep_run_left", creepinfo.animationspeed);
+		}
+
+		// Creates droplets if the player attacks a creep
+		if (gamestate.playerstate == STATE_ATTACK &&
+			obj_player.frame >= 8 &&
+			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB, obj_creep.pos, creepinfo.AABB))
+		{
+			CreateDroplet(obj_creep.pos);
+			Play::PlayAudio("hit");
+			isdead = true;
+		}
+
+		Play::UpdateGameObject(obj_creep);
+
+		if (isdead)
+		{
+			Play::DestroyGameObject(creep_id);
+		}
+	}
+}
+
 
 void UpdateSlimes()
 {
@@ -847,6 +928,11 @@ void CreateLevelFromArray()
 			if (levellayout.levellayout[tileIndex] == 7)
 			{
 				Play::CreateGameObject(TYPE_WITCH, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "witch_idle");
+			}
+
+			if (levellayout.levellayout[tileIndex] == 8)
+			{
+				Play::CreateGameObject(TYPE_CREEP, { (x * platform.AABB.x * 2) + platform.AABB.x / 2, (y * platform.AABB.y * 2) + platform.AABB.y / 2 }, 8, "creep_idle");
 			}
 		}
 	}
@@ -1150,13 +1236,15 @@ void Draw()
 
 	DrawPlatforms();
 
+	Play::DrawObject(Play::GetGameObjectByType(TYPE_WITCH));
+
 	DrawAllGameObjectsByTypeRotated(TYPE_PLAYER);
 
 	DrawAllGameObjectsByType(TYPE_AXE);
 
 	DrawAllGameObjectsByType(TYPE_SLIME);
 
-	Play::DrawObject(Play::GetGameObjectByType(TYPE_WITCH));
+	DrawAllGameObjectsByType(TYPE_CREEP);
 
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
