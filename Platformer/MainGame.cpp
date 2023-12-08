@@ -588,7 +588,7 @@ void UpdateSlimes()
 	{
 		GameObject& obj_slime = Play::GetGameObject(slime_id);
 
-		Play::SetSprite(obj_slime, "slime_idle", slimeinfo.animationspeed);
+		
 		
 		obj_slime.acceleration.y = playerinfo.gravity;
 
@@ -610,7 +610,7 @@ void UpdateSlimes()
 
 		// If the player is to the left or right of the slime, it runs away
 		if (obj_player.pos.x < obj_slime.pos.x &&
-			obj_player.pos.x > obj_slime.pos.x - Play::RandomRollRange(slimeinfo.sightrangehorizontal, 250) &&
+			obj_player.pos.x > obj_slime.pos.x - slimeinfo.sightrangehorizontal &&
 			obj_player.pos.y > obj_slime.pos.y - slimeinfo.sightrangevertical &&
 			obj_player.pos.y < obj_slime.pos.y + slimeinfo.sightrangevertical)
 
@@ -618,7 +618,7 @@ void UpdateSlimes()
 			obj_slime.velocity.x = slimeinfo.runspeed;
 		}
 		else if(obj_player.pos.x > obj_slime.pos.x &&
-			obj_player.pos.x < obj_slime.pos.x + Play::RandomRollRange(slimeinfo.sightrangehorizontal, 250) &&
+			obj_player.pos.x < obj_slime.pos.x + slimeinfo.sightrangehorizontal &&
 			obj_player.pos.y > obj_slime.pos.y - slimeinfo.sightrangevertical &&
 			obj_player.pos.y < obj_slime.pos.y + slimeinfo.sightrangevertical)
 		{
@@ -627,25 +627,27 @@ void UpdateSlimes()
 		else
 		{
 			obj_slime.velocity.x = 0;
+			Play::SetSprite(obj_slime, "slime_idle", slimeinfo.animationspeed);
 		}
 
+		// Faces the slime in the direction of travel
 		if (obj_slime.velocity.x > 0)
 		{
-			Play::SetSprite(obj_slime, "slime_idle_right", slimeinfo.animationspeed);
+			Play::SetSprite(obj_slime, "slime_hop_right", slimeinfo.animationspeed);
 		}
 		if (obj_slime.velocity.x < 0)
 		{
-			Play::SetSprite(obj_slime, "slime_idle_left", slimeinfo.animationspeed);
+			Play::SetSprite(obj_slime, "slime_hop_left", slimeinfo.animationspeed);
 		}
 	
-
+		// Creates droplets if the player attacks a slime
 		if (gamestate.playerstate == STATE_ATTACK &&
 			obj_player.frame >= 8 &&
 			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB,obj_slime.pos , slimeinfo.AABB))
 		{
 			CreateDroplet(obj_slime.pos);
 			Play::PlayAudio("hit");
-			Play::SetSprite(obj_slime, "slime_melt", slimeinfo.animationspeed);
+			Play::SetSprite(obj_slime, "slime_melt", slimeinfo.animationspeed); // not working
 			isdead = true;
 		}
 
