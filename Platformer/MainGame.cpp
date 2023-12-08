@@ -596,16 +596,16 @@ void UpdateCreep()
 		{
 			obj_creep.velocity.y = 0;
 			obj_creep.acceleration.y = 0;
-			obj_creep.pos = obj_creep.oldPos;
+			obj_creep.pos.y = obj_creep.oldPos.y;
 		}
 
 		if (WillCollideWithWall(obj_creep, creepinfo.AABB))
 		{
 			obj_creep.velocity.x = 0;
-			obj_creep.pos = obj_creep.oldPos;
+			obj_creep.pos.x = obj_creep.oldPos.x;
 		}
 
-		// If the player is to the left or right of the creep, it runs away
+		// If the player is to the left or right of the creep, it chases them
 		if (obj_player.pos.x < obj_creep.pos.x &&
 			obj_player.pos.x > obj_creep.pos.x - creepinfo.sightrangehorizontal &&
 			obj_player.pos.y > obj_creep.pos.y - creepinfo.sightrangevertical &&
@@ -623,7 +623,7 @@ void UpdateCreep()
 		}
 		else
 		{
-			obj_creep.velocity.x = 0;
+			obj_creep.velocity.x *= 0.8f;
 			Play::SetSprite(obj_creep, "creep_idle", creepinfo.animationspeed);
 		}
 
@@ -680,13 +680,13 @@ void UpdateSlimes()
 		{
 			obj_slime.velocity.y = 0;
 			obj_slime.acceleration.y = 0;
-			obj_slime.pos = obj_slime.oldPos;
+			obj_slime.pos.y = obj_slime.oldPos.y;
 		}
 
 		if (WillCollideWithWall(obj_slime, slimeinfo.AABB))
 		{
 			obj_slime.velocity.x = 0;
-			obj_slime.pos = obj_slime.oldPos;
+			obj_slime.pos.x = obj_slime.oldPos.x;
 		}
 
 		// If the player is to the left or right of the slime, it runs away
