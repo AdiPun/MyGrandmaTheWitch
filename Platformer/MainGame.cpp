@@ -602,28 +602,13 @@ void UpdateCreep()
 		if (WillCollideWithPlatform(obj_creep, creepinfo.AABB))
 		{
 			obj_creep.velocity.x = 0;
-			obj_creep.velocity.y = creepinfo.jumpspeed;
+			//obj_creep.velocity.y = creepinfo.jumpspeed;
 			obj_creep.pos.x = obj_creep.oldPos.x;
 		}
 
 		// If the player is to the left or right of the creep, it chases them
-		MakeGameObjectChaseAnother(obj_creep,obj_player)
+		MakeGameObjectChaseAnother(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical, creepinfo.runspeed, creepinfo.maxspeed);
 
-		{
-			obj_creep.velocity.x = -creepinfo.runspeed;
-		}
-		else if (obj_player.pos.x > obj_creep.pos.x &&
-			obj_player.pos.x < obj_creep.pos.x + creepinfo.sightrangehorizontal &&
-			obj_player.pos.y > obj_creep.pos.y - creepinfo.sightrangevertical &&
-			obj_player.pos.y < obj_creep.pos.y + creepinfo.sightrangevertical)
-		{
-			obj_creep.velocity.x = creepinfo.runspeed;
-		}
-		else
-		{
-			obj_creep.velocity.x *= 0.8f;
-			Play::SetSprite(obj_creep, "creep_idle", creepinfo.animationspeed);
-		}
 
 		// Faces the creep in the direction of travel
 		if (obj_creep.velocity.x > 0)
@@ -1215,6 +1200,29 @@ bool IsCollidingAABB(Point2D obj_a_pos, Vector2D obj_a_dimensions, Point2D obj_b
 void SetGameObjectRotationToDirection(GameObject& obj)
 {
 	obj.rotation = atan2(-obj.velocity.x, obj.velocity.y);
+}
+
+// Takes a game object and gives it a sight range and speed at which it chases another game object
+void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, float runspeed, float maxspeed)
+{
+	if (obj_gettingchased.pos.x < obj_chaser.pos.x &&
+		obj_gettingchased.pos.x > obj_chaser.pos.x - sightrangehorizontal &&
+		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
+		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical &&
+		obj_chaser.velocity.x >= -maxspeed)
+
+	{
+		obj_chaser.velocity.x -= runspeed;
+	}
+	else if (obj_gettingchased.pos.x > obj_chaser.pos.x &&
+		obj_gettingchased.pos.x < obj_chaser.pos.x + sightrangehorizontal &&
+		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
+		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical &&
+		
+		obj_chaser.velocity.x <= maxspeed)
+	{
+		obj_chaser.velocity.x += runspeed;
+	}
 }
 
 

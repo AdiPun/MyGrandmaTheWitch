@@ -114,8 +114,9 @@ struct CreepInfo
 	int type = TYPE_CREEP;
 	Vector2D AABB{ 12,24 };
 	Point2D pos;
-	float runspeed = 3.0f;
+	float runspeed = 0.1f;
 	float jumpspeed = -3.0f;
+	float maxspeed = 3.5f;
 	float animationspeed{ 0.3f };
 	float sightrangehorizontal = 400.0f;
 	float sightrangevertical = 200.0f;
