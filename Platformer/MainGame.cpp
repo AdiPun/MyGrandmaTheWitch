@@ -608,7 +608,7 @@ void UpdateCreep()
 
 		// If the player is to the left or right of the creep, it chases them
 		MakeGameObjectChaseAnother(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical, creepinfo.runspeed, creepinfo.maxspeed);
-
+		
 
 		// Faces the creep in the direction of travel
 		if (obj_creep.velocity.x > 0)

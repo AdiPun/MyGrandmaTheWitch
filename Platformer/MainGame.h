@@ -248,7 +248,7 @@ Platform platform;
 PlatformInfo platforminfo;
 GameState gamestate;
 
-
+// Player controls -----------------------------------------------------------------------------------------------
 void UpdatePlayer();
 void HandleGroundedControls();
 
@@ -259,6 +259,8 @@ void HandleAirBorneControls();
 void HandleFallingControls();
 void HandleLandingControls();
 
+// Objects -----------------------------------------------------------------------------------------------
+
 void UpdateWitch();
 void UpdateCreep();
 void UpdateSlimes();
@@ -267,11 +269,15 @@ void UpdateItemAxe();
 void CreateDroplet(Point2D pos);
 void UpdateDroplets();
 
+// Level -----------------------------------------------------------------------------------------------
+
 void CreateLevelFromArray();
 
 void CreatePlatform(int x, int y);
 void CreatePlatformRow(int tiles, int x, int y);
 void CreatePlatformColumn(int tiles, int x, int y);
+
+// Object functions -----------------------------------------------------------------------------------------------
 
 bool IsObjGrounded(GameObject& obj, Vector2D obj_AABB);
 bool FloorCollisionStarted(GameObject& obj, Vector2D obj_AABB);
@@ -286,6 +292,10 @@ void CheckPlayerIsLeftOfPLatform(Platform& platform);
 void CheckHeadboxIsLeftOfPlatform(Platform& platform);
 
 void SetGameObjectRotationToDirection(GameObject& obj);
+
+void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, float runspeed, float maxspeed);
+
+// Drawing -----------------------------------------------------------------------------------------------
 
 void CameraFollow();
 
