@@ -84,7 +84,7 @@ void UpdatePlayer()
 	}
 
 	// Wall interactions
-	if (WillCollideWithWall(obj_player, playerinfo.wallcollisionAABB))
+	if (WillCollideWithPlatform(obj_player, playerinfo.wallcollisionAABB))
 	{
 		obj_player.pos.x = obj_player.oldPos.x;
 		obj_player.velocity.x = 0;
@@ -599,17 +599,15 @@ void UpdateCreep()
 			obj_creep.pos.y = obj_creep.oldPos.y;
 		}
 
-		if (WillCollideWithWall(obj_creep, creepinfo.AABB))
+		if (WillCollideWithPlatform(obj_creep, creepinfo.AABB))
 		{
 			obj_creep.velocity.x = 0;
+			obj_creep.velocity.y = creepinfo.jumpspeed;
 			obj_creep.pos.x = obj_creep.oldPos.x;
 		}
 
 		// If the player is to the left or right of the creep, it chases them
-		if (obj_player.pos.x < obj_creep.pos.x &&
-			obj_player.pos.x > obj_creep.pos.x - creepinfo.sightrangehorizontal &&
-			obj_player.pos.y > obj_creep.pos.y - creepinfo.sightrangevertical &&
-			obj_player.pos.y < obj_creep.pos.y + creepinfo.sightrangevertical)
+		MakeGameObjectChaseAnother(obj_creep,obj_player)
 
 		{
 			obj_creep.velocity.x = -creepinfo.runspeed;
@@ -683,7 +681,7 @@ void UpdateSlimes()
 			obj_slime.pos.y = obj_slime.oldPos.y;
 		}
 
-		if (WillCollideWithWall(obj_slime, slimeinfo.AABB))
+		if (WillCollideWithPlatform(obj_slime, slimeinfo.AABB))
 		{
 			obj_slime.velocity.x = 0;
 			obj_slime.pos.x = obj_slime.oldPos.x;
@@ -803,7 +801,7 @@ void UpdateDroplets()
 			obj_droplet.velocity.y *= 0.5;
 		}
 
-		if (WillCollideWithWall(obj_droplet, dropletinfo.AABB))
+		if (WillCollideWithPlatform(obj_droplet, dropletinfo.AABB))
 		{
 			obj_droplet.velocity.x *= -1;
 			obj_droplet.velocity.x *= 0.5;
@@ -1074,7 +1072,7 @@ bool IsObjGrounded(GameObject& obj, Vector2D obj_AABB)
 }
 
 // Check's obj's edgebox and if it's going to collide with the sides of a platform
-bool WillCollideWithWall(GameObject& obj, Vector2D obj_AABB)
+bool WillCollideWithPlatform(GameObject& obj, Vector2D obj_AABB)
 
 {
 	Point2D objTopLeft = obj.pos - obj_AABB;
