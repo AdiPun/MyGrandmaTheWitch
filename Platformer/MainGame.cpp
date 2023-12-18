@@ -619,6 +619,10 @@ void UpdateCreep()
 		{
 			Play::SetSprite(obj_creep, "creep_run_left", creepinfo.animationspeed);
 		}
+		else
+		{
+			Play::SetSprite(obj_creep, "creep_idle", creepinfo.animationspeed);
+		}
 
 		// Creates droplets if the player attacks a creep
 		if (gamestate.playerstate == STATE_ATTACK &&
@@ -1222,6 +1226,10 @@ void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingc
 		obj_chaser.velocity.x <= maxspeed)
 	{
 		obj_chaser.velocity.x += runspeed;
+	}
+	else
+	{
+		obj_chaser.velocity.x = 0;
 	}
 }
 
