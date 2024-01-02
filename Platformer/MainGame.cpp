@@ -588,8 +588,64 @@ void UpdateCreep()
 	{
 		GameObject& obj_creep = Play::GetGameObject(creep_id);
 		obj_creep.acceleration.y = playerinfo.gravity;
+		bool isfacingright = false;
 
-		bool isdead = false;
+		// Debug to see creep death animation
+		if (Play::KeyPressed('P'))
+		{
+			gamestate.creepstate = STATE_DYING;
+		}
+	
+		switch (gamestate.creepstate)
+		{
+		case STATE_CREEP_IDLE:		
+
+			obj_creep.velocity.x *= 0.99;
+
+			if (isfacingright == true)
+			{
+				Play::SetSprite(obj_creep, "creep_idle_right", creepinfo.animationspeed);
+			}
+			else if (isfacingright == false)
+			{
+				Play::SetSprite(obj_creep, "creep_idle_left", creepinfo.animationspeed);
+			}
+
+			if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical))
+			{
+				gamestate.creepstate = STATE_CHASING;
+			}
+			break;
+		case STATE_CHASING:
+			if (IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == true)
+			{
+				isfacingright = false;
+				Play::SetSprite(obj_creep, "creep_run_left", creepinfo.animationspeed);
+				obj_creep.velocity.x = -creepinfo.runspeed;
+			}
+			else if (IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == false)
+			{
+				isfacingright = true;
+				Play::SetSprite(obj_creep, "creep_run_right", creepinfo.animationspeed);
+				obj_creep.velocity.x = +creepinfo.runspeed;
+			}
+			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) == false)
+			{
+				gamestate.creepstate = STATE_CREEP_IDLE;
+			}
+			break;
+		case STATE_DYING:
+			Play::SetSprite(obj_creep, "creep_dead", creepinfo.animationspeed);
+			if (Play::IsAnimationComplete(obj_creep))
+			{
+				gamestate.creepstate = STATE_DEAD;
+			}
+			break;
+		case STATE_DEAD:
+			Play::DestroyGameObject(creep_id);
+			break;
+		}
+		
 
 		// IsGrounded for creeps
 		if (IsObjGrounded(obj_creep, creepinfo.AABB))
@@ -606,40 +662,22 @@ void UpdateCreep()
 			obj_creep.pos.x = obj_creep.oldPos.x;
 		}
 
-		// If the player is to the left or right of the creep, it chases them
-		MakeGameObjectChaseAnother(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical, creepinfo.runspeed, creepinfo.maxspeed);
-		
-
 		// Faces the creep in the direction of travel
 		if (obj_creep.velocity.x > 0)
 		{
-			Play::SetSprite(obj_creep, "creep_run_right", creepinfo.animationspeed);
+			
 		}
 		if (obj_creep.velocity.x < 0)
 		{
-			Play::SetSprite(obj_creep, "creep_run_left", creepinfo.animationspeed);
+			
 		}
-		else
-		{
-			Play::SetSprite(obj_creep, "creep_idle", creepinfo.animationspeed);
-		}
-
-		// Creates droplets if the player attacks a creep
-		if (gamestate.playerstate == STATE_ATTACK &&
-			obj_player.frame >= 8 &&
-			IsCollidingAABB(obj_player.pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB, obj_creep.pos, creepinfo.AABB))
-		{
-			CreateDroplet(obj_creep.pos);
-			Play::PlayAudio("hit");
-			isdead = true;
-		}
+		
+		
+		
+		
 
 		Play::UpdateGameObject(obj_creep);
 
-		if (isdead)
-		{
-			Play::DestroyGameObject(creep_id);
-		}
 	}
 }
 
@@ -1231,6 +1269,40 @@ void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingc
 	{
 		obj_chaser.velocity.x = 0;
 	}
+}
+
+bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical)
+{
+	if (obj_gettingchased.pos.x < obj_chaser.pos.x &&
+		obj_gettingchased.pos.x > obj_chaser.pos.x - sightrangehorizontal &&
+		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
+		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical)
+
+	{
+		return true;
+	}
+	else if (obj_gettingchased.pos.x > obj_chaser.pos.x &&
+		obj_gettingchased.pos.x < obj_chaser.pos.x + sightrangehorizontal &&
+		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
+		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool IsGameObjectOnLeftOfAnotherGameObject(GameObject& obj_inmotion, GameObject& obj_stationary)
+{
+	if (obj_inmotion.pos.x < obj_stationary.pos.x)
+	{
+		return true;
+	}
+	else if (obj_inmotion.pos.x > obj_stationary.pos.x)
+	{
+		return false;
+	}
+	
 }
 
 

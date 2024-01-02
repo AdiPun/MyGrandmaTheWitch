@@ -29,6 +29,14 @@ enum PlayerState
 	STATE_ATTACK,
 };
 
+enum CreepState
+{
+	STATE_CREEP_IDLE = 0,
+	STATE_CHASING,
+	STATE_DYING,
+	STATE_DEAD,
+};
+
 struct PlayerInfo
 {
 	Vector2D verticalcollisionAABB{ 15 , 30 };
@@ -68,7 +76,7 @@ struct PlayerInfo
 
 	bool playerleftofplatform;
 	bool headboxleftofplatform;
-	bool hasaxe = false;
+	bool hasaxe = true; // Change to cheat the axe in
 
 	Vector2D axeattackoffset{ 0 , 7 };
 	Vector2D runoffset{ 0 , 4 };
@@ -114,10 +122,10 @@ struct CreepInfo
 	int type = TYPE_CREEP;
 	Vector2D AABB{ 12,24 };
 	Point2D pos;
-	float runspeed = 0.1f;
+	float runspeed = 2.5f;
 	float jumpspeed = -3.0f;
 	float maxspeed = 3.5f;
-	float animationspeed{ 0.3f };
+	float animationspeed{ 0.2f };
 	float sightrangehorizontal = 400.0f;
 	float sightrangevertical = 200.0f;
 };
@@ -228,6 +236,7 @@ struct GameState
 	float elapsedTime = 0;
 	Point2D centrepos = { DISPLAY_WIDTH,DISPLAY_HEIGHT};
 	PlayerState playerstate = STATE_JUMPINGDOWN;
+	CreepState creepstate = STATE_CREEP_IDLE;
 	std::vector<Platform> vPlatforms;
 };
 
@@ -295,6 +304,9 @@ void SetGameObjectRotationToDirection(GameObject& obj);
 
 void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, float runspeed, float maxspeed);
 
+bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical);
+
+bool IsGameObjectOnLeftOfAnotherGameObject(GameObject& obj_inmotion, GameObject& obj_stationary);
 // Drawing -----------------------------------------------------------------------------------------------
 
 void CameraFollow();
