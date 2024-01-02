@@ -600,7 +600,7 @@ void UpdateCreep()
 		{
 		case STATE_CREEP_IDLE:		
 
-			obj_creep.velocity.x *= 0.99;
+			obj_creep.velocity.x *= 0.9;
 
 			if (isfacingright == true)
 			{
@@ -617,17 +617,23 @@ void UpdateCreep()
 			}
 			break;
 		case STATE_CHASING:
-			if (IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == true)
+
+			// Stops infinite acceleration
+			SetGameObjectMaxSpeed(obj_creep, creepinfo.maxspeed);
+
+			if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) &&
+				IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == true)
 			{
 				isfacingright = false;
 				Play::SetSprite(obj_creep, "creep_run_left", creepinfo.animationspeed);
-				obj_creep.velocity.x = -creepinfo.runspeed;
+				obj_creep.velocity.x -= creepinfo.runspeed;
 			}
-			else if (IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == false)
+			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) &&
+				IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == false)
 			{
 				isfacingright = true;
 				Play::SetSprite(obj_creep, "creep_run_right", creepinfo.animationspeed);
-				obj_creep.velocity.x = +creepinfo.runspeed;
+				obj_creep.velocity.x += creepinfo.runspeed;
 			}
 			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) == false)
 			{
@@ -658,26 +664,10 @@ void UpdateCreep()
 		if (WillCollideWithPlatform(obj_creep, creepinfo.AABB))
 		{
 			obj_creep.velocity.x = 0;
-			//obj_creep.velocity.y = creepinfo.jumpspeed;
 			obj_creep.pos.x = obj_creep.oldPos.x;
 		}
 
-		// Faces the creep in the direction of travel
-		if (obj_creep.velocity.x > 0)
-		{
-			
-		}
-		if (obj_creep.velocity.x < 0)
-		{
-			
-		}
-		
-		
-		
-		
-
 		Play::UpdateGameObject(obj_creep);
-
 	}
 }
 
@@ -1260,7 +1250,6 @@ void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingc
 		obj_gettingchased.pos.x < obj_chaser.pos.x + sightrangehorizontal &&
 		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
 		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical &&
-		
 		obj_chaser.velocity.x <= maxspeed)
 	{
 		obj_chaser.velocity.x += runspeed;
@@ -1271,7 +1260,7 @@ void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingc
 	}
 }
 
-bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical)
+bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, Vector2D sightrangeoffset)
 {
 	if (obj_gettingchased.pos.x < obj_chaser.pos.x &&
 		obj_gettingchased.pos.x > obj_chaser.pos.x - sightrangehorizontal &&
@@ -1303,6 +1292,18 @@ bool IsGameObjectOnLeftOfAnotherGameObject(GameObject& obj_inmotion, GameObject&
 		return false;
 	}
 	
+}
+
+void SetGameObjectMaxSpeed(GameObject& obj, float max_velocity)
+{
+	if (obj.velocity.x <= -max_velocity)
+	{
+		obj.velocity.x = -max_velocity;
+	}
+	else if (obj.velocity.x >= max_velocity)
+	{
+		obj.velocity.x = max_velocity;
+	}
 }
 
 
@@ -1339,7 +1340,7 @@ void Draw()
 
 	DrawUI();
 
-	// DrawDebug();
+	DrawDebug();
 
 	Play::PresentDrawingBuffer();
 }
@@ -1487,24 +1488,25 @@ void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
 void DrawDebug()
 {
 
-	/*DrawPlayerNextPositionAABB();
+	//DrawPlayerNextPositionAABB();
 
-	DrawPlatformsAABB();
+	//DrawPlatformsAABB();
 
+	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);
+	
+	//DrawPlayerAABB();
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos - playerinfo.headboxoffset, playerinfo.headboxAABB);*/
-	DrawPlayerAABB();
+	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_PLAYER).pos + playerinfo.axehitboxoffset, playerinfo.axehitboxAABB); // Axe hitbox
+	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.talkingrangeoffset, witchinfo.talkingrangeAABB); // Witch talking hitbox
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.talkingrangeoffset, witchinfo.talkingrangeAABB); // Witch talking hitbox
+	//DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.speechbubbleoffset, bannerinfo.AABB); // Dialoguebox pos
 
-	DrawObjectAABB(Play::GetGameObjectByType(TYPE_WITCH).pos + witchinfo.speechbubbleoffset, bannerinfo.AABB); // Dialoguebox pos
+	//DrawAllObjectAABB(TYPE_SLIME, slimeinfo.AABB);
 
-	DrawAllObjectAABB(TYPE_SLIME, slimeinfo.AABB);
+	//DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
-	DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
-
+	DrawAllObjectAABB(TYPE_CREEP, { creepinfo.sightrangehorizontal , creepinfo.sightrangevertical }); // Axe hitbox
 
 }
 

@@ -122,12 +122,13 @@ struct CreepInfo
 	int type = TYPE_CREEP;
 	Vector2D AABB{ 12,24 };
 	Point2D pos;
-	float runspeed = 2.5f;
+	float runspeed = 0.2f;
 	float jumpspeed = -3.0f;
 	float maxspeed = 3.5f;
 	float animationspeed{ 0.2f };
 	float sightrangehorizontal = 400.0f;
-	float sightrangevertical = 200.0f;
+	float sightrangevertical = 150.0f;
+	Vector2D sightrangeoffset = {0,-100};
 };
 
 struct SlimeInfo
@@ -201,6 +202,7 @@ struct LevelLayoutInfo
 {
 	int width = 40;
 	int height = 22;
+	// 1 = grass platforms, 2 = rock platforms, 3 = wood platforms, 4 = , 5 = slimes, 6 = axe, 7 = witch, 8 = creep
 	int levellayout[880] = {
 		
 		5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -222,7 +224,7 @@ struct LevelLayoutInfo
 		2, 0, 0, 0, 0, 1, 2, 2, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 2, 0, 0, 0, 2,
 		2, 0, 0, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 2,
 		2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2, 0, 5, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 2, 2, 1, 0, 1, 2,
-		2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 2,
+		2, 1, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
 		2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 2,
 		2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 0, 2, 1, 1, 1, 2, 0, 0, 2, 1, 1, 1, 2, 0, 2, 1, 2, 0, 2, 1, 1, 1, 1, 1, 1, 1, 2,
 	};
@@ -304,9 +306,11 @@ void SetGameObjectRotationToDirection(GameObject& obj);
 
 void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, float runspeed, float maxspeed);
 
-bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical);
+bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, Vector2D sightrangeoffset = {0,0});
 
 bool IsGameObjectOnLeftOfAnotherGameObject(GameObject& obj_inmotion, GameObject& obj_stationary);
+
+void SetGameObjectMaxSpeed(GameObject& obj, float max_velocity);
 // Drawing -----------------------------------------------------------------------------------------------
 
 void CameraFollow();
