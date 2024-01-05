@@ -138,8 +138,6 @@ void UpdatePlayer()
 
 		HandleGroundedControls();
 
-
-
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		if (!playerinfo.facingright)
@@ -151,8 +149,6 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "player_run_right", playerinfo.animationspeedrun);
 		}
-
-
 
 		if (IsObjGrounded(obj_player, playerinfo.verticalcollisionAABB) == false)
 		{
@@ -211,8 +207,6 @@ void UpdatePlayer()
 			gamestate.playerstate = STATE_FALLING;
 			playerinfo.slidetimerCounter = playerinfo.slidetimer;
 		}
-
-
 
 		break;
 
@@ -406,6 +400,7 @@ void UpdatePlayer()
 
 		if (Play::KeyPressed(VK_SPACE))
 		{
+			obj_player.pos = { DISPLAY_WIDTH,DISPLAY_HEIGHT };
 			playerinfo.health = 3;
 			gamestate.playerstate = STATE_IDLE;
 		}
