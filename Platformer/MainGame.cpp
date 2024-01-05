@@ -110,7 +110,10 @@ void UpdatePlayer()
 	}
 
 	// Kills player if they fall
-	//if (obj_player.pos.y > )
+	if (obj_player.pos.y > 1600.0f)
+	{
+		gamestate.playerstate = STATE_PLAYER_DEAD;
+	}
 
 	switch (gamestate.playerstate)
 	{
