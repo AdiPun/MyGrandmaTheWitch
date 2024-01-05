@@ -27,6 +27,8 @@ enum PlayerState
 	STATE_FALLING,
 	STATE_LANDING,
 	STATE_ATTACK,
+	STATE_HURT,
+	STATE_PLAYER_DEAD,
 };
 
 enum CreepState
@@ -39,6 +41,8 @@ enum CreepState
 
 struct PlayerInfo
 {
+	int health{ 3 };
+
 	Vector2D verticalcollisionAABB{ 15 , 30 };
 	Vector2D wallcollisionAABB{ 15 , 20 };
 	Vector2D slidingAABB{ 15 , 0 };
@@ -81,6 +85,7 @@ struct PlayerInfo
 	Vector2D axeattackoffset{ 0 , 7 };
 	Vector2D runoffset{ 0 , 4 };
 	Vector2D slideoffset{ 0 , 4 };
+	Vector2D hurtoffset{ 0 , 16 };
 
 	Point2D axehitboxoffset{ 40 , 0 };
 	const Point2D constaxehitboxoffset{ 40 , 0 };
@@ -260,6 +265,7 @@ PlatformInfo platforminfo;
 GameState gamestate;
 
 // Player controls -----------------------------------------------------------------------------------------------
+
 void UpdatePlayer();
 void HandleGroundedControls();
 
@@ -307,6 +313,7 @@ bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_g
 bool IsGameObjectOnLeftOfAnotherGameObject(GameObject& obj_inmotion, GameObject& obj_stationary);
 
 void SetGameObjectMaxSpeed(GameObject& obj, float max_velocity);
+
 // Drawing -----------------------------------------------------------------------------------------------
 
 void CameraFollow();
@@ -326,3 +333,5 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB);
 void DrawPlayerAABB();
 void DrawPlayerNextPositionAABB();
 void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions);
+
+void DebugControls();

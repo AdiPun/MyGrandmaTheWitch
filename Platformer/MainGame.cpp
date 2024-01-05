@@ -11,6 +11,8 @@ void MainGameEntry(PLAY_IGNORE_COMMAND_LINE)
 	Play::MoveSpriteOrigin("run_right", 0, playerinfo.runoffset.y);
 	Play::MoveSpriteOrigin("slide_left", 0, playerinfo.slideoffset.y);
 	Play::MoveSpriteOrigin("slide_right", 0, playerinfo.slideoffset.y);
+	Play::MoveSpriteOrigin("hurt_left", 0, playerinfo.hurtoffset.y);
+	Play::MoveSpriteOrigin("hurt_right", 0, playerinfo.hurtoffset.y);
 	Play::MoveSpriteOrigin("witch_idle", 0, witchinfo.idlespriteoffset.y);
 	Play::MoveSpriteOrigin("witch_talking", 0, witchinfo.talkingspriteoffset.y);
 	Play::LoadBackground("Data\\Backgrounds\\background.png");
@@ -31,6 +33,7 @@ bool MainGameUpdate(float elapsedTime)
 	UpdateWitch();
 	CameraFollow();
 	Draw();
+	DebugControls();
 	return Play::KeyDown(VK_ESCAPE);
 }
 
@@ -361,7 +364,6 @@ void UpdatePlayer()
 
 	case STATE_ATTACK:
 
-
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		if (!playerinfo.facingright)
@@ -379,9 +381,42 @@ void UpdatePlayer()
 			playerinfo.axeanimationcomplete = true;
 			gamestate.playerstate = STATE_IDLE;
 		}
-
 		break;
 
+	case STATE_HURT:
+
+		// Player loses 1 health if they have health, otherwise they die
+		if (playerinfo.health > 0)
+		{
+			playerinfo.health -= 1;
+		}
+		else if (playerinfo.health < 0)
+		{
+			gamestate.playerstate = STATE_PLAYER_DEAD;
+		}
+		
+		if (!playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "hurt_left", playerinfo.animationspeedatk);
+		}
+		else if (playerinfo.facingright)
+		{
+			Play::SetSprite(obj_player, "hurt_right", playerinfo.animationspeedatk);
+		}
+		if (Play::IsAnimationComplete(obj_player))
+		{
+			gamestate.playerstate = STATE_IDLE;
+		}
+		break;
+
+	case STATE_PLAYER_DEAD:
+
+		if (Play::KeyPressed(VK_SPACE))
+		{
+			playerinfo.health = 3;
+			gamestate.playerstate = STATE_IDLE;
+		}
+		break;
 	}
 
 	Play::UpdateGameObject(obj_player);
@@ -1336,7 +1371,6 @@ void Draw()
 
 	DrawAllGameObjectsByTypeRotated(TYPE_DROPLET);
 
-
 	DrawDialogue();
 
 	DrawUI();
@@ -1450,6 +1484,7 @@ void DrawObjectAABB(Point2D objcentre, Vector2D objAABB)
 	Play::DrawRect(topLeft, bottomRight, Play::cGreen);
 }
 
+// Draws player's AABB lines
 void DrawPlayerAABB()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
@@ -1463,6 +1498,7 @@ void DrawPlayerAABB()
 
 }
 
+// Draws player's AABB lines in the next frame
 void DrawPlayerNextPositionAABB()
 {
 	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
@@ -1477,6 +1513,7 @@ void DrawPlayerNextPositionAABB()
 	Play::DrawRect(playernextposTopLeft, playernextposBottomRight, Play::cBlue);
 }
 
+// Draws AABB lines of all objects of type
 void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
 {
 	for (int id : Play::CollectGameObjectIDsByType(type))
@@ -1486,6 +1523,17 @@ void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
 	}
 }
 
+// Makes certain states or actions happen when keys are pressed
+void DebugControls()
+{
+	// Hurts the player when U is pressed
+	if (Play::KeyPressed('U'))
+	{
+		gamestate.playerstate = STATE_HURT;
+	}
+}
+
+// Draws debug lines
 void DrawDebug()
 {
 
