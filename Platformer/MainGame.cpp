@@ -1379,20 +1379,29 @@ void DrawHUD()
 {
 	Play::SetDrawingSpace(Play::SCREEN);
 	//-------------------------------------
+	
+	// Health icon
+	Play::DrawSprite("heart", Point2D(DISPLAY_WIDTH * 0.05f, DISPLAY_HEIGHT * 0.1f), 1);
+	Play::DrawFontText("64px", " : " + std::to_string(playerinfo.health), Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
 
 	// Tear icon
-	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.25f, DISPLAY_HEIGHT * 0.1f), 1);
-	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.30f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.2f, DISPLAY_HEIGHT * 0.1f), 1);
+	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.25f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
 
+	// Game over text
+	if(gamestate.playerstate == STATE_PLAYER_DEAD)
+	{
+		Play::DrawFontText("64px", "Game Over! Press Space to retry", Point2D(DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT * 0.5f), Play::CENTRE);
+	}
+
+	
 	// Axe icon
 	/*if(playerinfo.hasaxe)
 	{
 		Play::DrawSprite("item_axe", Point2D(DISPLAY_WIDTH * 0.25f, DISPLAY_HEIGHT * 0.1f), 1);
 	}*/
 
-	// Health icon
-	Play::DrawSprite("heart", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), 1);
-	Play::DrawFontText("64px", " : " + std::to_string(playerinfo.health), Point2D(DISPLAY_WIDTH * 0.15f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+	
 
 	//-------------------------------------
 	Play::SetDrawingSpace(Play::WORLD);
