@@ -80,7 +80,7 @@ struct PlayerInfo
 
 	bool playerleftofplatform;
 	bool headboxleftofplatform;
-	bool hasaxe = true; // Change to cheat the axe in
+	bool hasaxe = false;
 
 	Vector2D axeattackoffset{ 0 , 7 };
 	Vector2D runoffset{ 0 , 4 };

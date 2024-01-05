@@ -109,6 +109,9 @@ void UpdatePlayer()
 		obj_player.velocity.y *= 0.9f;
 	}
 
+	// Kills player if they fall
+	//if (obj_player.pos.y > )
+
 	switch (gamestate.playerstate)
 	{
 	case STATE_IDLE:
@@ -1369,9 +1372,12 @@ void Draw()
 }
 
 
-// Draws how many slime tears you have
+// Draws HUD at the screen drawing space
 void DrawHUD()
 {
+	GameObject& obj_player = Play::GetGameObjectByType(TYPE_PLAYER);
+
+
 	Play::SetDrawingSpace(Play::SCREEN);
 	//-------------------------------------
 	
@@ -1389,12 +1395,14 @@ void DrawHUD()
 		Play::DrawFontText("64px", "Game Over! Press Space to retry", Point2D(DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT * 0.5f), Play::CENTRE);
 	}
 
-	
+	// Player pos display debug
+	// Play::DrawFontText("64px", std::to_string(obj_player.pos.y), Point2D(DISPLAY_WIDTH * 0.5f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+
 	// Axe icon
-	/*if(playerinfo.hasaxe)
+	if(playerinfo.hasaxe == true)
 	{
-		Play::DrawSprite("item_axe", Point2D(DISPLAY_WIDTH * 0.25f, DISPLAY_HEIGHT * 0.1f), 1);
-	}*/
+		Play::DrawSprite("item_axe", Point2D(DISPLAY_WIDTH * 0.35f, DISPLAY_HEIGHT * 0.1f), 1);
+	}
 
 	
 
@@ -1538,10 +1546,22 @@ void DrawAllObjectAABB(GameObjectType type, Vector2D obj_dimensions)
 // Makes certain states or actions happen when keys are pressed
 void DebugControls()
 {
-	// Hurts the player when U is pressed
-	if (Play::KeyPressed('U'))
+	// Hurts the player when 1 is pressed
+	if (Play::KeyPressed('1'))
 	{
 		gamestate.playerstate = STATE_HURT;
+	}
+
+	// Equips and unequips axe when 2 is pressed
+	if (playerinfo.hasaxe == true &&
+		Play::KeyPressed('2'))
+	{
+		playerinfo.hasaxe = false;
+	}
+	else if (playerinfo.hasaxe == false &&
+		Play::KeyPressed('2'))
+	{
+		playerinfo.hasaxe = true;
 	}
 }
 
