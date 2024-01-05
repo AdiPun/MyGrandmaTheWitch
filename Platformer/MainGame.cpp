@@ -611,7 +611,7 @@ void UpdateCreep()
 				Play::SetSprite(obj_creep, "creep_idle_left", creepinfo.animationspeed);
 			}
 
-			if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical))
+			if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangeverticalnegative,creepinfo.sightrangeverticalpositive))
 			{
 				gamestate.creepstate = STATE_CHASING;
 			}
@@ -621,21 +621,21 @@ void UpdateCreep()
 			// Stops infinite acceleration
 			SetGameObjectMaxSpeed(obj_creep, creepinfo.maxspeed);
 
-			if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) &&
+			if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangeverticalnegative, creepinfo.sightrangeverticalpositive) &&
 				IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == true)
 			{
 				isfacingright = false;
 				Play::SetSprite(obj_creep, "creep_run_left", creepinfo.animationspeed);
 				obj_creep.velocity.x -= creepinfo.runspeed;
 			}
-			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) &&
+			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangeverticalnegative, creepinfo.sightrangeverticalpositive) &&
 				IsGameObjectOnLeftOfAnotherGameObject(obj_player, obj_creep) == false)
 			{
 				isfacingright = true;
 				Play::SetSprite(obj_creep, "creep_run_right", creepinfo.animationspeed);
 				obj_creep.velocity.x += creepinfo.runspeed;
 			}
-			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangevertical) == false)
+			else if (CanGameObjectSeeAnotherGameObject(obj_creep, obj_player, creepinfo.sightrangehorizontal, creepinfo.sightrangeverticalnegative, creepinfo.sightrangeverticalpositive) == false)
 			{
 				gamestate.creepstate = STATE_CREEP_IDLE;
 			}
@@ -1260,20 +1260,21 @@ void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingc
 	}
 }
 
-bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, Vector2D sightrangeoffset)
+bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangeverticalnegative, float sightrangeverticalpositive)
 {
+	
 	if (obj_gettingchased.pos.x < obj_chaser.pos.x &&
 		obj_gettingchased.pos.x > obj_chaser.pos.x - sightrangehorizontal &&
-		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
-		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical)
+		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangeverticalnegative &&
+		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangeverticalpositive)
 
 	{
 		return true;
 	}
 	else if (obj_gettingchased.pos.x > obj_chaser.pos.x &&
 		obj_gettingchased.pos.x < obj_chaser.pos.x + sightrangehorizontal &&
-		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangevertical &&
-		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangevertical)
+		obj_gettingchased.pos.y > obj_chaser.pos.y - sightrangeverticalnegative &&
+		obj_gettingchased.pos.y < obj_chaser.pos.y + sightrangeverticalpositive)
 	{
 		return true;
 	}
@@ -1506,7 +1507,7 @@ void DrawDebug()
 
 	//DrawAllObjectAABB(TYPE_DROPLET, dropletinfo.AABB);
 
-	DrawAllObjectAABB(TYPE_CREEP, { creepinfo.sightrangehorizontal , creepinfo.sightrangevertical }); // Axe hitbox
+	// DrawAllObjectAABB(TYPE_CREEP, { creepinfo.sightrangehorizontal , creepinfo.sightrangeverticalnegative }); // Creep sightrange
 
 }
 

@@ -120,15 +120,15 @@ struct BannerInfo
 struct CreepInfo
 {
 	int type = TYPE_CREEP;
-	Vector2D AABB{ 12,24 };
+	Vector2D AABB{ 12.0f,24.0f };
 	Point2D pos;
 	float runspeed = 0.2f;
 	float jumpspeed = -3.0f;
 	float maxspeed = 3.5f;
 	float animationspeed{ 0.2f };
 	float sightrangehorizontal = 400.0f;
-	float sightrangevertical = 150.0f;
-	Vector2D sightrangeoffset = {0,-100};
+	float sightrangeverticalnegative = 200.0f;
+	float sightrangeverticalpositive = 12.0f;
 };
 
 struct SlimeInfo
@@ -284,10 +284,6 @@ void UpdateDroplets();
 
 void CreateLevelFromArray();
 
-void CreatePlatform(int x, int y);
-void CreatePlatformRow(int tiles, int x, int y);
-void CreatePlatformColumn(int tiles, int x, int y);
-
 // Object functions -----------------------------------------------------------------------------------------------
 
 bool IsObjGrounded(GameObject& obj, Vector2D obj_AABB);
@@ -306,7 +302,7 @@ void SetGameObjectRotationToDirection(GameObject& obj);
 
 void MakeGameObjectChaseAnother(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, float runspeed, float maxspeed);
 
-bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangevertical, Vector2D sightrangeoffset = {0,0});
+bool CanGameObjectSeeAnotherGameObject(GameObject& obj_chaser, GameObject& obj_gettingchased, float sightrangehorizontal, float sightrangeverticalnegative, float sightrangeverticalpositive);
 
 bool IsGameObjectOnLeftOfAnotherGameObject(GameObject& obj_inmotion, GameObject& obj_stationary);
 
