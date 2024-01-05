@@ -253,8 +253,6 @@ void UpdatePlayer()
 
 		HandleAirBorneControls();
 
-
-
 		playerinfo.friction = playerinfo.runningandjumpingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
@@ -282,13 +280,9 @@ void UpdatePlayer()
 
 		HandleFallingControls();
 
-
-
 		playerinfo.friction = playerinfo.fallingfriction;
 
 		obj_player.acceleration.y = playerinfo.gravity;
-
-
 
 		if (!playerinfo.facingright)
 		{
@@ -384,17 +378,12 @@ void UpdatePlayer()
 		break;
 
 	case STATE_HURT:
-
-		// Player loses 1 health if they have health, otherwise they die
-		if (playerinfo.health > 0)
-		{
-			playerinfo.health -= 1;
-		}
-		else if (playerinfo.health < 0)
+		
+		if (playerinfo.health <= 0)
 		{
 			gamestate.playerstate = STATE_PLAYER_DEAD;
 		}
-		
+
 		if (!playerinfo.facingright)
 		{
 			Play::SetSprite(obj_player, "hurt_left", playerinfo.animationspeedatk);
@@ -403,13 +392,17 @@ void UpdatePlayer()
 		{
 			Play::SetSprite(obj_player, "hurt_right", playerinfo.animationspeedatk);
 		}
+
 		if (Play::IsAnimationComplete(obj_player))
 		{
+			playerinfo.health -= 1;
 			gamestate.playerstate = STATE_IDLE;
 		}
 		break;
 
 	case STATE_PLAYER_DEAD:
+
+		Play::DrawDebugText(obj_player.pos, "Game Over");
 
 		if (Play::KeyPressed(VK_SPACE))
 		{
@@ -1373,7 +1366,7 @@ void Draw()
 
 	DrawDialogue();
 
-	DrawUI();
+	DrawHUD();
 
 	DrawDebug();
 
@@ -1382,11 +1375,26 @@ void Draw()
 
 
 // Draws how many slime tears you have
-void DrawUI()
+void DrawHUD()
 {
 	Play::SetDrawingSpace(Play::SCREEN);
-	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), 1);
-	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.15f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+	//-------------------------------------
+
+	// Tear icon
+	Play::DrawSprite("ui_tear", Point2D(DISPLAY_WIDTH * 0.25f, DISPLAY_HEIGHT * 0.1f), 1);
+	Play::DrawFontText("64px", " : " + std::to_string(inventory.slimeteardrops), Point2D(DISPLAY_WIDTH * 0.30f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+
+	// Axe icon
+	/*if(playerinfo.hasaxe)
+	{
+		Play::DrawSprite("item_axe", Point2D(DISPLAY_WIDTH * 0.25f, DISPLAY_HEIGHT * 0.1f), 1);
+	}*/
+
+	// Health icon
+	Play::DrawSprite("heart", Point2D(DISPLAY_WIDTH * 0.1f, DISPLAY_HEIGHT * 0.1f), 1);
+	Play::DrawFontText("64px", " : " + std::to_string(playerinfo.health), Point2D(DISPLAY_WIDTH * 0.15f, DISPLAY_HEIGHT * 0.1f), Play::CENTRE);
+
+	//-------------------------------------
 	Play::SetDrawingSpace(Play::WORLD);
 }
 

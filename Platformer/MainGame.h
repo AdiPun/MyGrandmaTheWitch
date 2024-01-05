@@ -319,7 +319,7 @@ void SetGameObjectMaxSpeed(GameObject& obj, float max_velocity);
 void CameraFollow();
 
 void Draw();
-void DrawUI();
+void DrawHUD();
 void DrawDialogue();
 
 void DrawPlatforms();
